@@ -1,27 +1,67 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
+@layer base {
+  input,
+  select,
+  textarea {
+    @apply border-black border-2 rounded-md px-1 disabled:border-gray-200;
+  }
+  option {
+    @apply disabled:border-gray-200;
+  }
+  label {
+    @apply text-lg font-semibold;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+  button {
+    @apply disabled:bg-gray-400 disabled:text-white;
+  }
+
+  table {
+    @apply divide-y divide-black;
+  }
+  th {
+    @apply bg-black text-white;
+  }
+  th,
+  td {
+    @apply px-1 border-x border-gray-400 last:border-r-transparent first:border-l-transparent;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@layer utilities {
+  .pendaftaran_nav_button {
+    @apply border-2 border-white text-white font-semibold hover:pendaftaran_nav_button_active transition rounded-full py-1 md:py-2 w-[100px] sm:w-[130px] capitalize;
+  }
+  .pendaftaran_nav_button_active {
+    @apply bg-red-500 text-white border-red-500;
+  }
+
+  /* BUTTONS */
+  .btn_red {
+    @apply text-white border-2 border-red-500 bg-red-500 hover:bg-transparent hover:text-red-500 transition rounded-full px-2;
+  }
+  .btn_green {
+    @apply text-white border-2 border-green-500 bg-green-500 hover:bg-transparent hover:text-green-500 transition px-2 rounded-full;
+  }
+
+  /* INPUT FORM */
+  .input_container {
+    @apply flex flex-col;
+  }
+  .inputs_container {
+    @apply flex gap-3;
+  }
+  .input_error {
+    @apply border-red-500 focus:outline-red-500;
+  }
+  .input_file {
+    @apply px-1 text-sm border-none disabled:border-none disabled:bg-transparent;
+  }
+  .input_file::-webkit-file-upload-button {
+    @apply my-1 translate-x-5 btn_green;
+  }
 }
