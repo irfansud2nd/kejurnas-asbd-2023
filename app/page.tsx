@@ -4,10 +4,19 @@ import { IoLocationSharp } from "react-icons/io5";
 import Link from "next/link";
 import { BsCloudDownload } from "react-icons/bs";
 import LoginButton from "@/components/LoginButton";
+import Head from "next/head";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Kerjurnas ASBD 2023",
+};
 
 export default function Home() {
   return (
     <main className="w-full h-full bg-red-500 bg-opacity-70 flex items-center">
+      <Head>
+        <title>Kerjurnas ASBD 2023</title>
+      </Head>
       <Image
         src="/images/bg-bw.png"
         alt="bg-bw"

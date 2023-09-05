@@ -5,11 +5,15 @@ import FullLoading from "@/components/loading/FullLoading";
 import { MyContext } from "@/context/Context";
 import { FormContextProvider } from "@/context/FormContext";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const PendaftaranPage = () => {
   const [nav, setNav] = useState("kontingen");
   const { userLoading, user } = MyContext();
+
+  useEffect(() => {
+    document.title = "Halaman Pendaftaran - Kerjurnas ASBD 2023";
+  }, []);
 
   return (
     <div className="min-h-full w-full py-2">

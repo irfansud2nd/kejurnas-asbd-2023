@@ -4,6 +4,7 @@ import logo_kemenpora from "@/public/images/logo-kemenpora.png";
 import logo_al_azhar from "@/public/images/logo-al_azhar.png";
 import logo_asbd from "@/public/images/logo-asbd.png";
 import Profile from "./Profile";
+import Link from "next/link";
 
 const TopBar = () => {
   return (
@@ -11,10 +12,13 @@ const TopBar = () => {
       <div className="col-span-2 lg:col-span-1">
         <Profile />
       </div>
-      <div className="hidden sm:block col-span-6 lg:col-span-7 text-lg md:text-xl font-bold">
+      <Link
+        href="/"
+        className="hidden sm:block col-span-6 lg:col-span-7 text-lg md:text-xl font-bold"
+      >
         <span className="hidden md:inline">Kejuraan Nasional</span>{" "}
         <span className="hidden sm:inline md:hidden">Kejurnas</span> ASBD 2023
-      </div>
+      </Link>
       <div className="w-full h-full col-span-2 sm:col-span-1 relative">
         <Image
           src={logo_ipsi}
