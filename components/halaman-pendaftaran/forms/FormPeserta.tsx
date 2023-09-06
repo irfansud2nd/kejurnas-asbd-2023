@@ -363,7 +363,7 @@ const FormPeserta = ({
 
             {/* JENIS PERTANDINGAN */}
             <div className="input_container">
-              <label className="input_label">Jenis Pertaindingan</label>
+              <label className="input_label">Jenis Pertandingan</label>
               <select
                 disabled={disable}
                 value={data.jenisPertandingan}
