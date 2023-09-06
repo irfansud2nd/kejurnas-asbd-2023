@@ -2,10 +2,10 @@ import Image from "next/image";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { IoLocationSharp } from "react-icons/io5";
 import Link from "next/link";
-import { BsCloudDownload } from "react-icons/bs";
 import LoginButton from "@/components/LoginButton";
 import Head from "next/head";
 import { Metadata } from "next";
+import DownloadButton from "@/components/DownloadButton";
 
 export const metadata: Metadata = {
   title: "Kerjurnas ASBD 2023",
@@ -43,9 +43,7 @@ export default function Home() {
         </p>
         <div className="flex flex-wrap justify-center gap-x-20 gap-y-2 text-black mt-10">
           <LoginButton />
-          <button className="bg-white px-2 py-1 hover:bg-red-500 hover:text-white transition w-[200px]">
-            Download Proposal <BsCloudDownload className="inline mb-1" />
-          </button>
+          <DownloadButton />
         </div>
       </div>
     </main>

@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { newToast } from "@/utils/sharedFunctions";
+import InlineLoading from "./loading/InlineLoading";
 
 const LoginButton = () => {
   const { user, userLoading, googleLogin } = MyContext();
@@ -22,17 +23,17 @@ const LoginButton = () => {
 
   if (userLoading) {
     return (
-      <div className="bg-white px-2 py-1 hover:bg-red-500 hover:text-white transition w-[200px]">
-        Loading...
+      <div className="bg-white px-2 py-1 hover:bg-red-500 hover:text-white transition w-[200px] flex gap-1 justify-center items-center">
+        Loading... <InlineLoading />
       </div>
     );
   } else if (user) {
     return (
       <Link
         href="/halaman-pendaftaran"
-        className="bg-white px-2 py-1 hover:bg-red-500 hover:text-white transition w-[200px]"
+        className="bg-white px-2 py-1 hover:bg-red-500 hover:text-white transition w-[200px] flex gap-1 justify-center items-center"
       >
-        Halaman Pendaftaran <FiArrowRightCircle className="inline mb-1" />
+        Halaman Pendaftaran <FiArrowRightCircle className="inline" />
       </Link>
     );
   }

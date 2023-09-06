@@ -1,5 +1,6 @@
 import {
   errorPesertaInitialValue,
+  jenisPertandingan,
   pesertaInitialValue,
 } from "@/utils/formConstants";
 import { ErrorPeserta, PesertaState } from "@/utils/formTypes";
@@ -88,8 +89,9 @@ const Peserta = () => {
   // DATA LISTENER FOR CEK KUOTA
   useEffect(() => {
     if (
-      data.tingkatanPertandingan == "SMA" ||
-      data.tingkatanPertandingan == "Dewasa"
+      (data.tingkatanPertandingan == "SMA" ||
+        data.tingkatanPertandingan == "Dewasa") &&
+      data.jenisPertandingan != jenisPertandingan[2]
     ) {
       cekKuota();
     } else {
@@ -154,8 +156,9 @@ const Peserta = () => {
     e.preventDefault();
     setSubmitClicked(true);
     if (
-      data.tingkatanPertandingan == "SMA" ||
-      data.tingkatanPertandingan == "Dewasa"
+      (data.tingkatanPertandingan == "SMA" ||
+        data.tingkatanPertandingan == "Dewasa") &&
+      data.jenisPertandingan != jenisPertandingan[2]
     ) {
       newToast(toastId, "loading", "Cek Kuota Kategori");
       cekKuota().then((res) => {
