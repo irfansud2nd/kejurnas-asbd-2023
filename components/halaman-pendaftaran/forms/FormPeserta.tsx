@@ -414,16 +414,6 @@ const FormPeserta = ({
                         sabuk: e.target.value,
                       });
                     }}
-                    // className={`
-                    // ${
-                    //   errorMessage.kategoriPertandingan
-                    //     ? "input_error"
-                    //     : kuotaKelas
-                    //     ? "input"
-                    //     : "input_error"
-                    // }
-                    // input
-                    // `}
                   >
                     {tingkatanKategoriJurusAsbd.map((item) => (
                       <option value={item.sabuk} key={item.sabuk}>
@@ -431,9 +421,6 @@ const FormPeserta = ({
                       </option>
                     ))}
                   </select>
-                  <p className="text-red-500">
-                    {errorMessage.kategoriPertandingan}
-                  </p>
                   {/* {(data.tingkatanPertandingan == "SMA" ||
                   data.tingkatanPertandingan == "Dewasa") &&
                   (kuotaLoading ? (
@@ -450,6 +437,7 @@ const FormPeserta = ({
                     </p>
                   ))} */}
                 </div>
+                {/* TINGKATAN SABUK */}
 
                 {/* JURUS */}
                 {data.sabuk && (
@@ -464,16 +452,6 @@ const FormPeserta = ({
                           jurus: e.target.value,
                         });
                       }}
-                      //   className={`
-                      // ${
-                      //   errorMessage.kategoriPertandingan
-                      //     ? "input_error"
-                      //     : kuotaKelas
-                      //     ? "input"
-                      //     : "input_error"
-                      // }
-                      // input
-                      // `}
                     >
                       {tingkatanKategoriJurusAsbd[
                         tingkatanKategoriJurusAsbd.findIndex(
@@ -485,9 +463,6 @@ const FormPeserta = ({
                         </option>
                       ))}
                     </select>
-                    <p className="text-red-500">
-                      {errorMessage.kategoriPertandingan}
-                    </p>
                     {/* {(data.tingkatanPertandingan == "SMA" ||
                   data.tingkatanPertandingan == "Dewasa") &&
                   (kuotaLoading ? (
@@ -505,6 +480,7 @@ const FormPeserta = ({
                   ))} */}
                   </div>
                 )}
+                {/* JURUS */}
 
                 {/* KATEGORI */}
                 <div className="input_container">
@@ -518,16 +494,6 @@ const FormPeserta = ({
                         kategoriPertandingan: e.target.value,
                       });
                     }}
-                    //   className={`
-                    // ${
-                    //   errorMessage.kategoriPertandingan
-                    //     ? "input_error"
-                    //     : kuotaKelas
-                    //     ? "input"
-                    //     : "input_error"
-                    // }
-                    // input
-                    // `}
                   >
                     {data.jenisKelamin == "Putra"
                       ? kategoriAsbd.putra.map((item) => (
@@ -560,6 +526,7 @@ const FormPeserta = ({
                     </p>
                   ))} */}
                 </div>
+                {/* KATEGORI */}
               </>
             )}
 
@@ -675,6 +642,46 @@ const FormPeserta = ({
               </div>
             )}
             {/* KATEGORI TANDING */}
+
+            {/* NAMA TIM */}
+            <p>{data.namaTim}</p>
+            {(data.kategoriPertandingan.split(" ")[0] == "Regu" ||
+              data.kategoriPertandingan.split(" ")[0] == "Ganda") && (
+              <div className="input_container">
+                <label className="input_label">Nama Tim</label>
+                <input
+                  type="text"
+                  disabled={disable}
+                  value={data.namaTim}
+                  onChange={(e) => {
+                    setData({
+                      ...data,
+                      namaTim: e.target.value,
+                    });
+                  }}
+                  className={`
+                  ${errorMessage.namaTim ? "input_error" : "input"}
+                  `}
+                />
+                <p className="text-red-500">{errorMessage.namaTim}</p>
+                {/* {(data.tingkatanPertandingan == "SMA" ||
+                  data.tingkatanPertandingan == "Dewasa") &&
+                  (kuotaLoading ? (
+                    <p className="text-end">
+                      Memuat kuota kategori <InlineLoading />
+                    </p>
+                  ) : !kuotaKelas ? (
+                    <p className="text-end text-red-500">
+                      Kuota kategori habis
+                    </p>
+                  ) : (
+                    <p className="text-end">
+                      Sisa kuota kategori: {kuotaKelas} peserta
+                    </p>
+                  ))} */}
+              </div>
+            )}
+            {/* NAMA TIM */}
           </div>
           {/* KOLOM KANAN */}
         </div>

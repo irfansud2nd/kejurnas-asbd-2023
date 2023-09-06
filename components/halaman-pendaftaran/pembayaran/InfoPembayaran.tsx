@@ -63,7 +63,7 @@ const InfoPembayaran = ({
 
   return (
     <div className="w-full bg-white rounded-md p-2 grid lg:grid-cols-2 gap-2">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto flex flex-col justify-between">
         <table className="w-fit border-x-2 border-black mx-auto">
           <thead>
             <tr>
@@ -114,6 +114,9 @@ const InfoPembayaran = ({
             </tr>
           </tbody>
         </table>
+        <div className="bg-gray-200 font-bold text-lg text-center w-fit mx-auto px-2 py-1 mt-2 rounded-md">
+          Gunakan 3 digit terakhir No HP anda pada nominal transfer
+        </div>
       </div>
       <ContactPerson />
     </div>

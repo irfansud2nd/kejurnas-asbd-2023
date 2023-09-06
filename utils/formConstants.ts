@@ -187,6 +187,7 @@ export const errorPesertaInitialValue: ErrorPeserta = {
   jenisPertandingan: null,
   kategoriPertandingan: null,
   pasFoto: null,
+  namaTim: null,
 };
 
 // PESERTA STATE
@@ -204,6 +205,7 @@ export const pesertaInitialValue: PesertaState = {
   beratBadan: 0,
   tinggiBadan: 0,
   alamatLengkap: "",
+  namaTim: "",
   jenisKelamin: jenisKelamin[0],
   tingkatanPertandingan: tingkatanKategori[0].tingkatan,
   jenisPertandingan: jenisPertandingan[0],

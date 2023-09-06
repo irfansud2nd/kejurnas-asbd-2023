@@ -58,6 +58,7 @@ const Peserta = () => {
   // RESETER
   const reset = () => {
     setImageSelected(null);
+    setImagePreviewSrc("");
     clearInputImage();
     setData({
       ...pesertaInitialValue,

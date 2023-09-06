@@ -27,6 +27,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
+import { jenisPertandingan } from "./formConstants";
 
 // KATEGORI GENERATOR - START
 // ALPHABET
@@ -191,6 +192,12 @@ export const getInputErrorPeserta = (
       data.kategoriPertandingan == ""
         ? "Tolong lengkapi kategori Pertandingan"
         : null,
+    namaTim:
+      (data.kategoriPertandingan.split(" ")[0] == "Regu" ||
+        data.kategoriPertandingan.split(" ")[0] == "Ganda") &&
+      data.namaTim == ""
+        ? "Tolong lengkapi nama Tim"
+        : null,
   });
   if (
     imageUrl &&
@@ -205,7 +212,10 @@ export const getInputErrorPeserta = (
     data.idKontingen &&
     data.tingkatanPertandingan &&
     data.jenisPertandingan &&
-    data.kategoriPertandingan
+    data.kategoriPertandingan &&
+    (data.namaTim ||
+      (data.kategoriPertandingan.split(" ")[0] !== "Regu" &&
+        data.kategoriPertandingan.split(" ")[0] !== "Ganda"))
   ) {
     return true;
   } else {

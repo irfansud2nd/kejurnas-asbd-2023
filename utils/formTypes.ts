@@ -67,6 +67,7 @@ export type ErrorPeserta = {
   jenisPertandingan: string | null;
   kategoriPertandingan: string | null;
   pasFoto: string | null;
+  namaTim: string | null;
 };
 
 // KONTINGEN STATE
@@ -131,6 +132,7 @@ export type PesertaState = {
   jenisPertandingan: string;
   jurus: string;
   sabuk: string;
+  namaTim: string;
   kategoriPertandingan: string;
   idKontingen: string;
   downloadFotoUrl: string;
