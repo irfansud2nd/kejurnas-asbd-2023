@@ -644,7 +644,6 @@ const FormPeserta = ({
             {/* KATEGORI TANDING */}
 
             {/* NAMA TIM */}
-            <p>{data.namaTim}</p>
             {(data.kategoriPertandingan.split(" ")[0] == "Regu" ||
               data.kategoriPertandingan.split(" ")[0] == "Ganda") && (
               <div className="input_container">

@@ -108,19 +108,19 @@ export const tingkatanKategoriJurusAsbd = [
   },
   {
     sabuk: "Kuning",
-    jurus: ["Jurus Baku", "Jurus Kombinasi"],
+    jurus: ["Jurus Baku/Kombinasi"],
   },
   {
     sabuk: "Hijau",
-    jurus: ["Jurus Baku", "Jurus Kombinasi"],
+    jurus: ["Jurus Baku/Kombinasi"],
   },
   {
     sabuk: "Biru",
-    jurus: ["Jurus Baku", "Jurus Kombinasi"],
+    jurus: ["Jurus Baku/Kombinasi"],
   },
   {
     sabuk: "Violet",
-    jurus: ["Jurus Baku", "Jurus Kombinasi"],
+    jurus: ["Jurus Baku/Kombinasi"],
   },
 ];
 
