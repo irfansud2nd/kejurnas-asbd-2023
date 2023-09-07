@@ -60,6 +60,9 @@ const TabelPeserta = ({ handleDelete, handleEdit }: TabelProps) => {
                         " | " +
                         peserta.kategoriPertandingan
                       : peserta.kategoriPertandingan}
+                    {peserta.jenisPertandingan === jenisPertandingan[2] &&
+                      peserta.kategoriPertandingan.split(" ")[0] != "Tunggal" &&
+                      ` | Tim ${peserta.namaTim}`}
                   </td>
                   {handleDelete && handleEdit ? (
                     <td>
