@@ -1,8 +1,8 @@
 import { FormContext } from "@/context/FormContext";
-import { jenisPertandingan } from "@/utils/formConstants";
-import { PesertaState } from "@/utils/formTypes";
+import { KontingenState, PesertaState } from "@/utils/formTypes";
 import { useState, useEffect } from "react";
 import ContactPerson from "./ContactPerson";
+import { getGroupedUnpaidPeserta } from "@/utils/formFunctions";
 
 const InfoPembayaran = ({
   totalBiaya,
@@ -16,48 +16,32 @@ const InfoPembayaran = ({
     asbdTunggal: 0,
     asbdRegu: 0,
   });
-  const { pesertas }: { pesertas: PesertaState[] } = FormContext();
+  const {
+    pesertas,
+    kontingen,
+  }: { pesertas: PesertaState[]; kontingen: KontingenState } = FormContext();
 
   //   GROUPING PESERTA
   useEffect(() => {
     if (pesertas.length) {
-      getTotalPeserta();
+      setTotalPeserta({
+        nonAsbd: getGroupedUnpaidPeserta(pesertas).nonAsbd,
+        asbdTunggal: getGroupedUnpaidPeserta(pesertas).asbdTunggal,
+        asbdRegu: getGroupedUnpaidPeserta(pesertas).asbdRegu,
+      });
     }
   }, [pesertas]);
-
-  const getTotalPeserta = () => {
-    let nonAsbd = 0;
-    let asbdTunggal = 0;
-    let asbdRegu = 0;
-
-    pesertas.map((peserta) => {
-      if (!peserta.pembayaran) {
-        if (peserta.jenisPertandingan == jenisPertandingan[2]) {
-          if (peserta.kategoriPertandingan.split(" ")[0] == "Tunggal") {
-            asbdTunggal += 1;
-          } else {
-            asbdRegu += 1;
-          }
-        } else {
-          nonAsbd += 1;
-        }
-      }
-    });
-
-    setTotalPeserta({
-      nonAsbd: nonAsbd,
-      asbdTunggal: asbdTunggal,
-      asbdRegu: asbdRegu,
-    });
-  };
 
   //   GET TOTAL BIAYA
   useEffect(() => {
     const total =
       totalPeserta.nonAsbd * 325000 +
       totalPeserta.asbdTunggal * 250000 +
-      totalPeserta.asbdRegu * 225000 +
-      125000;
+      totalPeserta.asbdRegu * 225000;
+
+    if (!kontingen.idPembayaran.length) {
+      total + 125000;
+    }
     setTotalBiaya(total);
   }, [totalPeserta]);
 
