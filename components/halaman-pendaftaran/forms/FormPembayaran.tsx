@@ -210,7 +210,10 @@ const FormPembayaran = ({ totalBiaya }: { totalBiaya: number }) => {
             "error",
             `Gagal menyimpan data pembayaran ke kontingen ${error.code}`
           )
-        );
+        )
+        .finally(() => {
+          setDisable(false);
+        });
     } else {
       newToast(toastId, "error", "id undefined");
     }

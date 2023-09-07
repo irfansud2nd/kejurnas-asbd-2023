@@ -82,12 +82,14 @@ const InfoPembayaran = ({
                 Rp. {(totalPeserta.asbdRegu * 225000).toLocaleString("id")}
               </td>
             </tr>
-            <tr>
-              <td>Biaya Kontingen</td>
-              <td>1</td>
-              <td>Rp. 125.000</td>
-              <td>Rp. 125.000</td>
-            </tr>
+            {!kontingen.idPembayaran.length && (
+              <tr>
+                <td>Biaya Kontingen</td>
+                <td>1</td>
+                <td>Rp. 125.000</td>
+                <td>Rp. 125.000</td>
+              </tr>
+            )}
             <tr className="border-y-2 border-black">
               <td colSpan={3} className="border-r-2 border-black">
                 Total Biaya

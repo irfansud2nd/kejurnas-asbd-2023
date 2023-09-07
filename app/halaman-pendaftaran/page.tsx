@@ -1,4 +1,5 @@
 "use client";
+import LoginButton from "@/components/LoginButton";
 import FormPendaftaran from "@/components/halaman-pendaftaran/FormPendaftaran";
 import PendaftaranNav from "@/components/halaman-pendaftaran/PendaftaranNav";
 import FullLoading from "@/components/loading/FullLoading";
@@ -32,7 +33,9 @@ const PendaftaranPage = () => {
             <FormPendaftaran nav={nav} />
           </>
         ) : (
-          "Login dulu..."
+          <div className="flex justify-center items-center w-full h-full">
+            <LoginButton />
+          </div>
         )}
       </FormContextProvider>
     </div>
