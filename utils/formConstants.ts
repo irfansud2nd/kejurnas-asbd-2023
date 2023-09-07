@@ -1,4 +1,3 @@
-import { generateKategoriPertandingan } from "./formFunctions";
 import {
   ErrorOfficial,
   ErrorPeserta,
@@ -44,6 +43,77 @@ const seniAlat = {
   putra: ["Tunggal Tangan Kosong Putra", "Tunggal Full Putra"],
   putri: ["Tunggal Tangan Kosong Putri", "Tunggal Full Putri"],
 };
+
+// KATEGORI GENERATOR - START
+// ALPHABET
+const alphabet = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "X",
+  "Y",
+  "Z",
+];
+// GENERATOR
+export const generateKategoriPertandingan = (
+  endAlphabet: string,
+  start: number,
+  step: number,
+  bebas?: {
+    namaKelasBawah?: string;
+    bataKelasBawah?: string;
+    namaKelasAtas?: string;
+    bataKelasAtas?: string;
+  }
+) => {
+  const repeatValue = alphabet.indexOf(endAlphabet);
+  let kategoriArr: string[] = [];
+  let startKategori: number = 0;
+
+  if (bebas?.namaKelasBawah) {
+    kategoriArr.push(
+      `Kelas ${bebas.namaKelasBawah} (Dibawah ${
+        bebas.bataKelasBawah ? bebas.bataKelasBawah : start
+      } KG)`
+    );
+  }
+
+  startKategori = start;
+  for (let i = 0; i <= repeatValue; i++) {
+    kategoriArr.push(
+      `Kelas ${alphabet[i]} (${startKategori}-${startKategori + step} KG)`
+    );
+    startKategori += step;
+  }
+  const endNumber = startKategori;
+  if (bebas?.namaKelasAtas)
+    kategoriArr.push(
+      `Kelas ${bebas.namaKelasAtas} (Diatas ${
+        bebas.bataKelasAtas ? bebas.bataKelasAtas : endNumber
+      } KG)`
+    );
+  return kategoriArr;
+};
+// KATEGORI GENERATOR - END
 
 // TINGKATAN DAN KATEGORI TANDING OPTION
 export const tingkatanKategori = [

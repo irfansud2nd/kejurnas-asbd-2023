@@ -1,4 +1,4 @@
-import { auth } from "@/utils/firebase";
+import { auth, firestore } from "@/utils/firebase";
 import {
   GoogleAuthProvider,
   User,
@@ -7,6 +7,7 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useContext, createContext, useState, useEffect } from "react";
 
 const Context = createContext<any>(null);
@@ -17,7 +18,8 @@ export const ContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [adminAuthorized, setAdminAuthorized] = useState<boolean>(false);
+  const [adminAuthorized, setAdminAuthorized] = useState<any[]>([]);
+  const [adminLoading, setAdminLoading] = useState(false);
   const [error, setError] = useState({
     code: "",
     message: "",
@@ -34,17 +36,9 @@ export const ContextProvider = ({
     );
   };
 
-  const adminLogin = (email: string, pass: string) => {
-    signInWithEmailAndPassword(auth, email, pass)
-      .then((userCredential) => {
-        checkAdminAuthorized(userCredential.user);
-      })
-      .catch((error) => setError({ message: error.message, code: error.code }));
-  };
-
   const logout = () => {
     signOut(auth).then(() => {
-      setAdminAuthorized(false);
+      setAdminAuthorized([]);
     });
   };
 
@@ -65,11 +59,16 @@ export const ContextProvider = ({
   }, [user]);
 
   const checkAdminAuthorized = (user: User) => {
-    if (user.uid === process.env.NEXT_PUBLIC_ADMIN_UID) {
-      setAdminAuthorized(true);
-    } else {
-      setError({ ...error, message: "UID doesnt match" });
-    }
+    setAdminLoading(true);
+    let result: any;
+    getDocs(query(collection(firestore, "admin"), where("uid", "==", user.uid)))
+      .then((querySnapshot) =>
+        querySnapshot.forEach((doc) => {
+          result = doc.data();
+          setAdminAuthorized(result.role);
+        })
+      )
+      .finally(() => setAdminLoading(false));
   };
   return (
     <Context.Provider
@@ -79,7 +78,7 @@ export const ContextProvider = ({
         userLoading,
         googleLogin,
         logout,
-        adminLogin,
+        adminLoading,
         checkAdminAuthorized,
         adminAuthorized,
         submitting,

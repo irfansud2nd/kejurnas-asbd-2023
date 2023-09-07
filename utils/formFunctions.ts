@@ -29,77 +29,6 @@ import {
 } from "firebase/storage";
 import { jenisPertandingan } from "./formConstants";
 
-// KATEGORI GENERATOR - START
-// ALPHABET
-const alphabet = [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-  "O",
-  "P",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "V",
-  "X",
-  "Y",
-  "Z",
-];
-// GENERATOR
-export const generateKategoriPertandingan = (
-  endAlphabet: string,
-  start: number,
-  step: number,
-  bebas?: {
-    namaKelasBawah?: string;
-    bataKelasBawah?: string;
-    namaKelasAtas?: string;
-    bataKelasAtas?: string;
-  }
-) => {
-  const repeatValue = alphabet.indexOf(endAlphabet);
-  let kategoriArr: string[] = [];
-  let startKategori: number = 0;
-
-  if (bebas?.namaKelasBawah) {
-    kategoriArr.push(
-      `Kelas ${bebas.namaKelasBawah} (Dibawah ${
-        bebas.bataKelasBawah ? bebas.bataKelasBawah : start
-      } KG)`
-    );
-  }
-
-  startKategori = start;
-  for (let i = 0; i <= repeatValue; i++) {
-    kategoriArr.push(
-      `Kelas ${alphabet[i]} (${startKategori}-${startKategori + step} KG)`
-    );
-    startKategori += step;
-  }
-  const endNumber = startKategori;
-  if (bebas?.namaKelasAtas)
-    kategoriArr.push(
-      `Kelas ${bebas.namaKelasAtas} (Diatas ${
-        bebas.bataKelasAtas ? bebas.bataKelasAtas : endNumber
-      } KG)`
-    );
-  return kategoriArr;
-};
-// KATEGORI GENERATOR - END
-
 // LIMIT IMAGE - START
 export const limitImage = (
   file: File,
@@ -432,7 +361,7 @@ export const getOfficials = async (userUID: string) => {
 // GET PESERTAS
 export const getPesertas = async (userUID: string) => {
   try {
-    let result: DocumentData | OfficialState[] | [] = [];
+    let result: DocumentData | PesertaState[] | [] = [];
     const querySnapshot = await getDocs(
       query(
         collection(firestore, "pesertas"),
@@ -510,3 +439,26 @@ export const deletePerson = async (
     });
 };
 // DELETER - END
+
+// GROUPING UNPAID PESERTA
+export const getGroupedUnpaidPeserta = (pesertas: PesertaState[]) => {
+  let nonAsbd = 0;
+  let asbdTunggal = 0;
+  let asbdRegu = 0;
+
+  pesertas.map((peserta) => {
+    if (!peserta.pembayaran) {
+      if (peserta.jenisPertandingan == jenisPertandingan[2]) {
+        if (peserta.kategoriPertandingan.split(" ")[0] == "Tunggal") {
+          asbdTunggal += 1;
+        } else {
+          asbdRegu += 1;
+        }
+      } else {
+        nonAsbd += 1;
+      }
+    }
+  });
+
+  return { nonAsbd, asbdTunggal, asbdRegu };
+};

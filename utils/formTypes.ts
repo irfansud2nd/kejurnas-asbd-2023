@@ -88,6 +88,7 @@ export type KontingenState = {
     noHp: string;
     waktu: string;
     buktiUrl: string;
+    nominal: string;
   }[];
   infoKonfirmasi: {
     idPembayaran: string;

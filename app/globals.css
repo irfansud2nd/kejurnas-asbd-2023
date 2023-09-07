@@ -64,4 +64,8 @@
   .input_file::-webkit-file-upload-button {
     @apply my-1 translate-x-5 btn_green;
   }
+
+  .border_td td {
+    @apply border-b border-black;
+  }
 }
