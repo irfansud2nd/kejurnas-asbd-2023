@@ -1,10 +1,20 @@
 import { AdminContext } from "@/context/AdminContext";
-import { formatTanggal } from "@/utils/adminFunctions";
+import { formatTanggal, getKontingenUnpaid } from "@/utils/adminFunctions";
 import { KontingenState } from "@/utils/formTypes";
 import KonfirmasiButton from "../KonfirmasiButton";
+import { useDownloadExcel } from "react-export-table-to-excel";
+import { useRef } from "react";
+import InlineLoading from "@/components/loading/InlineLoading";
 
 const TabelKontingenAdmin = () => {
-  const { kontingens, setSelectedKontingen } = AdminContext();
+  const {
+    kontingens,
+    setSelectedKontingen,
+    selectedKontingen,
+    refreshKontingens,
+    kontingensLoading,
+    pesertas,
+  } = AdminContext();
 
   const tabelHead = [
     "No",
@@ -26,13 +36,37 @@ const TabelKontingenAdmin = () => {
     kontingen.infoPembayaran.map(
       (info) => (paidNominal += Number(info.nominal.replace(/[^0-9]/g, "")))
     );
-    // kontingen.pesertas.length -
     return kontingen.pesertas.length - Math.floor(paidNominal / 300000);
   };
 
+  const tabelRef = useRef(null);
+  const { onDownload } = useDownloadExcel({
+    currentTableRef: tabelRef.current,
+    filename: "Tabel Kontingen",
+    sheet: "Data Kontingen",
+  });
+
   return (
     <div>
-      <table className="w-full">
+      <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
+        Tabel Kontingen
+      </h1>
+
+      {/* BUTTONS */}
+      <div className="flex gap-1 mb-1 items-center">
+        {!selectedKontingen.id && (
+          <button className="btn_green" onClick={refreshKontingens}>
+            Refresh
+          </button>
+        )}
+        {kontingensLoading && <InlineLoading />}
+        <button className="btn_green" onClick={onDownload}>
+          Download
+        </button>
+      </div>
+      {/* BUTTONS */}
+
+      <table className="w-full" ref={tabelRef}>
         <thead>
           <tr>
             {tabelHead.map((item) => (
@@ -46,7 +80,7 @@ const TabelKontingenAdmin = () => {
               <td>{i + 1}</td>
               <td>{kontingen.id}</td>
               <td
-                className="hover:text-custom-gold cursor-pointer"
+                className="hover:text-green-500 hover:underline transition cursor-pointer"
                 onClick={() => setSelectedKontingen(kontingen)}
               >
                 {kontingen.namaKontingen}
@@ -61,7 +95,7 @@ const TabelKontingenAdmin = () => {
                           key={idPembayaran}
                           className="border-b border-black last:border-none"
                         >
-                          <p className="whitespace-nowrap">
+                          <span className="whitespace-nowrap">
                             {formatTanggal(
                               kontingen.infoPembayaran[
                                 kontingen.infoPembayaran.findIndex(
@@ -78,8 +112,9 @@ const TabelKontingenAdmin = () => {
                                 )
                               ].nominal
                             }
-                          </p>
-                          <p className="whitespace-nowrap">
+                          </span>
+                          <br />
+                          <span className="whitespace-nowrap">
                             {kontingen.confirmedPembayaran.indexOf(
                               idPembayaran
                             ) >= 0 ? (
@@ -104,13 +139,17 @@ const TabelKontingenAdmin = () => {
                                 data={kontingen}
                               />
                             )}
-                          </p>
+                          </span>
                         </li>
                       ))
                     : "-"}
                 </ul>
               </td>
-              <td>{getUnpaidPeserta(kontingen)}</td>
+              <td className="whitespace-nowrap">
+                {getKontingenUnpaid(kontingen, pesertas) < 0
+                  ? "0"
+                  : `Rp. ${getKontingenUnpaid(kontingen, pesertas)}`}
+              </td>
               <td>
                 {kontingen.unconfirmedPembayaran &&
                 kontingen.unconfirmedPembayaran.length

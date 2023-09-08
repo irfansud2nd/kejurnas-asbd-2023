@@ -18,6 +18,7 @@ import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AdminContext } from "@/context/AdminContext";
 
 const KonfirmasiButton = ({
   idPembayaran,
@@ -38,6 +39,7 @@ const KonfirmasiButton = ({
   const [pesertasToConfirm, setPesertasToConfirm] = useState<string[]>([]);
 
   const { user } = MyContext();
+  const { refreshKontingens } = AdminContext();
 
   const toastId = useRef(null);
 
@@ -102,7 +104,11 @@ const KonfirmasiButton = ({
             waktu: time,
           }),
         })
-          .then(() => updateToast(toastId, "success", "Konfirmasi berhasil"))
+          .then(() => {
+            setRodalVisible(false);
+            refreshKontingens();
+            updateToast(toastId, "success", "Konfirmasi berhasil");
+          })
           .catch((error) => alert(error));
       })
       .catch((error) => alert(error));

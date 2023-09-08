@@ -8,6 +8,8 @@ import {
   getAllKontingen,
   getAllOfficial,
   getAllPeserta,
+  getOfficialsByKontingen,
+  getPesertasByKontingen,
 } from "@/utils/adminFunctions";
 
 const Context = createContext<any>(null);
@@ -25,7 +27,9 @@ export const AdminContextProvider = ({
   const [officialsLoading, setOfficialsLoading] = useState(true);
   const [pesertasLoading, setPesertasLoading] = useState(true);
   const [mode, setMode] = useState("");
-  const [selectedKontingen, setSelectedKontingen] = useState("");
+  const [selectedKontingen, setSelectedKontingen] = useState<KontingenState>(
+    kontingenInitialValue
+  );
 
   const { user } = MyContext();
 
@@ -43,6 +47,7 @@ export const AdminContextProvider = ({
 
   // GET KONTINGEN
   const refreshKontingens = () => {
+    setSelectedKontingen(kontingenInitialValue);
     console.log("refreshKontingen");
     setKontingensLoading(true);
     getAllKontingen()
@@ -55,6 +60,7 @@ export const AdminContextProvider = ({
 
   // GET OFFICIALS
   const refreshOfficials = () => {
+    setSelectedKontingen(kontingenInitialValue);
     console.log("refreshOfficials");
     setOfficialsLoading(true);
     getAllOfficial()
@@ -67,6 +73,7 @@ export const AdminContextProvider = ({
 
   // GET PESERTA
   const refreshPesertas = () => {
+    setSelectedKontingen(kontingenInitialValue);
     console.log("refreshPesertas");
     setPesertasLoading(true);
     getAllPeserta()
@@ -76,6 +83,17 @@ export const AdminContextProvider = ({
       })
       .catch((error) => setError(error));
   };
+
+  useEffect(() => {
+    if (selectedKontingen.id) {
+      setKontingens([selectedKontingen]);
+      setOfficials(getOfficialsByKontingen(selectedKontingen.id, officials));
+      setPesertas(getPesertasByKontingen(selectedKontingen.id, pesertas));
+    } else {
+      refreshAll();
+    }
+  }, [selectedKontingen]);
+
   return (
     <Context.Provider
       value={{

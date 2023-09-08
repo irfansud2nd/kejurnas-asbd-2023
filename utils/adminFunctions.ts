@@ -49,7 +49,7 @@ export const getAllPeserta = async () => {
 };
 // DATA FETCHER - END
 
-// DATA FETCHER BY ID KONTINGEN
+// DATA FETCHER BY ID KONTINGEN - START
 export const getPesertasByKontingen = (
   idKontingen: string,
   pesertas: PesertaState[]
@@ -76,6 +76,34 @@ export const getPesertasByKontingen = (
   //     throw new Error(`Gagal mendapatkan data peserta, ${error.code}`);
   //   }
 };
+export const getOfficialsByKontingen = (
+  idKontingen: string,
+  officials: OfficialState[]
+) => {
+  let result: OfficialState[] = [];
+
+  officials.map((official) => {
+    if (official.idKontingen == idKontingen) result.push(official);
+  });
+
+  return result;
+
+  //   try {
+  //     let result: DocumentData | PesertaState[] | [] = [];
+  //     const querySnapshot = await getDocs(
+  //       query(
+  //         collection(firestore, "pesertas"),
+  //         where("idKontingen", "==", idKontingen)
+  //       )
+  //     );
+  //     querySnapshot.forEach((doc) => result.push(doc.data()));
+  //     return result;
+  //   } catch (error: any) {
+  //     throw new Error(`Gagal mendapatkan data peserta, ${error.code}`);
+  //   }
+};
+
+// DATA FETCHER BY ID KONTINGEN - END
 
 export const getKontingenUnpaid = (
   kontingen: KontingenState,
@@ -88,11 +116,14 @@ export const getKontingenUnpaid = (
   });
 
   const filteredPesertas = getPesertasByKontingen(kontingen.id, pesertas);
-  const nominalToPay =
+  let nominalToPay =
     getGroupedUnpaidPeserta(filteredPesertas).nonAsbd * 325000 +
     getGroupedUnpaidPeserta(filteredPesertas).asbdTunggal * 250000 +
-    getGroupedUnpaidPeserta(filteredPesertas).asbdRegu * 225000 +
-    125000;
+    getGroupedUnpaidPeserta(filteredPesertas).asbdRegu * 225000;
+
+  if (!kontingen.idPembayaran.length) {
+    nominalToPay += 125000;
+  }
 
   return nominalToPay - paidNominal;
 };
