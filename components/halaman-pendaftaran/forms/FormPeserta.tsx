@@ -43,7 +43,7 @@ const FormPeserta = ({
     let age: string | Date = new Date(
       currentDate.getTime() - birthDate.getTime()
     );
-    age = `${age.getFullYear() - 1970} Tahun, ${age.getMonth()} Bulan`;
+    age = `${age.getFullYear() - 1970}`;
     setData({ ...data, tanggalLahir: date, umur: age });
   };
 
