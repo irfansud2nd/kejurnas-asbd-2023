@@ -39,11 +39,12 @@ const InfoPembayaran = ({
       totalPeserta.asbdTunggal * 250000 +
       totalPeserta.asbdRegu * 225000;
 
-    if (!kontingen.idPembayaran.length) {
-      total + 125000;
+    if (kontingen.idPembayaran.length <= 0) {
+      setTotalBiaya(total + 125000);
+    } else {
+      setTotalBiaya(total);
     }
-    setTotalBiaya(total);
-  }, [totalPeserta]);
+  }, [totalPeserta, kontingen.idPembayaran.length]);
 
   return (
     <div className="w-full bg-white rounded-md p-2 grid lg:grid-cols-2 gap-2">
