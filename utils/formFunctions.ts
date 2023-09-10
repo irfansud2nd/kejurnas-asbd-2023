@@ -464,3 +464,24 @@ export const getGroupedUnpaidPeserta = (pesertas: PesertaState[]) => {
 
   return { nonAsbd, asbdTunggal, asbdRegu };
 };
+
+// GET GROUPED PESERTA
+export const getGroupedPeserta = (pesertas: PesertaState[]) => {
+  let nonAsbd = 0;
+  let asbdTunggal = 0;
+  let asbdRegu = 0;
+
+  pesertas.map((peserta) => {
+    if (peserta.jenisPertandingan == jenisPertandingan[2]) {
+      if (peserta.kategoriPertandingan.split(" ")[0] == "Tunggal") {
+        asbdTunggal += 1;
+      } else {
+        asbdRegu += 1;
+      }
+    } else {
+      nonAsbd += 1;
+    }
+  });
+
+  return { nonAsbd, asbdTunggal, asbdRegu };
+};

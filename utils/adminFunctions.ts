@@ -10,7 +10,7 @@ import {
 import { KontingenState, OfficialState, PesertaState } from "./formTypes";
 import { firestore } from "./firebase";
 import Peserta from "@/components/halaman-pendaftaran/parts/Peserta";
-import { getGroupedUnpaidPeserta } from "./formFunctions";
+import { getGroupedPeserta, getGroupedUnpaidPeserta } from "./formFunctions";
 
 // GET KONTINGEN
 export const getAllKontingen = async () => {
@@ -112,20 +112,19 @@ export const getKontingenUnpaid = (
   let paidNominal = 0;
 
   kontingen.infoPembayaran.map((info) => {
-    paidNominal += Number(info.nominal.replace("Rp. ", "").replace(".", ""));
+    paidNominal += Math.floor(
+      Number(info.nominal.replace("Rp. ", "").replace(".", "")) / 1000
+    );
   });
 
   const filteredPesertas = getPesertasByKontingen(kontingen.id, pesertas);
   let nominalToPay =
-    getGroupedUnpaidPeserta(filteredPesertas).nonAsbd * 325000 +
-    getGroupedUnpaidPeserta(filteredPesertas).asbdTunggal * 250000 +
-    getGroupedUnpaidPeserta(filteredPesertas).asbdRegu * 225000;
+    getGroupedPeserta(filteredPesertas).nonAsbd * 325000 +
+    getGroupedPeserta(filteredPesertas).asbdTunggal * 250000 +
+    getGroupedPeserta(filteredPesertas).asbdRegu * 225000 +
+    125000;
 
-  if (!kontingen.idPembayaran.length) {
-    nominalToPay += 125000;
-  }
-
-  return nominalToPay - paidNominal;
+  return nominalToPay - paidNominal * 1000;
 };
 
 export const formatTanggal = (

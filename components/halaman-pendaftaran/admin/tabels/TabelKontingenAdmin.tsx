@@ -146,9 +146,10 @@ const TabelKontingenAdmin = () => {
                 </ul>
               </td>
               <td className="whitespace-nowrap">
-                {getKontingenUnpaid(kontingen, pesertas) < 0
+                {/* {getKontingenUnpaid(kontingen, pesertas) < 0
                   ? "0"
-                  : `Rp. ${getKontingenUnpaid(kontingen, pesertas)}`}
+                  : `Rp. ${getKontingenUnpaid(kontingen, pesertas)}`} */}
+                Rp. {getKontingenUnpaid(kontingen, pesertas)}
               </td>
               <td>
                 {kontingen.unconfirmedPembayaran &&
