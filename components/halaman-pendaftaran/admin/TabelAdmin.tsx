@@ -5,7 +5,7 @@ import TabelOfficialAdmin from "./tabels/TabelOfficialAdmin";
 import { kontingenInitialValue } from "@/utils/formConstants";
 
 const TabelAdmin = () => {
-  const { mode, setMode, selectedKontingen, setSelectedKontingen } =
+  const { mode, setMode, selectedKontingen, setSelectedKontingen, refreshAll } =
     AdminContext();
   return (
     <div>
@@ -13,6 +13,7 @@ const TabelAdmin = () => {
         className="btn_green mb-1"
         onClick={() => {
           setMode("");
+          refreshAll();
           setSelectedKontingen(kontingenInitialValue);
         }}
       >

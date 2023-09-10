@@ -94,6 +94,15 @@ export const AdminContextProvider = ({
     }
   }, [selectedKontingen]);
 
+  const getUnconfirmesKontingens = () => {
+    setMode("kontingen");
+    let selected: KontingenState[] = [];
+    kontingens.map((kontingen) => {
+      if (kontingen.unconfirmedPembayaran.length) selected.push(kontingen);
+    });
+    setKontingens(selected);
+  };
+
   return (
     <Context.Provider
       value={{
@@ -115,6 +124,7 @@ export const AdminContextProvider = ({
         setMode,
         selectedKontingen,
         setSelectedKontingen,
+        getUnconfirmesKontingens,
       }}
     >
       {children}

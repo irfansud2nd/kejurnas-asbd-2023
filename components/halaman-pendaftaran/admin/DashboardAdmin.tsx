@@ -16,6 +16,7 @@ const DashboardAdmin = () => {
     refreshPesertas,
     refreshAll,
     setMode,
+    getUnconfirmesKontingens,
   } = AdminContext();
 
   const getPesertasPayment = (pesertas: PesertaState[]) => {
@@ -23,10 +24,13 @@ const DashboardAdmin = () => {
     let unconfirmed = 0;
     let confirmed = 0;
     pesertas.map((peserta) => {
-      if (!peserta.pembayaran) unpaid += 1;
-      if (!peserta.confirmedPembayaran) {
+      if (!peserta.pembayaran) {
+        unpaid += 1;
+      }
+      if (!peserta.confirmedPembayaran && peserta.pembayaran) {
         unconfirmed += 1;
-      } else {
+      }
+      if (peserta.confirmedPembayaran) {
         confirmed += 1;
       }
     });
@@ -147,13 +151,16 @@ const DashboardAdmin = () => {
                 getKontingensPayment().confirmed
               )}
             </p>
-            <p className="text-2xl font-extrabold text-yellow-500">
+            <button
+              className="text-2xl font-extrabold text-yellow-500 hover:underline"
+              onClick={getUnconfirmesKontingens}
+            >
               {kontingensLoading ? (
                 <InlineLoading />
               ) : (
                 getKontingensPayment().unconfirmed
               )}
-            </p>
+            </button>
             <p className="text-2xl font-extrabold text-red-500">
               {kontingensLoading ? (
                 <InlineLoading />
