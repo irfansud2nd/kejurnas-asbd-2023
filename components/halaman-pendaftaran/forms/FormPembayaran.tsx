@@ -190,7 +190,10 @@ const FormPembayaran = ({ totalBiaya }: { totalBiaya: number }) => {
         unconfirmedPembayaran: arrayUnion(idPembayaran),
         infoPembayaran: arrayUnion({
           idPembayaran: idPembayaran,
-          nominal: `Rp. ${totalBiaya.toLocaleString("id")}`,
+          nominal: `Rp. ${(totalBiaya / 1000).toLocaleString("id")}.${noHp
+            .split("")
+            .slice(-3)
+            .join("")}`,
           noHp: noHp,
           waktu: time,
           buktiUrl: url,
