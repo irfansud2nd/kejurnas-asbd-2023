@@ -149,7 +149,8 @@ const TabelKontingenAdmin = () => {
                 {/* {getKontingenUnpaid(kontingen, pesertas) < 0
                   ? "0"
                   : `Rp. ${getKontingenUnpaid(kontingen, pesertas)}`} */}
-                Rp. {getKontingenUnpaid(kontingen, pesertas)}
+                Rp.{" "}
+                {getKontingenUnpaid(kontingen, pesertas).toLocaleString("id")}
               </td>
               <td>
                 {kontingen.unconfirmedPembayaran &&
