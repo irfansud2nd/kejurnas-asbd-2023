@@ -1,6 +1,7 @@
 import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
 import { findNamaKontingen, formatTanggal } from "@/utils/adminFunctions";
+import { jenisPertandingan } from "@/utils/formConstants";
 import { PesertaState } from "@/utils/formTypes";
 import Image from "next/image";
 import Link from "next/link";
@@ -123,7 +124,17 @@ const TabelPesertaAdmin = () => {
               <td>{peserta.tingkatanPertandingan}</td>
               <td>{peserta.jenisPertandingan}</td>
               <td className="whitespace-nowrap">
-                {peserta.kategoriPertandingan}
+                {peserta.jenisPertandingan === jenisPertandingan[2]
+                  ? "Sabuk " +
+                    peserta.sabuk +
+                    " | " +
+                    peserta.jurus +
+                    " | " +
+                    peserta.kategoriPertandingan
+                  : peserta.kategoriPertandingan}
+                {peserta.jenisPertandingan === jenisPertandingan[2] &&
+                  peserta.kategoriPertandingan.split(" ")[0] != "Tunggal" &&
+                  ` | Tim ${peserta.namaTim}`}
               </td>
               <td>{findNamaKontingen(kontingens, peserta.idKontingen)}</td>
               <td className="whitespace-nowrap">

@@ -1,4 +1,4 @@
-import { AdminContext, AdminContextProvider } from "@/context/AdminContext";
+import { AdminContext } from "@/context/AdminContext";
 import DashboardAdmin from "./DashboardAdmin";
 import TabelAdmin from "./TabelAdmin";
 
