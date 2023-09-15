@@ -29,7 +29,8 @@ export default function Home() {
           Kejuaraan Nasional ASBD 2023
         </h1>
         <p>
-          <FaRegCalendarAlt className="inline mb-1 mr-1" /> 18 - 20 Oktober 2023
+          <FaRegCalendarAlt className="inline mb-1 mr-1" /> 03 - 05 November
+          2023
           <span className="hidden min-[480px]:inline"> | </span>
           <br className="min-[480px]:hidden" />
           <Link
