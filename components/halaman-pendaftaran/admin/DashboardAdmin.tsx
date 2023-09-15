@@ -56,9 +56,14 @@ const DashboardAdmin = () => {
   return (
     <div className="w-full h-full bg-gray-200 rounded-md p-2">
       <h1 className="text-4xl font-extrabold">Dashboard Admin</h1>
-      <button className="btn_green" onClick={refreshAll}>
-        Refresh All
-      </button>
+      <div className="flex gap-2">
+        <button className="btn_green" onClick={refreshAll}>
+          Refresh All
+        </button>
+        <button className="btn_green" onClick={() => setMode("id")}>
+          ID Card
+        </button>
+      </div>
 
       {/* FIRST ROW */}
       <div className="flex gap-2 flex-wrap mt-2">

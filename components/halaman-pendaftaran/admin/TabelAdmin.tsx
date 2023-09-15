@@ -3,6 +3,7 @@ import TabelPesertaAdmin from "./tabels/TabelPesertaAdmin";
 import TabelKontingenAdmin from "./tabels/TabelKontingenAdmin";
 import TabelOfficialAdmin from "./tabels/TabelOfficialAdmin";
 import { kontingenInitialValue } from "@/utils/formConstants";
+import IdCard from "./id-card/IdCard";
 
 const TabelAdmin = () => {
   const { mode, setMode, selectedKontingen, setSelectedKontingen, refreshAll } =
@@ -25,7 +26,7 @@ const TabelAdmin = () => {
           Kontingen {selectedKontingen.namaKontingen}
         </h1>
       )}
-
+      {mode == "id" && <IdCard />}
       {mode == "kontingen" && <TabelKontingenAdmin />}
       {(mode == "peserta" || selectedKontingen.id) && <TabelPesertaAdmin />}
       {(mode == "official" || selectedKontingen.id) && <TabelOfficialAdmin />}
