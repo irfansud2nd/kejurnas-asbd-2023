@@ -114,66 +114,68 @@ const DashboardAdmin = () => {
       {/* SECOND ROW */}
       <div className="flex flex-col gap-2 bg-black p-2 text-center text-white rounded-md w-fit mt-2">
         <p className="font-semibold text-lg">Pembayaran</p>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="flex flex-col gap-1">
-            <p className="font-semibold text-lg">Keterangan</p>
-            <p className="text-2xl font-extrabold text-green-500">Confirmed</p>
-            <p className="text-2xl font-extrabold text-yellow-500">
-              Unconfirmed
-            </p>
-            <p className="text-2xl font-extrabold text-red-500">Unpaid</p>
-          </div>
-          <div className="flex flex-col gap-1 border-l-2 border-white-500">
-            <p className="font-semibold text-lg ">Peserta</p>
-            <p className="text-2xl font-extrabold text-green-500">
-              {pesertasLoading ? (
-                <InlineLoading />
-              ) : (
-                getPesertasPayment(pesertas).confirmed
-              )}
-            </p>
-            <p className="text-2xl font-extrabold text-yellow-500">
-              {pesertasLoading ? (
-                <InlineLoading />
-              ) : (
-                getPesertasPayment(pesertas).unconfirmed
-              )}
-            </p>
-            <p className="text-2xl font-extrabold text-red-500">
-              {pesertasLoading ? (
-                <InlineLoading />
-              ) : (
-                getPesertasPayment(pesertas).unpaid
-              )}
-            </p>
-          </div>
-          <div className="flex flex-col gap-1 border-l-2 border-white-500 px-2">
-            <p className="font-semibold text-lg">Kontingen</p>
-            <p className="text-2xl font-extrabold text-green-500">
-              {kontingensLoading ? (
-                <InlineLoading />
-              ) : (
-                getKontingensPayment().confirmed
-              )}
-            </p>
-            <button
-              className="text-2xl font-extrabold text-yellow-500 hover:underline"
-              onClick={getUnconfirmesKontingens}
-            >
-              {kontingensLoading ? (
-                <InlineLoading />
-              ) : (
-                getKontingensPayment().unconfirmed
-              )}
-            </button>
-            <p className="text-2xl font-extrabold text-red-500">
-              {kontingensLoading ? (
-                <InlineLoading />
-              ) : (
-                getKontingensPayment().unpaid
-              )}
-            </p>
-          </div>
+        <div className="grid grid-cols-[repeat(3,_auto)] grid-rows-[repeat(4,_auto)] w-fit">
+          <p className="font-semibold text-lg border-r-2 border-r-white">
+            Keterangan
+          </p>
+          <p className="font-semibold text-lg border-r-2 border-r-white px-2">
+            Peserta
+          </p>
+          <p className="font-semibold text-lg px-2">Kontingen</p>
+          <p className="text-2xl font-extrabold text-green-500 border-r-2 border-r-white">
+            Confirmed
+          </p>
+          <p className="text-2xl font-extrabold text-green-500 border-r-2 border-r-white">
+            {pesertasLoading ? (
+              <InlineLoading />
+            ) : (
+              getPesertasPayment(pesertas).confirmed
+            )}
+          </p>
+          <p className="text-2xl font-extrabold text-green-500">
+            {kontingensLoading ? (
+              <InlineLoading />
+            ) : (
+              getKontingensPayment().confirmed
+            )}
+          </p>
+          <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white px-2">
+            Unconfirmed
+          </p>
+          <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white">
+            {pesertasLoading ? (
+              <InlineLoading />
+            ) : (
+              getPesertasPayment(pesertas).unconfirmed
+            )}
+          </p>
+          <button
+            className="text-2xl font-extrabold text-yellow-500 hover:underline"
+            onClick={getUnconfirmesKontingens}
+          >
+            {kontingensLoading ? (
+              <InlineLoading />
+            ) : (
+              getKontingensPayment().unconfirmed
+            )}
+          </button>
+          <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
+            Unpaid
+          </p>
+          <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
+            {pesertasLoading ? (
+              <InlineLoading />
+            ) : (
+              getPesertasPayment(pesertas).unpaid
+            )}
+          </p>
+          <p className="text-2xl font-extrabold text-red-500">
+            {kontingensLoading ? (
+              <InlineLoading />
+            ) : (
+              getKontingensPayment().unpaid
+            )}
+          </p>
         </div>
       </div>
     </div>
