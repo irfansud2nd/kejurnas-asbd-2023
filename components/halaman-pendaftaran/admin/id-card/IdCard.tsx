@@ -37,9 +37,10 @@ const IdCard = () => {
     }
   }, [selectedKontingen.id]);
 
-  const componentRef = useRef(null);
+  const printRef = useRef(null);
   const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
+    content: () => printRef.current,
+    onPrintError: () => alert("error"),
   });
 
   return (
@@ -118,7 +119,7 @@ const IdCard = () => {
           </button>
 
           <div
-            ref={componentRef}
+            ref={printRef}
             className="w-[818px] h-[1156px] grid grid-cols-2 place-items-center"
           >
             {/* ID CARD PESERTA */}
@@ -130,7 +131,7 @@ const IdCard = () => {
                       alt="idcard"
                       className="w-fit h-full"
                     />
-                    <div className="w-[97px] h-[128px] absolute left-[141px] top-[230px] z-[1]">
+                    <div className="w-[96px] h-[127px] absolute left-[142px] top-[230px] z-[1]">
                       <div className="bg-green-500 bg-opacity-50 w-full h-full relative">
                         <Image
                           src={peserta.downloadFotoUrl}
@@ -150,9 +151,11 @@ const IdCard = () => {
                     >
                       {selectedKontingen.namaKontingen}
                     </p>
-                    <p className="absolute left-1/2 -translate-x-[48%] bottom-[90px] text-base font-bold z-[2] uppercase whitespace-nowrap">
-                      {peserta.kategoriPertandingan.split("(")[0]} |{" "}
-                      {peserta.jenisKelamin} | {peserta.tingkatanPertandingan}
+                    <p className="absolute left-1/2 -translate-x-[48%] bottom-[90px] text-sm font-bold z-[2] uppercase whitespace-nowrap">
+                      {peserta.kategoriPertandingan
+                        .split("(")[0]
+                        .replace(/ Putra| Putri/g, "")}{" "}
+                      | {peserta.jenisKelamin} | {peserta.tingkatanPertandingan}
                     </p>
                   </div>
                 ))
