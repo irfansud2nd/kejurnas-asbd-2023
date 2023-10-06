@@ -36,7 +36,7 @@ const Peserta = () => {
   const [errorMessage, setErrorMessage] = useState<ErrorPeserta>(
     errorPesertaInitialValue
   );
-  const [kuotaKelas, setKuotaKelas] = useState<number>(8);
+  const [kuotaKelas, setKuotaKelas] = useState<number>(32);
   const [kuotaLoading, setKuotaLoading] = useState(false);
   const [prevData, setPrevData] = useState<PesertaState>(pesertaInitialValue);
 
@@ -95,7 +95,7 @@ const Peserta = () => {
     ) {
       cekKuota();
     } else {
-      setKuotaKelas(16);
+      setKuotaKelas(32);
     }
   }, [
     data.tingkatanPertandingan,
@@ -106,7 +106,9 @@ const Peserta = () => {
 
   // CEK KUOTA TINGKATAN SMA DAN DEWASA
   const cekKuota = async () => {
-    let kuota = 8;
+    let kuota = 32;
+    let kuotaGanda = kuota * 2;
+    let kuotaRegu = kuota * 3;
     setKuotaLoading(true);
     const q = query(
       collection(firestore, "pesertas"),
@@ -117,7 +119,13 @@ const Peserta = () => {
     return getDocs(q)
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          kuota -= 1;
+          if (data.kategoriPertandingan.includes("Regu")) {
+            kuotaRegu -= 1;
+          } else if (data.kategoriPertandingan.includes("Ganda")) {
+            kuotaGanda -= 1;
+          } else {
+            kuota -= 1;
+          }
         });
         if (
           updating &&
@@ -125,12 +133,31 @@ const Peserta = () => {
           prevData.jenisKelamin == data.jenisKelamin &&
           prevData.jenisPertandingan == data.jenisPertandingan
         ) {
-          kuota += 1;
+          if (data.kategoriPertandingan.includes("Regu")) {
+            kuotaRegu += 1;
+          } else if (data.kategoriPertandingan.includes("Ganda")) {
+            kuotaGanda += 1;
+          } else {
+            kuota += 1;
+          }
         }
-        return kuota;
+        if (data.kategoriPertandingan.includes("Regu")) {
+          return kuotaRegu;
+        } else if (data.kategoriPertandingan.includes("Ganda")) {
+          return kuotaGanda;
+        } else {
+          return kuota;
+        }
       })
       .finally(() => {
-        setKuotaKelas(kuota);
+        if (data.kategoriPertandingan.includes("Regu")) {
+          setKuotaKelas(kuotaRegu);
+        } else if (data.kategoriPertandingan.includes("Ganda")) {
+          setKuotaKelas(kuotaGanda);
+        } else {
+          setKuotaKelas(kuota);
+        }
+        // setKuotaKelas(kuota);
         setKuotaLoading(false);
       });
   };
@@ -156,9 +183,8 @@ const Peserta = () => {
     e.preventDefault();
     setSubmitClicked(true);
     if (
-      (data.tingkatanPertandingan == "SMA" ||
-        data.tingkatanPertandingan == "Dewasa") &&
-      data.jenisPertandingan != jenisPertandingan[2]
+      data.tingkatanPertandingan == "SMA" ||
+      data.tingkatanPertandingan == "Dewasa"
     ) {
       newToast(toastId, "loading", "Cek Kuota Kategori");
       cekKuota().then((res) => {
