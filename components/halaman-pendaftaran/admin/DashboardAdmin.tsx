@@ -2,6 +2,7 @@ import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
 import { getKontingenUnpaid } from "@/utils/adminFunctions";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
+import TabelKuota from "./dashboard/TabelKuota";
 
 const DashboardAdmin = () => {
   const {
@@ -178,6 +179,9 @@ const DashboardAdmin = () => {
           </p>
         </div>
       </div>
+
+      {/* THIRD ROW */}
+      <TabelKuota />
     </div>
   );
 };

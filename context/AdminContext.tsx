@@ -11,6 +11,7 @@ import {
   getOfficialsByKontingen,
   getPesertasByKontingen,
 } from "@/utils/adminFunctions";
+import InlineLoading from "@/components/loading/InlineLoading";
 
 const Context = createContext<any>(null);
 
@@ -103,6 +104,45 @@ export const AdminContextProvider = ({
     setKontingens(selected);
   };
 
+  // CEK KUOTA
+  const cekKuota = (
+    tingkatanPertandingan: string,
+    kategoriPertandingan: string,
+    jenisKelamin: string
+  ) => {
+    let kuota = 32;
+    let kuotaGanda = kuota * 2;
+    let kuotaRegu = kuota * 3;
+    if (!pesertasLoading) {
+      pesertas.map((peserta) => {
+        if (
+          peserta.jenisKelamin == jenisKelamin &&
+          peserta.kategoriPertandingan == kategoriPertandingan &&
+          peserta.tingkatanPertandingan == tingkatanPertandingan
+        ) {
+          if (kategoriPertandingan.includes("Regu")) {
+            kuotaRegu -= 1;
+          } else if (kategoriPertandingan.includes("Ganda")) {
+            kuotaGanda -= 1;
+          } else {
+            kuota -= 1;
+          }
+        }
+      });
+      return (
+        <span>
+          {kategoriPertandingan.includes("Regu")
+            ? kuotaRegu
+            : kategoriPertandingan.includes("Ganda")
+            ? kuotaGanda
+            : kuota}
+          {/* <span className="text-gray-500"> / 16</span> */}
+        </span>
+      );
+    }
+    return <InlineLoading />;
+  };
+
   return (
     <Context.Provider
       value={{
@@ -125,6 +165,7 @@ export const AdminContextProvider = ({
         selectedKontingen,
         setSelectedKontingen,
         getUnconfirmesKontingens,
+        cekKuota,
       }}
     >
       {children}
