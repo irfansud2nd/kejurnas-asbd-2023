@@ -16,6 +16,21 @@ const seniTunggal = {
   putri: ["Tunggal Putri"],
 };
 
+const seniSdI = {
+  putra: [
+    "Tunggal Putra",
+    "Ganda Tangan Kosong Putra",
+    "Ganda Senjata Putra",
+    "Regu A 1-6 Putra",
+  ],
+  putri: [
+    "Tunggal Putri",
+    "Ganda Tangan Kosong Putri",
+    "Ganda Senjata Putri",
+    "Regu A 1-6 Putri",
+  ],
+};
+
 // SENI LENGKAP
 const seniLengkap = {
   putra: ["Tunggal Putra", "Ganda Putra", "Regu Putra"],
@@ -122,7 +137,7 @@ export const tingkatanKategori = [
     kategoriTanding: generateKategoriPertandingan("P", 16, 2, {
       namaKelasAtas: "Bebas",
     }),
-    kategoriSeni: seniTunggal,
+    kategoriSeni: seniSdI,
   },
   {
     tingkatan: "SD II",
