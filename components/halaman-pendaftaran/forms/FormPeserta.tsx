@@ -8,7 +8,8 @@ import {
   tingkatanKategori,
   tingkatanKategoriJurusAsbd,
 } from "@/utils/formConstants";
-import { FormPesertaProps } from "@/utils/formTypes";
+import { FormPesertaProps, KontingenState } from "@/utils/formTypes";
+import { findNamaKontingen } from "@/utils/sharedFunctions";
 import Image from "next/image";
 import { useEffect } from "react";
 
@@ -25,7 +26,7 @@ const FormPeserta = ({
   updating,
 }: FormPesertaProps) => {
   const { disable } = MyContext();
-  const { kontingen } = FormContext();
+  const { kontingens }: { kontingens: KontingenState[] } = FormContext();
 
   // SANITIZE NIK
   const sanitizeNIK = (value: string) => {
@@ -328,7 +329,18 @@ const FormPeserta = ({
             {/* NAMA KONTINGEN */}
             <div className="input_container">
               <label className="input_label">Nama Kontingen</label>
-              <input type="text" disabled value={kontingen.namaKontingen} />
+              <select
+                value={data.idKontingen}
+                onChange={(e) =>
+                  setData({ ...data, idKontingen: e.target.value })
+                }
+              >
+                {kontingens.map((kontingen: KontingenState) => (
+                  <option value={kontingen.id}>
+                    {findNamaKontingen(kontingens, kontingen.id)}
+                  </option>
+                ))}
+              </select>
               <p className="text-red-500">{errorMessage.idKontingen}</p>
             </div>
             {/* NAMA KONTINGEN */}

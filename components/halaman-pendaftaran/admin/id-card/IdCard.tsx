@@ -29,10 +29,10 @@ const IdCard = () => {
   useEffect(() => {
     if (selectedKontingen.id) {
       setSelectedOfficials(
-        getOfficialsByKontingen(selectedKontingen.id, officials)
+        getOfficialsByKontingen(officials, selectedKontingen.id)
       );
       setSelectedPesertas(
-        getPesertasByKontingen(selectedKontingen.id, pesertas)
+        getPesertasByKontingen(pesertas, selectedKontingen.id)
       );
     }
   }, [selectedKontingen.id]);

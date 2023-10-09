@@ -88,8 +88,8 @@ export const AdminContextProvider = ({
   useEffect(() => {
     if (selectedKontingen.id) {
       setKontingens([selectedKontingen]);
-      setOfficials(getOfficialsByKontingen(selectedKontingen.id, officials));
-      setPesertas(getPesertasByKontingen(selectedKontingen.id, pesertas));
+      setOfficials(getOfficialsByKontingen(officials, selectedKontingen.id));
+      setPesertas(getPesertasByKontingen(pesertas, selectedKontingen.id));
     } else {
       refreshAll();
     }

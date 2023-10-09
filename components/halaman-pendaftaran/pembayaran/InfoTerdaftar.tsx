@@ -2,14 +2,16 @@ import { FormContext } from "@/context/FormContext";
 import { KontingenState, OfficialState, PesertaState } from "@/utils/formTypes";
 import TabelOfficial from "../tabels/TabelOfficial";
 import TabelPeserta from "../tabels/TabelPeserta";
+import { getOfficialsByKontingen } from "@/utils/adminFunctions";
+import TabelKontingen from "../tabels/TabelKontingen";
 
 const InfoTerdaftar = () => {
   const {
-    kontingen,
+    kontingens,
     pesertas,
     officials,
   }: {
-    kontingen: KontingenState;
+    kontingens: KontingenState[];
     pesertas: PesertaState[];
     officials: OfficialState[];
   } = FormContext();
@@ -19,13 +21,26 @@ const InfoTerdaftar = () => {
       <h1 className="text-xl sm:text-2xl font-extrabold border-b-2 border-black">
         Ringkasan Data
       </h1>
-      {!kontingen.id ? (
+      {!kontingens.length ? (
         <p className="text-red-500">Belum Ada Kontingen Terdaftar</p>
       ) : (
         <>
-          <h1 className="text-xl font-bold">
-            Kontingen {kontingen.namaKontingen}
-          </h1>
+          {/* <h1 className="text-xl font-bold">
+              Kontingen {kontingen.namaKontingen}
+            </h1> */}
+          {kontingens.length ? (
+            <div className="border-b-2 pb-2 border-gray-300">
+              <h2 className="text-lg font-semibold">
+                Kontingen{" "}
+                <span className="text-base text-gray-700">
+                  ({kontingens.length} kontingen)
+                </span>
+              </h2>
+              <TabelKontingen />
+            </div>
+          ) : (
+            <p className="text-red-500">Belum Ada Official Terdaftar</p>
+          )}
           {officials.length ? (
             <div className="border-b-2 pb-2 border-gray-300">
               <h2 className="text-lg font-semibold">

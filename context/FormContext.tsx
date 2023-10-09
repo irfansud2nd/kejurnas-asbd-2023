@@ -13,13 +13,11 @@ export const FormContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [kontingen, setKontingen] = useState<KontingenState>(
-    kontingenInitialValue
-  );
+  const [kontingens, setKontingens] = useState<KontingenState[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [pesertas, setPesertas] = useState<PesertaState[]>([]);
   const [officials, setOfficials] = useState<OfficialState[]>([]);
-  const [kontingenLoading, setKontingenLoading] = useState(true);
+  const [kontingensLoading, setkontingensLoading] = useState(true);
   const [officialsLoading, setOfficialsLoading] = useState(true);
   const [pesertasLoading, setPesertasLoading] = useState(true);
 
@@ -27,20 +25,20 @@ export const FormContextProvider = ({
 
   useEffect(() => {
     if (user) {
-      refreshKontingen();
+      refreshKontingens();
       refreshOfficials();
       refreshPesertas();
     }
   }, [user]);
 
   // GET KONTINGEN
-  const refreshKontingen = () => {
+  const refreshKontingens = () => {
     console.log("refreshKontingen");
-    setKontingenLoading(true);
+    setkontingensLoading(true);
     getKontingen(user.uid)
       .then((res: any) => {
-        res ? setKontingen(res) : setKontingen(kontingenInitialValue);
-        setKontingenLoading(false);
+        setKontingens(res);
+        setkontingensLoading(false);
       })
       .catch((error) => setError(error));
   };
@@ -72,11 +70,11 @@ export const FormContextProvider = ({
     <Context.Provider
       value={{
         error,
-        kontingen,
-        kontingenLoading,
-        setKontingen,
+        kontingens,
+        kontingensLoading,
+        setKontingens,
         kontingenInitialValue,
-        refreshKontingen,
+        refreshKontingens,
         pesertas,
         pesertasLoading,
         setPesertas,

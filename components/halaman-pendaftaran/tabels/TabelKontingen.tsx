@@ -6,24 +6,26 @@ import {
   TabelProps,
 } from "@/utils/formTypes";
 import TabelActionButtons from "./TabelActionButtons";
-import { useEffect } from "react";
+import {
+  getOfficialsByKontingen,
+  getPesertasByKontingen,
+} from "@/utils/adminFunctions";
+import InlineLoading from "@/components/loading/InlineLoading";
 
 const TabelKontingen = ({ handleDelete, handleEdit }: TabelProps) => {
   const {
-    kontingen,
-    officials,
-    pesertas,
+    kontingens,
+    kontingensLoading,
   }: {
-    kontingen: KontingenState;
-    officials: OfficialState[];
-    pesertas: PesertaState[];
+    kontingens: KontingenState[];
+    kontingensLoading: boolean;
   } = FormContext();
 
   const tableHead = ["Nama Kontingen", "Official", "Peserta"];
 
   return (
     <>
-      {kontingen.id ? (
+      {kontingens.length ? (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -39,22 +41,28 @@ const TabelKontingen = ({ handleDelete, handleEdit }: TabelProps) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>{kontingen.namaKontingen}</td>
-                <td>{officials.length}</td>
-                <td>{pesertas.length}</td>
-                <td>
+              {kontingens.map((kontingen) => (
+                <tr>
+                  <td>{kontingen.namaKontingen}</td>
+                  <td>{kontingen.officials.length}</td>
+                  <td>{kontingen.pesertas.length}</td>
                   {handleDelete && handleEdit && (
-                    <TabelActionButtons
-                      handleDelete={handleDelete}
-                      handleEdit={handleEdit}
-                    />
+                    <td>
+                      <TabelActionButtons
+                        handleDelete={() => handleDelete(kontingen)}
+                        handleEdit={() => handleEdit(kontingen)}
+                      />
+                    </td>
                   )}
-                </td>
-              </tr>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
+      ) : kontingensLoading ? (
+        <p className="w-full bg-white rounded-md p-2">
+          Memuat Data Kontingen <InlineLoading />
+        </p>
       ) : (
         <p className="text-rose-500 font-bold">
           Belum ada kontingen yang terdaftar

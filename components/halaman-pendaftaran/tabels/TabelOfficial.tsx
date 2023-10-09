@@ -3,16 +3,19 @@ import { KontingenState, OfficialState, TabelProps } from "@/utils/formTypes";
 import TabelActionButtons from "./TabelActionButtons";
 import { useEffect } from "react";
 import InlineLoading from "@/components/loading/InlineLoading";
+import { compare, findNamaKontingen } from "@/utils/sharedFunctions";
 
 const TabelOfficial = ({ handleDelete, handleEdit }: TabelProps) => {
   const {
     officials,
-    kontingen,
+    kontingens,
     officialsLoading,
+    kontingensLoading,
   }: {
     officials: OfficialState[];
-    kontingen: KontingenState;
+    kontingens: KontingenState[];
     officialsLoading: boolean;
+    kontingensLoading: boolean;
   } = FormContext();
 
   const tableHead = [
@@ -41,27 +44,32 @@ const TabelOfficial = ({ handleDelete, handleEdit }: TabelProps) => {
               </tr>
             </thead>
             <tbody>
-              {officials.map((official, i) => (
-                <tr key={official.id}>
-                  <td>{i + 1}</td>
-                  <td>{official.namaLengkap}</td>
-                  <td>{official.jenisKelamin}</td>
-                  <td>{official.jabatan}</td>
-                  <td>{kontingen.namaKontingen}</td>
-                  {handleDelete && handleEdit && (
-                    <td>
-                      <TabelActionButtons
-                        handleDelete={() => handleDelete(official)}
-                        handleEdit={() => handleEdit(official)}
-                      />
+              {officials
+                .sort(compare("waktuPendaftaran", "asc"))
+                .sort(compare("idKontingen", "asc"))
+                .map((official, i) => (
+                  <tr key={official.id}>
+                    <td>{i + 1}</td>
+                    <td>{official.namaLengkap}</td>
+                    <td>{official.jenisKelamin}</td>
+                    <td>{official.jabatan}</td>
+                    <td className="whitespace-nowrap">
+                      {findNamaKontingen(kontingens, official.idKontingen)}
                     </td>
-                  )}
-                </tr>
-              ))}
+                    {handleDelete && handleEdit && (
+                      <td>
+                        <TabelActionButtons
+                          handleDelete={() => handleDelete(official)}
+                          handleEdit={() => handleEdit(official)}
+                        />
+                      </td>
+                    )}
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
-      ) : officialsLoading ? (
+      ) : officialsLoading || kontingensLoading ? (
         <p className="w-full bg-white rounded-md p-2">
           Memuat Data Official <InlineLoading />
         </p>

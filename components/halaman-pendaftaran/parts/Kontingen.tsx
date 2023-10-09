@@ -24,11 +24,15 @@ const Kontingen = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const {
-    kontingen,
-    refreshKontingen,
-    kontingenLoading,
+    kontingens,
+    refreshKontingens,
     refreshOfficials,
     refreshPesertas,
+  }: {
+    kontingens: KontingenState[];
+    refreshKontingens: () => void;
+    refreshOfficials: () => void;
+    refreshPesertas: () => void;
   } = FormContext();
   const { user, setDisable } = MyContext();
   const toastId = useRef(null);
@@ -66,7 +70,7 @@ const Kontingen = () => {
           )
           .finally(() => {
             reset();
-            refreshKontingen();
+            refreshKontingens();
           });
       } else {
         // UPDATE DATA
@@ -84,7 +88,7 @@ const Kontingen = () => {
           )
           .finally(() => {
             reset();
-            refreshKontingen();
+            refreshKontingens();
           });
       }
     } else {
@@ -112,15 +116,15 @@ const Kontingen = () => {
   };
 
   // EDIT BUTTON HANDLER
-  const handleEdit = () => {
-    setData(kontingen);
+  const handleEdit = (data: KontingenState) => {
+    setData(data);
     setUpdating(true);
   };
 
   // DELETE BUTTON HANDLER
-  const handleDelete = () => {
+  const handleDelete = (data: KontingenState) => {
     setModalVisible(true);
-    setDataToDelete(kontingen);
+    setDataToDelete(data);
   };
 
   // DELETE KONTINGEN START
@@ -141,7 +145,7 @@ const Kontingen = () => {
           fotoUrl: `officials/${id}-image`,
           id: id,
         },
-        kontingen,
+        dataToDelete,
         toastId,
         () => afterDeleteOfficial(officialIndex)
       );
@@ -170,7 +174,7 @@ const Kontingen = () => {
           fotoUrl: `pesertas/${id}-image`,
           id: id,
         },
-        kontingen,
+        dataToDelete,
         toastId,
         () => afterDeletePeserta(pesertaIndex)
       );
@@ -200,7 +204,7 @@ const Kontingen = () => {
         );
       })
       .finally(() => {
-        refreshKontingen();
+        refreshKontingens();
         refreshOfficials();
         refreshPesertas();
         reset();
@@ -217,31 +221,22 @@ const Kontingen = () => {
         cancelDelete={reset}
         deleteData={deleteData}
       />
-      {kontingenLoading ? (
-        <p className="w-full bg-white rounded-md p-2">
-          Memuat Data Kontingen <InlineLoading />
-        </p>
+      <div className="w-full bg-white rounded-md p-2">
+        <TabelKontingen handleEdit={handleEdit} handleDelete={handleDelete} />
+      </div>
+      {data.creatorUid ? (
+        <FormKontingen
+          sendKontingen={sendKontingen}
+          data={data}
+          setData={setData}
+          reset={reset}
+          errorMessage={errorMessage}
+          updating={updating}
+        />
       ) : (
-        <>
-          <div className="w-full bg-white rounded-md p-2">
-            <TabelKontingen
-              handleEdit={handleEdit}
-              handleDelete={handleDelete}
-            />
-          </div>
-          {kontingen.id && !updating ? null : data.creatorUid ? (
-            <FormKontingen
-              sendKontingen={sendKontingen}
-              data={data}
-              setData={setData}
-              reset={reset}
-              errorMessage={errorMessage}
-              updating={updating}
-            />
-          ) : (
-            <p className="bg-white rounded-md p-2 mt-2">loading...</p>
-          )}
-        </>
+        <p className="bg-white rounded-md p-2 mt-2">
+          Memuat Data <InlineLoading />
+        </p>
       )}
     </div>
   );

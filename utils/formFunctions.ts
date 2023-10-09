@@ -19,7 +19,7 @@ import {
   OfficialState,
   PesertaState,
 } from "./formTypes";
-import { newToast, updateToast } from "./sharedFunctions";
+import { controlToast, newToast, updateToast } from "./sharedFunctions";
 import { Id } from "react-toastify";
 import {
   deleteObject,
@@ -235,34 +235,166 @@ export const sendPerson = async (
 
 // DATA UPDATER - START
 // UPDATE PERSON
-export const updatePerson = async (
+// export const updatePerson = async (
+//   tipe: "peserta" | "official",
+//   data: OfficialState | PesertaState | DocumentData,
+//   toastId: React.MutableRefObject<Id | null>,
+//   callback?: () => void
+// ) => {
+//   newToast(toastId, "loading", `Meniympan perubahan data ${data.namaLengkap}`);
+//   let dir;
+//   tipe == "peserta" ? (dir = "pesertas") : (dir = "officials");
+//   return updateDoc(doc(firestore, `${tipe}s`, data.id), {
+//     ...data,
+//     waktuPerubahan: Date.now(),
+//   })
+//     .then(() => {
+//       updateToast(
+//         toastId,
+//         "success",
+//         `Perubahan data ${data.namaLengkap} berhasil disimpan`
+//       );
+//       callback && callback();
+//     })
+//     .catch((error) => {
+//       updateToast(
+//         toastId,
+//         "error",
+//         `Perubahan data ${data.namaLengkap} gagal disimpan. ${error.code}`
+//       );
+//     });
+// };
+
+export const updatePerson = (
   tipe: "peserta" | "official",
-  data: OfficialState | PesertaState | DocumentData,
+  prevData: PesertaState | OfficialState | DocumentData,
+  data: PesertaState | DocumentData,
   toastId: React.MutableRefObject<Id | null>,
-  callback?: () => void
+  callback: () => void,
+  pasFoto?: File
 ) => {
-  newToast(toastId, "loading", `Meniympan perubahan data ${data.namaLengkap}`);
-  let dir;
-  tipe == "peserta" ? (dir = "pesertas") : (dir = "officials");
-  return updateDoc(doc(firestore, `${tipe}s`, data.id), {
-    ...data,
-    waktuPerubahan: Date.now(),
-  })
-    .then(() => {
-      updateToast(
-        toastId,
-        "success",
-        `Perubahan data ${data.namaLengkap} berhasil disimpan`
-      );
-      callback && callback();
-    })
-    .catch((error) => {
-      updateToast(
-        toastId,
-        "error",
-        `Perubahan data ${data.namaLengkap} gagal disimpan. ${error.code}`
-      );
-    });
+  const pasFotoUrl = `${tipe}s/${data.id}-image`;
+  let downloadPasFotoUrl = data.downloadFotoUrl;
+  const stepController = (step: number) => {
+    switch (step) {
+      case 1:
+        if (pasFoto) {
+          // DELETE OLD PAS FOTO
+          controlToast(toastId, "loading", "Menghapus Pas Foto lama", true);
+          deleteObject(ref(storage, pasFotoUrl))
+            .then(() => {
+              stepController(2);
+            })
+            .catch((error) =>
+              controlToast(
+                toastId,
+                "error",
+                `Gagal menghapus Pas Foto lama, ${error.code}`
+              )
+            );
+        } else {
+          stepController(3);
+        }
+        break;
+      case 2:
+        if (pasFoto) {
+          // UPLOAD NEW PAS FOTO
+          controlToast(
+            toastId,
+            "loading",
+            "Mengunggah Pas Foto baru",
+            !data.fotoUrl
+          );
+          uploadBytes(ref(storage, pasFotoUrl), pasFoto)
+            .then((snapshot) =>
+              getDownloadURL(snapshot.ref).then((url) => {
+                downloadPasFotoUrl = url;
+                stepController(3);
+              })
+            )
+            .catch((error) =>
+              controlToast(
+                toastId,
+                "error",
+                `Gagal mengunggah Pas Foto baru. ${error.code}`
+              )
+            );
+        }
+        break;
+      case 3:
+        if (data.idKontingen != prevData.idKontingen) {
+          controlToast(
+            toastId,
+            "loading",
+            `Menghapus ${data.namaLengkap} dari kontingen lama`,
+            !pasFoto
+          );
+          updateDoc(doc(firestore, "kontingens", prevData.idKontingen), {
+            [`${tipe}s`]: arrayRemove(data.id),
+          })
+            .then(() => stepController(4))
+            .catch((error) =>
+              controlToast(
+                toastId,
+                "error",
+                `Gagal Menghapus ${data.namaLengkap} dari kontingen lama. ${error.code}`
+              )
+            );
+        } else {
+          stepController(5);
+        }
+        break;
+      case 4:
+        controlToast(
+          toastId,
+          "loading",
+          `Menambahkan ${data.namaLengkap} ke kontingen baru`
+        );
+        updateDoc(doc(firestore, "kontingens", data.idKontingen), {
+          [`${tipe}s`]: arrayUnion(data.id),
+        })
+          .then(() => stepController(5))
+          .catch((error) =>
+            controlToast(
+              toastId,
+              "error",
+              `Gagal menambahkan ${data.namaLengkap} ke kontingen baru. ${error.code}`
+            )
+          );
+        break;
+      case 5:
+        // UPDATE DATA
+        controlToast(
+          toastId,
+          "loading",
+          `Memperbaharui Data ${data.namaLengkap}`,
+          data.idKontingen == prevData.idKontingen && !pasFoto
+        );
+        updateDoc(doc(firestore, `${tipe}s`, data.id), {
+          ...data,
+          pasFotoUrl: pasFotoUrl,
+          downloadFotoUrl: downloadPasFotoUrl,
+          waktuPerubahan: Date.now(),
+        })
+          .then(() => {
+            controlToast(
+              toastId,
+              "success",
+              `Data ${data.namaLengkap} berhasil diperbaharui`
+            );
+            callback();
+          })
+          .catch((error) =>
+            controlToast(
+              toastId,
+              "error",
+              `Data ${data.namaLengkap} Gagal diperbaharui. ${error.code}`
+            )
+          );
+        break;
+    }
+  };
+  stepController(1);
 };
 
 // UPDATE PERSON AND IMAGE
@@ -329,14 +461,14 @@ export const updatePersonImage = async (
 // GET KONTINGEN
 export const getKontingen = async (userUID: string) => {
   try {
-    let result: DocumentData | KontingenState | null = null;
+    let result: DocumentData | KontingenState[] = [];
     const querySnapshot = await getDocs(
       query(
         collection(firestore, "kontingens"),
         where("creatorUid", "==", userUID)
       )
     );
-    querySnapshot.forEach((doc) => (result = doc.data()));
+    querySnapshot.forEach((doc) => result.push(doc.data()));
     return result;
   } catch (error: any) {
     throw new Error(`Gagal mendapatkan data kontingen, ${error.code}`);

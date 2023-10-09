@@ -51,8 +51,8 @@ export const getAllPeserta = async () => {
 
 // DATA FETCHER BY ID KONTINGEN - START
 export const getPesertasByKontingen = (
-  idKontingen: string,
-  pesertas: PesertaState[]
+  pesertas: PesertaState[],
+  idKontingen: string
 ) => {
   let result: PesertaState[] = [];
 
@@ -77,8 +77,8 @@ export const getPesertasByKontingen = (
   //   }
 };
 export const getOfficialsByKontingen = (
-  idKontingen: string,
-  officials: OfficialState[]
+  officials: OfficialState[],
+  idKontingen: string
 ) => {
   let result: OfficialState[] = [];
 
@@ -117,7 +117,7 @@ export const getKontingenUnpaid = (
     );
   });
 
-  const filteredPesertas = getPesertasByKontingen(kontingen.id, pesertas);
+  const filteredPesertas = getPesertasByKontingen(pesertas, kontingen.id);
   let nominalToPay =
     getGroupedPeserta(filteredPesertas).nonAsbd * 325000 +
     getGroupedPeserta(filteredPesertas).asbdTunggal * 250000 +
@@ -145,17 +145,4 @@ export const formatTanggal = (
   } else {
     return "-";
   }
-};
-
-// FIND NAMA KONTINGEN
-export const findNamaKontingen = (
-  dataKontingen: KontingenState[],
-  idKontingen: string
-) => {
-  const index = dataKontingen.findIndex(
-    (kontingen) => kontingen.id == idKontingen
-  );
-  return dataKontingen[index]
-    ? dataKontingen[index].namaKontingen
-    : "kontingen not found";
 };

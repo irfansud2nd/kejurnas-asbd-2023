@@ -4,7 +4,11 @@ import {
   errorOfficialInitialValue,
   officialInitialValue,
 } from "@/utils/formConstants";
-import { ErrorOfficial, OfficialState } from "@/utils/formTypes";
+import {
+  ErrorOfficial,
+  KontingenState,
+  OfficialState,
+} from "@/utils/formTypes";
 import { MyContext } from "@/context/Context";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,12 +21,11 @@ import {
   limitImage,
   sendPerson,
   updatePerson,
-  updatePersonImage,
 } from "@/utils/formFunctions";
-import InlineLoading from "@/components/loading/InlineLoading";
 
 const Official = () => {
   const [data, setData] = useState<OfficialState>(officialInitialValue);
+  const [prevData, setPrevData] = useState<OfficialState>(officialInitialValue);
   const [updating, setUpdating] = useState<boolean>(false);
   const [dataToDelete, setDataToDelete] = useState(officialInitialValue);
   const [imageSelected, setImageSelected] = useState<File | null>();
@@ -34,19 +37,25 @@ const Official = () => {
   );
 
   const { user, disable, setDisable } = MyContext();
-  const { kontingen, refreshOfficials, kontingenLoading } = FormContext();
+  const {
+    kontingens,
+    refreshOfficials,
+    officialsLoading,
+    kontingensLoading,
+    refreshKontingens,
+  } = FormContext();
   const toastId = useRef(null);
 
   useEffect(() => {
-    if (kontingen?.id && !kontingenLoading && user) {
+    if (kontingens.length && !kontingensLoading && user) {
       setData({
         ...data,
-        idKontingen: kontingen.id,
+        idKontingen: kontingens[0].id,
         creatorEmail: user.email,
         creatorUid: user.uid,
       });
     }
-  }, [kontingen, user, kontingenLoading]);
+  }, [kontingens, user, kontingensLoading]);
 
   // RESETER
   const reset = () => {
@@ -54,13 +63,15 @@ const Official = () => {
       ...officialInitialValue,
       creatorEmail: user.email,
       creatorUid: user.uid,
-      idKontingen: kontingen?.id,
+      idKontingen: kontingens[0].id,
     });
     setImageSelected(null);
+    refreshKontingens();
     refreshOfficials();
     setModalVisible(false);
     setDataToDelete(officialInitialValue);
     setUpdating(false);
+    setPrevData(officialInitialValue);
     setSubmitClicked(false);
     setErrorMessage(errorOfficialInitialValue);
     clearInputImage();
@@ -110,7 +121,11 @@ const Official = () => {
             "official",
             data,
             imageSelected,
-            kontingen,
+            kontingens[
+              kontingens.findIndex(
+                (item: KontingenState) => item.id == data.idKontingen
+              )
+            ],
             toastId,
             reset
           );
@@ -143,15 +158,17 @@ const Official = () => {
   // UPDATE CONTROLLER
   const updateControl = () => {
     if (imageSelected) {
-      updatePersonImage("official", data, toastId, imageSelected, reset);
+      // updatePersonImage("official", data, toastId, imageSelected, reset);
+      updatePerson("official", prevData, data, toastId, reset, imageSelected);
     } else {
-      updatePerson("official", data, toastId, reset);
+      updatePerson("official", prevData, data, toastId, reset);
     }
   };
 
   // EDIT BUTTON HANDLER
   const handleEdit = (data: OfficialState) => {
     setData(data);
+    setPrevData(data);
     setUpdating(true);
   };
 
@@ -164,7 +181,17 @@ const Official = () => {
   // DELETE OFFICIAL START
   const deleteData = () => {
     setModalVisible(false);
-    deletePerson("officials", dataToDelete, kontingen, toastId, reset);
+    deletePerson(
+      "officials",
+      dataToDelete,
+      kontingens[
+        kontingens.findIndex(
+          (item: KontingenState) => item.id == data.idKontingen
+        )
+      ],
+      toastId,
+      reset
+    );
   };
 
   return (
@@ -177,31 +204,20 @@ const Official = () => {
         cancelDelete={reset}
         deleteData={deleteData}
       />
-      {kontingenLoading ? (
-        <p className="w-full bg-white rounded-md p-2">
-          Memuat Data Official <InlineLoading />
-        </p>
-      ) : (
-        <>
-          <div className="w-full bg-white rounded-md p-2">
-            <TabelOfficial
-              handleEdit={handleEdit}
-              handleDelete={handleDelete}
-            />
-          </div>
-          <FormOfficial
-            data={data}
-            setData={setData}
-            submitHandler={submitHandler}
-            imageChangeHandler={imageChangeHandler}
-            imagePreviewSrc={imagePreviewSrc}
-            setImageSelected={setImageSelected}
-            errorMessage={errorMessage}
-            reset={reset}
-            updating={updating}
-          />
-        </>
-      )}
+      <div className="w-full bg-white rounded-md p-2">
+        <TabelOfficial handleEdit={handleEdit} handleDelete={handleDelete} />
+      </div>
+      <FormOfficial
+        data={data}
+        setData={setData}
+        submitHandler={submitHandler}
+        imageChangeHandler={imageChangeHandler}
+        imagePreviewSrc={imagePreviewSrc}
+        setImageSelected={setImageSelected}
+        errorMessage={errorMessage}
+        reset={reset}
+        updating={updating}
+      />
     </div>
   );
 };

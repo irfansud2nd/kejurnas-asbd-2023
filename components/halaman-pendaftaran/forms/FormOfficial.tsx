@@ -1,9 +1,10 @@
 import { MyContext } from "@/context/Context";
-import { FormOfficialProps } from "@/utils/formTypes";
+import { FormOfficialProps, KontingenState } from "@/utils/formTypes";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { jabatanOfficial, jenisKelaminDewasa } from "@/utils/formConstants";
 import { FormContext } from "@/context/FormContext";
+import { findNamaKontingen } from "@/utils/sharedFunctions";
 
 const FormOfficial = ({
   data,
@@ -16,13 +17,14 @@ const FormOfficial = ({
   updating,
 }: FormOfficialProps) => {
   const { disable } = MyContext();
-  const { kontingen } = FormContext();
+  const { kontingens } = FormContext();
 
   return (
     <form
       className="bg-white rounded-md p-2 mt-2"
       onSubmit={(e) => submitHandler(e)}
     >
+      <p>{data.id}</p>
       <div className="w-full flex flex-wrap sm:flex-nowrap justify-center gap-3">
         {/* KOLOM KIRI */}
         {/* PAS FOT0 */}
@@ -130,7 +132,18 @@ const FormOfficial = ({
           {/* NAMA KONTINGEN */}
           <div className="input_container">
             <label className="input_label">Nama Kontingen</label>
-            <input type="text" disabled value={kontingen.namaKontingen} />
+            <select
+              value={data.idKontingen}
+              onChange={(e) =>
+                setData({ ...data, idKontingen: e.target.value })
+              }
+            >
+              {kontingens.map((kontingen: KontingenState) => (
+                <option value={kontingen.id}>
+                  {findNamaKontingen(kontingens, kontingen.id)}
+                </option>
+              ))}
+            </select>
             <p className="text-red-500">{errorMessage.idKontingen}</p>
           </div>
           {/* NAMA KONTINGEN */}

@@ -3,16 +3,19 @@ import { KontingenState, PesertaState, TabelProps } from "@/utils/formTypes";
 import TabelActionButtons from "./TabelActionButtons";
 import InlineLoading from "@/components/loading/InlineLoading";
 import { jenisPertandingan } from "@/utils/formConstants";
+import { compare, findNamaKontingen } from "@/utils/sharedFunctions";
 
 const TabelPeserta = ({ handleDelete, handleEdit }: TabelProps) => {
   const {
     pesertas,
-    kontingen,
+    kontingens,
     pesertasLoading,
+    kontingensLoading,
   }: {
     pesertas: PesertaState[];
-    kontingen: KontingenState;
+    kontingens: KontingenState[];
     pesertasLoading: boolean;
+    kontingensLoading: boolean;
   } = FormContext();
 
   const tableHead = [
@@ -44,48 +47,62 @@ const TabelPeserta = ({ handleDelete, handleEdit }: TabelProps) => {
               </tr>
             </thead>
             <tbody>
-              {pesertas.map((peserta, i) => (
-                <tr key={peserta.id}>
-                  <td>{i + 1}</td>
-                  <td>{peserta.namaLengkap}</td>
-                  <td>{kontingen.namaKontingen}</td>
-                  <td>{peserta.tingkatanPertandingan}</td>
-                  <td>{peserta.jenisPertandingan}</td>
-                  <td className="whitespace-nowrap">
-                    {peserta.jenisPertandingan === jenisPertandingan[2]
-                      ? "Sabuk " +
-                        peserta.sabuk +
-                        " | " +
-                        peserta.jurus +
-                        " | " +
-                        peserta.kategoriPertandingan
-                      : peserta.kategoriPertandingan}
-                    {peserta.jenisPertandingan === jenisPertandingan[2] &&
-                      peserta.kategoriPertandingan.split(" ")[0] != "Tunggal" &&
-                      ` | Tim ${peserta.namaTim}`}
-                  </td>
-                  {handleDelete && handleEdit ? (
-                    <td>
-                      <TabelActionButtons
-                        handleDelete={() => handleDelete(peserta)}
-                        handleEdit={() => handleEdit(peserta)}
-                      />
+              {pesertas
+                .sort(compare("waktuPendaftaran", "asc"))
+                .sort(compare("idKontingen", "asc"))
+                .map((peserta, i) => (
+                  <tr key={peserta.id}>
+                    <td>{i + 1}</td>
+                    <td className="uppercase">{peserta.namaLengkap}</td>
+                    <td className="whitespace-nowrap">
+                      {findNamaKontingen(kontingens, peserta.idKontingen)}
                     </td>
-                  ) : (
-                    <td>
-                      {peserta.pembayaran
-                        ? peserta.confirmedPembayaran
-                          ? "Pembayaran sudah dikonfirmasi"
-                          : "Menunggu konfirmasi dari admin"
-                        : "Belum dibayar"}
+                    <td>{peserta.tingkatanPertandingan}</td>
+                    <td>{peserta.jenisPertandingan}</td>
+                    <td className="whitespace-nowrap">
+                      {peserta.jenisPertandingan === jenisPertandingan[2]
+                        ? "Sabuk " +
+                          peserta.sabuk +
+                          " | " +
+                          peserta.jurus +
+                          " | " +
+                          peserta.kategoriPertandingan
+                        : peserta.kategoriPertandingan}
+                      {peserta.jenisPertandingan === jenisPertandingan[2] &&
+                        peserta.kategoriPertandingan.split(" ")[0] !=
+                          "Tunggal" &&
+                        ` | Tim ${peserta.namaTim}`}
                     </td>
-                  )}
-                </tr>
-              ))}
+                    {handleDelete && handleEdit ? (
+                      <td>
+                        <TabelActionButtons
+                          handleDelete={() => handleDelete(peserta)}
+                          handleEdit={() => handleEdit(peserta)}
+                        />
+                      </td>
+                    ) : (
+                      <td className="whitespace-nowrap">
+                        {peserta.pembayaran ? (
+                          peserta.confirmedPembayaran ? (
+                            <span className="text-green-500">
+                              Pembayaran sudah dikonfirmasi
+                            </span>
+                          ) : (
+                            <span className="text-yellow-500">
+                              Menunggu konfirmasi dari admin
+                            </span>
+                          )
+                        ) : (
+                          <span className="text-red-500">Belum dibayar</span>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
-      ) : pesertasLoading ? (
+      ) : pesertasLoading || kontingensLoading ? (
         <p className="w-full bg-white rounded-md p-2">
           Memuat Data Peserta <InlineLoading />
         </p>
