@@ -18,13 +18,6 @@ export default function Home() {
       <Head>
         <title>Kerjurnas ASBD 2023</title>
       </Head>
-      <Image
-        src={bw}
-        alt="bg-bw"
-        fill
-        quality={100}
-        className="object-cover -z-10"
-      />
       <div className="bg-black bg-opacity-50 backdrop-blur-sm w-full h-fit shadow-2xl flex flex-col justify-center items-center text-white my-auto p-2 text-center">
         <h1 className="text-4xl font font-extrabold mb-2 ">
           Kejuaraan Nasional ASBD 2023
