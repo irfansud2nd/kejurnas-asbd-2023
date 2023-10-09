@@ -6,6 +6,7 @@ import LoginButton from "@/components/LoginButton";
 import Head from "next/head";
 import { Metadata } from "next";
 import DownloadButton from "@/components/DownloadButton";
+import bw from "@/public/images/bg-bw.png";
 
 export const metadata: Metadata = {
   title: "Kerjurnas ASBD 2023",
@@ -18,7 +19,7 @@ export default function Home() {
         <title>Kerjurnas ASBD 2023</title>
       </Head>
       <Image
-        src="/images/bg-bw.png"
+        src={bw}
         alt="bg-bw"
         fill
         quality={100}

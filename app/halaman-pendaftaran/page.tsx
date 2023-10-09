@@ -7,6 +7,7 @@ import { MyContext } from "@/context/Context";
 import { FormContextProvider } from "@/context/FormContext";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import bw from "@/public/images/bg-bw.png";
 
 const PendaftaranPage = () => {
   const [nav, setNav] = useState("kontingen");
@@ -18,12 +19,7 @@ const PendaftaranPage = () => {
 
   return (
     <div className="min-h-full w-full py-2">
-      <Image
-        src="/images/bg-bw.png"
-        fill
-        className="object-cover -z-10"
-        alt="bg-bw"
-      />
+      <Image src={bw} fill className="object-cover -z-10" alt="bg-bw" />
       <FormContextProvider>
         {userLoading ? (
           <FullLoading />
