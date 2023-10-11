@@ -138,11 +138,16 @@ const KonfirmasiButton = ({
         <p>Jumlah Nominal: {infoPembayaran.nominal}</p>
         <div className="w-[300px] h-[400px] border-2 border-custom-navy relative">
           {infoPembayaran.buktiUrl ? (
-            <Image
+            // <Image
+            //   src={infoPembayaran.buktiUrl}
+            //   alt="bukti pembayaran"
+            //   fill
+            //   className="object-contain"
+            // />
+            <img
               src={infoPembayaran.buktiUrl}
               alt="bukti pembayaran"
-              fill
-              className="object-contain"
+              className="w-[300px] h-[400px] object-contain"
             />
           ) : null}
         </div>

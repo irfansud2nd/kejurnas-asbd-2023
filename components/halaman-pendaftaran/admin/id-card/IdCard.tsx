@@ -133,11 +133,16 @@ const IdCard = () => {
                     />
                     <div className="w-[96px] h-[127px] absolute left-[142px] top-[230px] z-[1]">
                       <div className="bg-green-500 bg-opacity-50 w-full h-full relative">
-                        <Image
+                        {/* <Image
                           src={peserta.downloadFotoUrl}
                           alt="pasfoto"
                           fill
                           className="object-cover"
+                        /> */}
+                        <img
+                          src={peserta.downloadFotoUrl}
+                          alt="pasfoto"
+                          className="w-[96px] h-[127px] object-cover"
                         />
                       </div>
                     </div>
@@ -173,11 +178,16 @@ const IdCard = () => {
                     />
                     <div className="w-[97px] h-[128px] absolute left-[141px] top-[230px] z-[1]">
                       <div className="w-full h-full relative">
-                        <Image
+                        {/* <Image
                           src={official.downloadFotoUrl}
                           alt="pasfoto"
                           fill
                           className="object-cover"
+                        /> */}
+                        <img
+                          src={official.downloadFotoUrl}
+                          alt="pasfoto"
+                          className="w-[97px] h-[128px] object-cover"
                         />
                       </div>
                     </div>
