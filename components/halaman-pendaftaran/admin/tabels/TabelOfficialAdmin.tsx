@@ -76,7 +76,12 @@ const TabelOfficialAdmin = () => {
           </Link>
         </div>
         <div className="w-[400px] h-[300px] relative">
-          <Image src={fotoUrl} alt="kk" fill className="object-contain" />
+          {/* <Image src={fotoUrl} alt="kk" fill className="object-contain" /> */}
+          <img
+            src={fotoUrl}
+            alt="kk"
+            className="w-full h-full absolute object-contain"
+          />
         </div>
       </Rodal>
       {/* RODAL */}

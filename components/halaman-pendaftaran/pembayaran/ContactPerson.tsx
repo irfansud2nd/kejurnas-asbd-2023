@@ -11,7 +11,8 @@ const ContactPerson = () => {
     <div className="flex flex-col gap-y-2 items-center justify-between text-lg font-semibold text-center">
       <p className="">Semua Pembayaran dibayarkan melalui rekening</p>
       <div className="flex gap-2">
-        <Image src={bri_logo} alt="logo-bri" className="w-28 h-fit" />
+        {/* <Image src={bri_logo} alt="logo-bri" className="w-28 h-fit" /> */}
+        <img src="images/bri.svg" alt="logo-bri" className="w-28 h-fit" />
         <div className="flex flex-col justify-between">
           <p>130201000643502</p>
           <p>a.n. Gina Rosdiana</p>

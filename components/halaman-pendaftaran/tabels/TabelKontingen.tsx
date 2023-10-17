@@ -42,7 +42,7 @@ const TabelKontingen = ({ handleDelete, handleEdit }: TabelProps) => {
             </thead>
             <tbody>
               {kontingens.map((kontingen) => (
-                <tr>
+                <tr key={kontingen.id}>
                   <td>{kontingen.namaKontingen}</td>
                   <td>{kontingen.officials.length}</td>
                   <td>{kontingen.pesertas.length}</td>

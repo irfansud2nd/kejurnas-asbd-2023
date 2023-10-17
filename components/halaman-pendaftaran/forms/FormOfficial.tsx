@@ -144,7 +144,7 @@ const FormOfficial = ({
               }
             >
               {kontingens.map((kontingen: KontingenState) => (
-                <option value={kontingen.id}>
+                <option value={kontingen.id} key={kontingen.id}>
                   {findNamaKontingen(kontingens, kontingen.id)}
                 </option>
               ))}

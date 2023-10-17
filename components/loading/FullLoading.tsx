@@ -4,10 +4,15 @@ import logo_asbd from "@/public/images/logo-asbd.png";
 const FullLoading = () => {
   return (
     <div className="h-full w-full flex flex-col justify-center items-center">
-      <Image
+      {/* <Image
         src={logo_asbd}
         alt="logo_asbd"
         className="h-1/2 max-h-[400px] w-fit animate-pulse"
+      /> */}
+      <img
+        src="images/logo-asbd.png"
+        alt="logo-asbd"
+        className="h-1/2 max-h-[400px] w-fit absolute animate-pulse"
       />
     </div>
   );

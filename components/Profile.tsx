@@ -43,11 +43,17 @@ const Profile = () => {
             {user ? (
               user.photoURL ? (
                 <div className="w-6 h-6 relative rounded-full">
-                  <Image
+                  {/* <Image
                     src={user.photoURL}
                     alt="profile image"
                     fill
                     className="object-contain rounded-full"
+                  /> */}
+                  <img
+                    src={user.photoURL}
+                    referrerPolicy="no-referrer"
+                    alt="profile image"
+                    className="w-6 h-6 object-contain rounded-full"
                   />
                 </div>
               ) : (

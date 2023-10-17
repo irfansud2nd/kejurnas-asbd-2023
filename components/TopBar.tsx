@@ -19,36 +19,60 @@ const TopBar = () => {
         <span className="hidden md:inline">Kejuraan Nasional</span>{" "}
         <span className="hidden sm:inline md:hidden">Kejurnas</span> ASBD 2023
       </Link>
-      <div className="w-full h-full col-span-2 sm:col-span-1 relative">
-        <Image
+      <div className="w-full h-full col-span-2 sm:col-span-1 relative flex justify-end">
+        {/* <div className="w-full h-full col-span-2 sm:col-span-1 relative"> */}
+        {/* <Image
           src={logo_ipsi}
           alt="logo_ipsi"
           fill
           className="w-fit h-full object-contain object-right"
+        /> */}
+        <img
+          src="images/logo-ipsi.png"
+          alt="logo_ipsi"
+          className="w-fit h-full absolute object-contain object-right"
         />
       </div>
-      <div className="w-full h-full col-span-2 sm:col-span-1 relative">
-        <Image
+      <div className="w-full h-full col-span-2 sm:col-span-1 relative flex justify-end">
+        {/* <div className="w-full h-full col-span-2 sm:col-span-1 relative"> */}
+        {/* <Image
           src={logo_kemenpora}
           alt="logo_kemenpora"
           fill
           className="w-fit h-full object-contain object-right"
+        /> */}
+        <img
+          src="images/logo-kemenpora.png"
+          alt="logo_kemenpora"
+          className="w-fit h-full absolute object-contain object-right"
         />
       </div>
-      <div className="w-full h-full col-span-2 sm:col-span-1 relative">
-        <Image
+      <div className="w-full h-full col-span-2 sm:col-span-1 relative flex justify-end">
+        {/* <div className="w-full h-full col-span-2 sm:col-span-1 relative"> */}
+        {/* <Image
           src={logo_asbd}
           alt="logo-asbd"
           fill
           className="w-fit h-full object-contain object-right"
+        /> */}
+        <img
+          src="images/logo-asbd.png"
+          alt="logo_ipsi"
+          className="w-fit h-full absolute object-contain object-right"
         />
       </div>
-      <div className="w-full h-full col-span-2 sm:col-span-1 relative">
-        <Image
+      <div className="w-full h-full col-span-2 sm:col-span-1 relative flex justify-end">
+        {/* <div className="w-full h-full col-span-2 sm:col-span-1 relative"> */}
+        {/* <Image
           src={logo_al_azhar}
           alt="logo_al_azhar"
           fill
           className="w-fit h-full object-contain object-right"
+        /> */}
+        <img
+          src="images/logo-al_azhar.png"
+          alt="logo_al_azhar"
+          className="w-fit h-full absolute object-contain object-right"
         />
       </div>
     </div>
