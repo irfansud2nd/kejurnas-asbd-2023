@@ -24,7 +24,6 @@ const FormOfficial = ({
       className="bg-white rounded-md p-2 mt-2"
       onSubmit={(e) => submitHandler(e)}
     >
-      <p>{data.id}</p>
       <div className="w-full flex flex-wrap sm:flex-nowrap justify-center gap-3">
         {/* KOLOM KIRI */}
         {/* PAS FOT0 */}
@@ -43,11 +42,17 @@ const FormOfficial = ({
             bg-white w-[150px] h-[200px] relative border-2 rounded-md`}
           >
             {imagePreviewSrc && (
-              <Image
+              // <Image
+              //   src={imagePreviewSrc}
+              //   alt="preview"
+              //   fill
+              //   className="object-cover rounded-md"
+              // />
+              <img
                 src={imagePreviewSrc}
                 alt="preview"
-                fill
-                className="object-cover rounded-md"
+                // className="w-[150px] h-[196px] object-cover rounded-sm"
+                className="w-full h-full absolute object-cover rounded-sm"
               />
             )}
           </div>
