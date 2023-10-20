@@ -1,3 +1,4 @@
+import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
 import { firestore } from "@/utils/firebase";
 import { newToast, updateToast } from "@/utils/sharedFunctions";
@@ -8,6 +9,10 @@ import "react-toastify/dist/ReactToastify.css";
 
 const UpdateKontingen = () => {
   const { kontingens } = AdminContext();
+  const kontingensToUpdate = kontingens.splice(
+    kontingens.findIndex((item: any) => item.id == "0RRkbCN4dmxqdXcMnRq8"),
+    1
+  );
 
   const toastId = useRef(null);
 
@@ -16,8 +21,8 @@ const UpdateKontingen = () => {
       if (index < 0) {
         updateToast(toastId, "success", "Updating Complete");
       } else {
-        const selectedKontingen = kontingens[index];
-        if (index == kontingens.length - 1) {
+        const selectedKontingen = kontingensToUpdate[index];
+        if (index == kontingensToUpdate.length - 1) {
           newToast(
             toastId,
             "loading",
@@ -31,6 +36,11 @@ const UpdateKontingen = () => {
           );
         }
         updateDoc(doc(firestore, "kontingens", selectedKontingen.id), {
+          unconfirmedPembayaranIds: selectedKontingen.unconfirmedPembayaran,
+          confirmedPembayaranIds: selectedKontingen.confirmedPembayaran,
+          pembayaran: true,
+          biayaKontingen: true,
+          confirmedPembayaran: true,
           unconfirmedPembayaran: false,
         })
           .then(() => repeater(index - 1))
@@ -43,13 +53,19 @@ const UpdateKontingen = () => {
           );
       }
     };
-    repeater(kontingens.length - 1);
+    repeater(kontingensToUpdate.length - 1);
   };
+
   return (
     <div>
       <ToastContainer />
-      <button className="btn_green" onClick={updateAll}>
-        Update all Kontingen
+      <button className="btn_green mb-1" onClick={updateAll}>
+        Update all Kontingen{" "}
+        {kontingensToUpdate.length ? (
+          kontingensToUpdate[0].namaKontingen
+        ) : (
+          <InlineLoading />
+        )}
       </button>
     </div>
   );

@@ -5,6 +5,8 @@ import KonfirmasiButton from "../KonfirmasiButton";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import { useRef } from "react";
 import InlineLoading from "@/components/loading/InlineLoading";
+import { compare } from "@/utils/sharedFunctions";
+import UpdateKontingen from "../UpdateKontingen";
 
 const TabelKontingenAdmin = () => {
   const {
@@ -52,7 +54,7 @@ const TabelKontingenAdmin = () => {
         Tabel Kontingen
       </h1>
 
-      {/* <UpdateKontingen /> */}
+      <UpdateKontingen />
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
@@ -77,20 +79,22 @@ const TabelKontingenAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {kontingens.map((kontingen: KontingenState, i: number) => (
-            <tr key={kontingen.id} className="border_td">
-              <td>{i + 1}</td>
-              <td>{kontingen.id}</td>
-              <td
-                className="hover:text-green-500 hover:underline transition cursor-pointer"
-                onClick={() => setSelectedKontingen(kontingen)}
-              >
-                {kontingen.namaKontingen}
-              </td>
-              <td>{kontingen.pesertas.length}</td>
-              <td>{kontingen.officials.length}</td>
-              <td>
-                <ul>
+          {kontingens
+            .sort(compare("waktuPendaftaran", "asc"))
+            .map((kontingen: KontingenState, i: number) => (
+              <tr key={kontingen.id} className="border_td">
+                <td>{i + 1}</td>
+                <td>{kontingen.id}</td>
+                <td
+                  className="hover:text-green-500 hover:underline transition cursor-pointer"
+                  onClick={() => setSelectedKontingen(kontingen)}
+                >
+                  {kontingen.namaKontingen}
+                </td>
+                <td>{kontingen.pesertas.length}</td>
+                <td>{kontingen.officials.length}</td>
+                <td>
+                  {/* <ul>
                   {kontingen.idPembayaran
                     ? kontingen.idPembayaran.map((idPembayaran) => (
                         <li
@@ -145,26 +149,26 @@ const TabelKontingenAdmin = () => {
                         </li>
                       ))
                     : "-"}
-                </ul>
-              </td>
-              <td className="whitespace-nowrap">
-                {/* {getKontingenUnpaid(kontingen, pesertas) < 0
+                </ul> */}
+                </td>
+                <td className="whitespace-nowrap">
+                  {/* {getKontingenUnpaid(kontingen, pesertas) < 0
                   ? "0"
                   : `Rp. ${getKontingenUnpaid(kontingen, pesertas)}`} */}
-                Rp.{" "}
-                {getKontingenUnpaid(kontingen, pesertas).toLocaleString("id")}
-              </td>
-              <td>
-                {kontingen.unconfirmedPembayaranIds &&
-                kontingen.unconfirmedPembayaranIds.length
-                  ? "Butuh Konfimasi"
-                  : "Selesai Konfirmasi"}
-              </td>
-              <td>{kontingen.creatorEmail}</td>
-              <td>{formatTanggal(kontingen.waktuPendaftaran)}</td>
-              <td>{formatTanggal(kontingen.waktuPerubahan)}</td>
-            </tr>
-          ))}
+                  Rp.{" "}
+                  {getKontingenUnpaid(kontingen, pesertas).toLocaleString("id")}
+                </td>
+                <td>
+                  {kontingen.unconfirmedPembayaranIds &&
+                  kontingen.unconfirmedPembayaranIds.length
+                    ? "Butuh Konfimasi"
+                    : "Selesai Konfirmasi"}
+                </td>
+                <td>{kontingen.creatorEmail}</td>
+                <td>{formatTanggal(kontingen.waktuPendaftaran)}</td>
+                <td>{formatTanggal(kontingen.waktuPerubahan)}</td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>

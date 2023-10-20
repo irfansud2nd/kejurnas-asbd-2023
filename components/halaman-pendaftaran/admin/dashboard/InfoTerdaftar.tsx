@@ -53,19 +53,19 @@ const InfoTerdaftar = () => {
         loading={kontingen.loading}
         total={kontingen.total}
         refresh={getKontingen}
-        link="/kontingen"
+        link="admin/kontingen"
       />
       <TerdaftarCard
         loading={official.loading}
         total={official.total}
         refresh={getOfficial}
-        link="/official"
+        link="admin/official"
       />
       <TerdaftarCard
         loading={peserta.loading}
         total={peserta.total}
         refresh={getPeserta}
-        link="/peserta"
+        link="admin/peserta"
       />
     </div>
   );

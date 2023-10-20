@@ -4,7 +4,7 @@ import { getKontingenUnpaid } from "@/utils/adminFunctions";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
 import TabelKuota from "./dashboard/TabelKuota";
 import TabelPembayaran from "./dashboard/TabelPembayaran";
-import InfoTerdaftar from "../pembayaran/InfoTerdaftar";
+import InfoTerdaftar from "./dashboard/InfoTerdaftar";
 
 const DashboardAdmin = () => {
   const {

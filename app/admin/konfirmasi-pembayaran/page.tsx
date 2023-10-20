@@ -1,3 +1,4 @@
+"use client";
 import IsAuthorized from "@/components/halaman-pendaftaran/admin/IsAuthorized";
 import { firestore } from "@/utils/firebase";
 import { kontingenInitialValue } from "@/utils/formConstants";

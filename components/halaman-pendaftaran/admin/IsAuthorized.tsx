@@ -31,7 +31,7 @@ const IsAuthorized = ({ children }: { children: React.ReactNode }) => {
       {userLoading || adminLoading ? (
         <FullLoading />
       ) : adminAuthorized && adminAuthorized.length ? (
-        { children }
+        <>{children}</>
       ) : (
         // back to homepage
         <div className="w-full h-full text-center flex justify-center items-center">
