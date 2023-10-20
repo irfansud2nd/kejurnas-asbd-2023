@@ -52,6 +52,8 @@ const TabelKontingenAdmin = () => {
         Tabel Kontingen
       </h1>
 
+      {/* <UpdateKontingen /> */}
+
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
         {!selectedKontingen.id && (
@@ -115,7 +117,7 @@ const TabelKontingenAdmin = () => {
                           </span>
                           <br />
                           <span className="whitespace-nowrap">
-                            {kontingen.confirmedPembayaran.indexOf(
+                            {kontingen.confirmedPembayaranIds.indexOf(
                               idPembayaran
                             ) >= 0 ? (
                               `Confirmed by ${
@@ -153,8 +155,8 @@ const TabelKontingenAdmin = () => {
                 {getKontingenUnpaid(kontingen, pesertas).toLocaleString("id")}
               </td>
               <td>
-                {kontingen.unconfirmedPembayaran &&
-                kontingen.unconfirmedPembayaran.length
+                {kontingen.unconfirmedPembayaranIds &&
+                kontingen.unconfirmedPembayaranIds.length
                   ? "Butuh Konfimasi"
                   : "Selesai Konfirmasi"}
               </td>

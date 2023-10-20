@@ -14,7 +14,7 @@ const TabelAdmin = () => {
         className="btn_green mb-1"
         onClick={() => {
           setMode("");
-          refreshAll();
+          // refreshAll();
           setSelectedKontingen(kontingenInitialValue);
         }}
       >

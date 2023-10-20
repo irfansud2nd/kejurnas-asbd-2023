@@ -11,7 +11,6 @@ import RodalPeserta from "../rodals/RodalPeserta";
 import { MyContext } from "@/context/Context";
 import { FormContext } from "@/context/FormContext";
 import TabelPeserta from "../tabels/TabelPeserta";
-import InlineLoading from "@/components/loading/InlineLoading";
 import FormPeserta from "../forms/FormPeserta";
 import {
   deletePerson,
@@ -19,15 +18,10 @@ import {
   limitImage,
   sendPerson,
   updatePerson,
-  updatePersonImage,
 } from "@/utils/formFunctions";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "@/utils/firebase";
-import {
-  findNamaKontingen,
-  newToast,
-  updateToast,
-} from "@/utils/sharedFunctions";
+import { newToast, updateToast } from "@/utils/sharedFunctions";
 
 const Peserta = () => {
   const [data, setData] = useState<PesertaState>(pesertaInitialValue);
@@ -51,6 +45,12 @@ const Peserta = () => {
     pesertasLoading,
     kontingensLoading,
     refreshKontingens,
+  }: {
+    kontingens: KontingenState[];
+    refreshPesertas: () => void;
+    refreshKontingens: () => void;
+    pesertasLoading: boolean;
+    kontingensLoading: boolean;
   } = FormContext();
   const toastId = useRef(null);
 

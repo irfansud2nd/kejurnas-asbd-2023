@@ -1,13 +1,10 @@
-"use client";
-import Authorized from "@/components/halaman-pendaftaran/admin/Authorized";
-import IsAuthorized from "@/components/halaman-pendaftaran/admin/IsAuthorized";
 import FullLoading from "@/components/loading/FullLoading";
 import { AdminContextProvider } from "@/context/AdminContext";
 import { MyContext } from "@/context/Context";
 import Link from "next/link";
 import { useEffect } from "react";
 
-const AdminPage = () => {
+const IsAuthorized = ({ children }: { children: React.ReactNode }) => {
   const {
     user,
     userLoading,
@@ -30,13 +27,11 @@ const AdminPage = () => {
   }, [user]);
 
   return (
-    <main className="w-full bg-white h-full">
-      {/* {userLoading || adminLoading ? (
+    <>
+      {userLoading || adminLoading ? (
         <FullLoading />
       ) : adminAuthorized && adminAuthorized.length ? (
-        <AdminContextProvider>
-          <Authorized />
-        </AdminContextProvider>
+        { children }
       ) : (
         // back to homepage
         <div className="w-full h-full text-center flex justify-center items-center">
@@ -53,13 +48,8 @@ const AdminPage = () => {
             )}
           </div>
         </div>
-      )} */}
-      <IsAuthorized>
-        <AdminContextProvider>
-          <Authorized />
-        </AdminContextProvider>
-      </IsAuthorized>
-    </main>
+      )}
+    </>
   );
 };
-export default AdminPage;
+export default IsAuthorized;

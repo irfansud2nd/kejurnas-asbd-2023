@@ -192,8 +192,12 @@ const FormPembayaran = ({
     const id = kontingenToPay.id;
     if (id) {
       updateDoc(doc(firestore, "kontingens", id), {
+        pembayaran: true,
+        biayaKontingen: true,
+        unconfirmedPembayaran: true,
+        confirmedPembayaran: false,
         idPembayaran: arrayUnion(idPembayaran),
-        unconfirmedPembayaran: arrayUnion(idPembayaran),
+        unconfirmedPembayaranIds: arrayUnion(idPembayaran),
         infoPembayaran: arrayUnion({
           idPembayaran: idPembayaran,
           nominal: `Rp. ${(totalBiaya / 1000).toLocaleString("id")}.${noHp

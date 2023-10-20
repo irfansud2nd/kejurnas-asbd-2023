@@ -99,7 +99,7 @@ export const AdminContextProvider = ({
     setMode("kontingen");
     let selected: KontingenState[] = [];
     kontingens.map((kontingen) => {
-      if (kontingen.unconfirmedPembayaran.length) selected.push(kontingen);
+      if (kontingen.unconfirmedPembayaranIds.length) selected.push(kontingen);
     });
     setKontingens(selected);
   };

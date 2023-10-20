@@ -158,7 +158,7 @@ export const getInputErrorPeserta = (
 
 // DATA SENDER - START
 // SEND PERSON
-export const sendPerson = async (
+export const sendPerson1 = async (
   tipe: "peserta" | "official",
   data: PesertaState | OfficialState | DocumentData,
   imageSelected: File,
@@ -230,6 +230,106 @@ export const sendPerson = async (
         `Foto ${data.namaLengkap} gagal diunggah. ${error.code}`
       );
     });
+};
+
+export const sendPerson = (
+  tipe: "peserta" | "official",
+  data: PesertaState | OfficialState | DocumentData,
+  imageSelected: File,
+  kontingen: KontingenState,
+  toastId: React.MutableRefObject<Id | null>,
+  callback?: () => void
+) => {
+  const newDocRef = doc(collection(firestore, `${tipe}s`));
+  const fotoUrl = `${tipe}s/${newDocRef.id}-image`;
+  let downloadFotoUrl = "";
+  const stepController = (step: number) => {
+    switch (step) {
+      case 1:
+        // UPLOAD IMAGE
+        newToast(toastId, "loading", `Mengunggah foto ${data.namaLengkap}`);
+        uploadBytes(ref(storage, fotoUrl), imageSelected)
+          .then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((url) => {
+              downloadFotoUrl = url;
+              stepController(2);
+            });
+          })
+          .catch((error) => {
+            updateToast(
+              toastId,
+              "error",
+              `Foto ${data.namaLengkap} gagal diunggah. ${error.code}`
+            );
+          });
+        break;
+      case 2:
+        // SEND PERSON DATA
+        setDoc(newDocRef, {
+          ...data,
+          id: newDocRef.id,
+          waktuPendaftaran: Date.now(),
+          downloadFotoUrl: downloadFotoUrl,
+          fotoUrl: fotoUrl,
+        })
+          .then(() => stepController(3))
+          .catch((error) => {
+            updateToast(
+              toastId,
+              "error",
+              `${data.namaLengkap} gagal didaftarkan sebagai ${tipe}. ${error.code}`
+            );
+            return error;
+          });
+        break;
+      case 3:
+        // ADD PERSON TO KONTINGEN
+        updateToast(
+          toastId,
+          "loading",
+          `Mendaftarkan ${data.namaLengkap} sebagai ${tipe} kontingen ${kontingen.namaKontingen}`
+        );
+        updateDoc(doc(firestore, "kontingens", data.idKontingen), {
+          [`${tipe}s`]: arrayUnion(newDocRef.id),
+        })
+          .then(() => {
+            stepController(5);
+          })
+          .catch((error) => {
+            updateToast(
+              toastId,
+              "error",
+              `${data.namaLengkap} gagal didaftarkan sebagai ${tipe} kontingen ${kontingen.namaKontingen}. ${error.code}`
+            );
+          });
+        break;
+      case 4:
+        // SET PEMBAYARAN KONTINGEN TO FALSE
+        if (kontingen.pembayaran) {
+          updateToast(
+            toastId,
+            "loading",
+            `Merubah data pembayaran kontingen ${kontingen.namaKontingen}`
+          );
+          updateDoc(doc(firestore, "kontingens", data.idKontingen), {
+            pembayaran: false,
+          }).then(() => stepController(5));
+        } else {
+          stepController(5);
+        }
+        break;
+      case 5:
+        // DONE
+        updateToast(
+          toastId,
+          "success",
+          `${data.namaLengkap} berhasil didaftarkan sebagai ${tipe} kontingen ${kontingen.namaKontingen}`
+        );
+        callback && callback();
+        break;
+    }
+  };
+  stepController(1);
 };
 // DATA SENDER - END
 

@@ -12,7 +12,6 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import Image from "next/image";
 import { useState, useRef } from "react";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
@@ -95,8 +94,10 @@ const KonfirmasiButton = ({
     })
       .then(() => {
         updateDoc(doc(firestore, "kontingens", data.id), {
-          unconfirmedPembayaran: arrayRemove(idPembayaran),
-          confirmedPembayaran: arrayUnion(idPembayaran),
+          unconfirmedPembayaran:
+            data.idPembayaran.length == data.confirmedPembayaranIds.length,
+          unconfirmedPembayaranIds: arrayRemove(idPembayaran),
+          confirmedPembayaranIds: arrayUnion(idPembayaran),
           infoKonfirmasi: arrayUnion({
             idPembayaran: idPembayaran,
             nama: user.displayName,

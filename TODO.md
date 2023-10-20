@@ -6,10 +6,10 @@ Project Description
 
 ### Todo
 
-- [ ] set disable  
-- [ ] login first  
-- [ ] set loading  
-- [ ] set disable  
+- [ ] test sendPerson  
+- [ ] admin to link  
+- [ ] authorized component  
+- [ ] dashboard to count  
 
 ### In Progress
 
