@@ -95,7 +95,7 @@ const KonfirmasiButton = ({
       .then(() => {
         updateDoc(doc(firestore, "kontingens", data.id), {
           unconfirmedPembayaran:
-            data.idPembayaran.length == data.confirmedPembayaranIds.length,
+            data.idPembayaran.length != data.confirmedPembayaranIds.length,
           unconfirmedPembayaranIds: arrayRemove(idPembayaran),
           confirmedPembayaranIds: arrayUnion(idPembayaran),
           infoKonfirmasi: arrayUnion({

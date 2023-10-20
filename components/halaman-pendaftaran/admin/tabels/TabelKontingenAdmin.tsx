@@ -7,6 +7,7 @@ import { useRef } from "react";
 import InlineLoading from "@/components/loading/InlineLoading";
 import { compare } from "@/utils/sharedFunctions";
 import UpdateKontingen from "../UpdateKontingen";
+import Link from "next/link";
 
 const TabelKontingenAdmin = () => {
   const {
@@ -54,7 +55,7 @@ const TabelKontingenAdmin = () => {
         Tabel Kontingen
       </h1>
 
-      <UpdateKontingen />
+      {/* <UpdateKontingen /> */}
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
@@ -85,71 +86,74 @@ const TabelKontingenAdmin = () => {
               <tr key={kontingen.id} className="border_td">
                 <td>{i + 1}</td>
                 <td>{kontingen.id}</td>
-                <td
-                  className="hover:text-green-500 hover:underline transition cursor-pointer"
-                  onClick={() => setSelectedKontingen(kontingen)}
-                >
-                  {kontingen.namaKontingen}
+                <td className="hover:text-green-500 hover:underline transition cursor-pointer">
+                  <button onClick={() => setSelectedKontingen(kontingen)}>
+                    {kontingen.namaKontingen}
+                  </button>
+                  {/* <Link href={"kontingen/" + kontingen.id}>
+                    {kontingen.namaKontingen}
+                  </Link> */}
                 </td>
                 <td>{kontingen.pesertas.length}</td>
                 <td>{kontingen.officials.length}</td>
                 <td>
-                  {/* <ul>
-                  {kontingen.idPembayaran
-                    ? kontingen.idPembayaran.map((idPembayaran) => (
-                        <li
-                          key={idPembayaran}
-                          className="border-b border-black last:border-none"
-                        >
-                          <span className="whitespace-nowrap">
-                            {formatTanggal(
-                              kontingen.infoPembayaran[
-                                kontingen.infoPembayaran.findIndex(
-                                  (info) => info.idPembayaran == idPembayaran
-                                )
-                              ].waktu,
-                              true
-                            )}{" "}
-                            |{" "}
-                            {
-                              kontingen.infoPembayaran[
-                                kontingen.infoPembayaran.findIndex(
-                                  (info) => info.idPembayaran == idPembayaran
-                                )
-                              ].nominal
-                            }
-                          </span>
-                          <br />
-                          <span className="whitespace-nowrap">
-                            {kontingen.confirmedPembayaranIds.indexOf(
-                              idPembayaran
-                            ) >= 0 ? (
-                              `Confirmed by ${
-                                kontingen.infoKonfirmasi[
-                                  kontingen.infoKonfirmasi.findIndex(
+                  <ul>
+                    {kontingen.idPembayaran
+                      ? kontingen.idPembayaran.map((idPembayaran) => (
+                          <li
+                            key={idPembayaran}
+                            className="border-b border-black last:border-none"
+                          >
+                            <span className="whitespace-nowrap">
+                              {formatTanggal(
+                                kontingen.infoPembayaran[
+                                  kontingen.infoPembayaran.findIndex(
                                     (info) => info.idPembayaran == idPembayaran
                                   )
-                                ].email
-                              }`
-                            ) : (
-                              <KonfirmasiButton
-                                idPembayaran={idPembayaran}
-                                infoPembayaran={
-                                  kontingen.infoPembayaran[
-                                    kontingen.infoPembayaran.findIndex(
+                                ].waktu,
+                                true
+                              )}{" "}
+                              |{" "}
+                              {
+                                kontingen.infoPembayaran[
+                                  kontingen.infoPembayaran.findIndex(
+                                    (info) => info.idPembayaran == idPembayaran
+                                  )
+                                ].nominal
+                              }
+                            </span>
+                            <br />
+                            <span className="whitespace-nowrap">
+                              {kontingen.confirmedPembayaranIds.indexOf(
+                                idPembayaran
+                              ) >= 0 ? (
+                                `Confirmed by ${
+                                  kontingen.infoKonfirmasi[
+                                    kontingen.infoKonfirmasi.findIndex(
                                       (info) =>
                                         info.idPembayaran == idPembayaran
                                     )
-                                  ]
-                                }
-                                data={kontingen}
-                              />
-                            )}
-                          </span>
-                        </li>
-                      ))
-                    : "-"}
-                </ul> */}
+                                  ].email
+                                }`
+                              ) : (
+                                <KonfirmasiButton
+                                  idPembayaran={idPembayaran}
+                                  infoPembayaran={
+                                    kontingen.infoPembayaran[
+                                      kontingen.infoPembayaran.findIndex(
+                                        (info) =>
+                                          info.idPembayaran == idPembayaran
+                                      )
+                                    ]
+                                  }
+                                  data={kontingen}
+                                />
+                              )}
+                            </span>
+                          </li>
+                        ))
+                      : "-"}
+                  </ul>
                 </td>
                 <td className="whitespace-nowrap">
                   {/* {getKontingenUnpaid(kontingen, pesertas) < 0

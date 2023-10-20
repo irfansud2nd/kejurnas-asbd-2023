@@ -1,5 +1,6 @@
 "use client";
 import InlineLoading from "@/components/loading/InlineLoading";
+import { AdminContext } from "@/context/AdminContext";
 import { firestore } from "@/utils/firebase";
 import {
   collection,
@@ -9,6 +10,8 @@ import {
 } from "firebase/firestore";
 import { useState, useEffect } from "react";
 const TabelPembayaran = () => {
+  const { getUnconfirmesKontingens } = AdminContext();
+
   const [peserta, setPeserta] = useState<{
     confirmed: number;
     unconfirmed: number;
@@ -197,7 +200,7 @@ const TabelPembayaran = () => {
         </p>
         <button
           className="text-2xl font-extrabold text-yellow-500 hover:underline"
-          //   onClick={getUnconfirmesKontingens}
+          onClick={getUnconfirmesKontingens}
         >
           {loading ? <InlineLoading /> : kontingen.unconfirmed}
         </button>
