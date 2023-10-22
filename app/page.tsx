@@ -7,6 +7,7 @@ import Head from "next/head";
 import { Metadata } from "next";
 import DownloadButton from "@/components/DownloadButton";
 import bw from "@/public/images/bg-bw.png";
+import { BsTicketPerforated } from "react-icons/bs";
 
 export const metadata: Metadata = {
   title: "Kerjurnas ASBD 2023",
@@ -39,6 +40,16 @@ export default function Home() {
         <div className="flex flex-wrap justify-center gap-x-20 gap-y-2 text-black mt-10">
           <LoginButton />
           <DownloadButton />
+          <Link
+            href="https://www.loket.com/event/kejuaraan-nasional-asbd-2023"
+            target="_blank"
+            className="bg-white px-2 py-1 hover:bg-red-500 hover:text-white transition w-[200px] flex justify-center items-center"
+          >
+            Pembelian Tiket Penonton
+            <span className="text-xl">
+              <BsTicketPerforated />
+            </span>
+          </Link>
         </div>
       </div>
     </main>

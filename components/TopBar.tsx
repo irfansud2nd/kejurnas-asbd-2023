@@ -28,7 +28,7 @@ const TopBar = () => {
           className="w-fit h-full object-contain object-right"
         /> */}
         <img
-          src="images/logo-ipsi.png"
+          src={logo_ipsi.src}
           alt="logo_ipsi"
           className="w-fit h-full absolute object-contain object-right"
         />
@@ -42,7 +42,7 @@ const TopBar = () => {
           className="w-fit h-full object-contain object-right"
         /> */}
         <img
-          src="images/logo-kemenpora.png"
+          src={logo_kemenpora.src}
           alt="logo_kemenpora"
           className="w-fit h-full absolute object-contain object-right"
         />
@@ -56,7 +56,7 @@ const TopBar = () => {
           className="w-fit h-full object-contain object-right"
         /> */}
         <img
-          src="images/logo-asbd.png"
+          src={logo_asbd.src}
           alt="logo_ipsi"
           className="w-fit h-full absolute object-contain object-right"
         />
@@ -70,7 +70,7 @@ const TopBar = () => {
           className="w-fit h-full object-contain object-right"
         /> */}
         <img
-          src="images/logo-al_azhar.png"
+          src={logo_al_azhar.src}
           alt="logo_al_azhar"
           className="w-fit h-full absolute object-contain object-right"
         />

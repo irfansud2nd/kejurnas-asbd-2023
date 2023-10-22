@@ -10,7 +10,7 @@ const FullLoading = () => {
         className="h-1/2 max-h-[400px] w-fit animate-pulse"
       /> */}
       <img
-        src="images/logo-asbd.png"
+        src={logo_asbd.src}
         alt="logo-asbd"
         className="h-1/2 max-h-[400px] w-fit absolute animate-pulse"
       />
