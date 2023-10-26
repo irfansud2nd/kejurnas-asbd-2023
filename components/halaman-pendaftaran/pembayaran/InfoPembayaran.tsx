@@ -50,7 +50,7 @@ const InfoPembayaran = ({
       totalPeserta.asbdTunggal * 250000 +
       totalPeserta.asbdRegu * 225000;
 
-    if (kontingenToPay.idPembayaran.length <= 0) {
+    if (!kontingenToPay.biayaKontingen) {
       total += 125000;
     }
 
@@ -114,7 +114,7 @@ const InfoPembayaran = ({
                   Rp. {(totalPeserta.asbdRegu * 225000).toLocaleString("id")}
                 </td>
               </tr>
-              {kontingenToPay.idPembayaran.length <= 0 ? (
+              {!kontingenToPay.biayaKontingen ? (
                 <tr>
                   <td>Biaya Kontingen</td>
                   <td>1</td>
