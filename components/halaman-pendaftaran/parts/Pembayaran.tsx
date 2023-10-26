@@ -4,6 +4,7 @@ import InfoPembayaran from "../pembayaran/InfoPembayaran";
 import InfoTerdaftar from "../pembayaran/InfoTerdaftar";
 import { useState } from "react";
 import { FormContext } from "@/context/FormContext";
+import InlineLoading from "@/components/loading/InlineLoading";
 
 const Pembayaran = () => {
   const { kontingens } = FormContext();
@@ -15,6 +16,16 @@ const Pembayaran = () => {
     return (
       <div className="w-full bg-white rounded-md p-2 grid lg:grid-cols-2 gap-2">
         <p className="text-red-500">Belum ada kontingen terdaftar</p>
+      </div>
+    );
+  }
+
+  if (!kontingenToPay) {
+    return (
+      <div className="w-full bg-white rounded-md p-2 grid lg:grid-cols-2 gap-2">
+        <p>
+          Memuat Data <InlineLoading />
+        </p>
       </div>
     );
   }
