@@ -29,6 +29,10 @@ const AdminPage = () => {
     if (user) checkAdminAuthorized(user);
   }, [user]);
 
+  useEffect(() => {
+    window.document.title = "Halaman Admin - Kejurnas ASBD 2023";
+  }, []);
+
   return (
     <main className="w-full bg-white h-full">
       {/* {userLoading || adminLoading ? (
