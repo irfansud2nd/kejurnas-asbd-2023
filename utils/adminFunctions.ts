@@ -112,9 +112,7 @@ export const getKontingenUnpaid = (
   let paidNominal = 0;
 
   kontingen.infoPembayaran.map((info) => {
-    paidNominal += Math.floor(
-      Number(info.nominal.replace("Rp. ", "").replace(".", "")) / 1000
-    );
+    paidNominal += Math.floor(Number(info.nominal.replace(/\D/g, "")) / 1000);
   });
 
   const filteredPesertas = getPesertasByKontingen(pesertas, kontingen.id);

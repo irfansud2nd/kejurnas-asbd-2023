@@ -1,15 +1,17 @@
 import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
 import { formatTanggal } from "@/utils/adminFunctions";
-import { jenisPertandingan } from "@/utils/formConstants";
-import { PesertaState } from "@/utils/formTypes";
-import { findNamaKontingen } from "@/utils/sharedFunctions";
-import Image from "next/image";
+import { jenisPertandingan, pesertaInitialValue } from "@/utils/formConstants";
+import { deletePerson } from "@/utils/formFunctions";
+import { KontingenState, PesertaState } from "@/utils/formTypes";
+import { compare, findNamaKontingen } from "@/utils/sharedFunctions";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TabelPesertaAdmin = () => {
   const {
@@ -18,6 +20,7 @@ const TabelPesertaAdmin = () => {
     refreshPesertas,
     pesertasLoading,
     selectedKontingen,
+    selectedPesertas,
   } = AdminContext();
 
   const tabelHead = [
@@ -39,7 +42,7 @@ const TabelPesertaAdmin = () => {
     "Status Pembayaran",
     "Waktu Pembayaran",
     "Konfirmai Pembayaran",
-    "Dikonfirmasi oleh",
+    "Delete",
     "Email Pendaftar",
     "Waktu Pendaftaran",
     "Waktu Perubahan",
@@ -49,14 +52,44 @@ const TabelPesertaAdmin = () => {
 
   const [showRodal, setShowRodal] = useState(false);
   const [fotoUrl, setFotoUrl] = useState("");
+  const [pesertasToMap, setPesertasToMap] = useState<PesertaState[]>(pesertas);
 
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
     filename: "Tabel Peserta",
     sheet: "Data Peserta",
   });
+
+  const toastId = useRef(null);
+
+  const deleteHandler = (peserta: PesertaState) => {
+    if (confirm("Apakah anda yakin")) {
+      deletePerson(
+        "pesertas",
+        peserta,
+        kontingens[
+          kontingens.findIndex(
+            (item: KontingenState) => item.id == peserta.idKontingen
+          )
+        ],
+        toastId
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (selectedKontingen.id) {
+      let arr = [...selectedPesertas];
+      arr = arr.sort(compare("umur", "asc"));
+      setPesertasToMap(arr);
+    } else {
+      setPesertasToMap(pesertas);
+    }
+  }, [selectedPesertas]);
+
   return (
     <div>
+      <ToastContainer />
       <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
         Tabel Peserta
       </h1>
@@ -109,7 +142,7 @@ const TabelPesertaAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {pesertas.map((peserta: PesertaState, i: number) => (
+          {pesertasToMap.map((peserta: PesertaState, i: number) => (
             <tr key={peserta.id} className="border_td">
               <td>{i + 1}</td>
               <td className="capitalize">{peserta.namaLengkap}</td>
@@ -160,7 +193,16 @@ const TabelPesertaAdmin = () => {
               <td>{formatTanggal(peserta.infoPembayaran.waktu)}</td>
               <td>{peserta.confirmedPembayaran ? "Yes" : "No"}</td>
               <td>
-                {peserta.infoKonfirmasi ? peserta.infoKonfirmasi.email : "-"}
+                {/* {peserta.pembayaran ? (
+                  "-"
+                ) : ( */}
+                <button
+                  className="btn_red"
+                  onClick={() => deleteHandler(peserta)}
+                >
+                  Delete
+                </button>
+                {/* )} */}
               </td>
               <td>{peserta.creatorEmail}</td>
               <td>{formatTanggal(peserta.waktuPendaftaran)}</td>

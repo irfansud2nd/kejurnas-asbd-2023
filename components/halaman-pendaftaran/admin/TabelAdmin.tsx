@@ -6,8 +6,14 @@ import { kontingenInitialValue } from "@/utils/formConstants";
 import IdCard from "./id-card/IdCard";
 
 const TabelAdmin = () => {
-  const { mode, setMode, selectedKontingen, setSelectedKontingen, refreshAll } =
-    AdminContext();
+  const {
+    mode,
+    setMode,
+    selectedKontingen,
+    setSelectedKontingen,
+    setUncofirmedKontingens,
+    refreshAll,
+  } = AdminContext();
   return (
     <div>
       <button
@@ -16,6 +22,7 @@ const TabelAdmin = () => {
           setMode("");
           // refreshAll();
           setSelectedKontingen(kontingenInitialValue);
+          setUncofirmedKontingens([]);
         }}
       >
         Dashboard

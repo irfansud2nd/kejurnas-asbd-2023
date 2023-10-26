@@ -1,180 +1,62 @@
 "use client";
 import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
+import { getKontingenUnpaid } from "@/utils/adminFunctions";
 import { firestore } from "@/utils/firebase";
-import {
-  collection,
-  getCountFromServer,
-  query,
-  where,
-} from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { KontingenState, PesertaState } from "@/utils/formTypes";
+
 const TabelPembayaran = () => {
-  const { getUnconfirmesKontingens } = AdminContext();
+  const {
+    getUnconfirmedKontingens,
+    pesertas,
+    kontingens,
+    pesertasLoading,
+    kontingensLoading,
+  } = AdminContext();
 
-  const [peserta, setPeserta] = useState<{
-    confirmed: number;
-    unconfirmed: number;
-    paid: number;
-    unpaid: number;
-  }>({
-    confirmed: 0,
-    unconfirmed: 0,
-    paid: 0,
-    unpaid: 0,
-  });
-  const [kontingen, setKontingen] = useState<{
-    confirmed: number;
-    unconfirmed: number;
-    paid: number;
-    unpaid: number;
-  }>({
-    confirmed: 0,
-    unconfirmed: 0,
-    paid: 0,
-    unpaid: 0,
-  });
-  const [loading, setLoading] = useState(true);
-
-  const getPesertaPayment = () => {
-    let confirmed = 0;
-    let unconfirmed = 0;
-    let paid = 0;
+  const getPesertasPayment = () => {
     let unpaid = 0;
-
-    setLoading(true);
-
-    const stepController = (step: number) => {
-      switch (step) {
-        case 1:
-          getCountFromServer(
-            query(
-              collection(firestore, "pesertas"),
-              where("pembayaran", "==", true)
-            )
-          ).then((res) => {
-            paid = res.data().count;
-            stepController(2);
-          });
-          break;
-        case 2:
-          getCountFromServer(
-            query(
-              collection(firestore, "pesertas"),
-              where("pembayaran", "==", false)
-            )
-          ).then((res) => {
-            unpaid = res.data().count;
-            stepController(3);
-          });
-          break;
-        case 3:
-          getCountFromServer(
-            query(
-              collection(firestore, "pesertas"),
-              where("confirmedPembayaran", "==", true)
-            )
-          ).then((res) => {
-            confirmed = res.data().count;
-            stepController(4);
-          });
-          break;
-        case 4:
-          getCountFromServer(
-            query(
-              collection(firestore, "pesertas"),
-              where("confirmedPembayaran", "==", false),
-              where("pembayaran", "==", true)
-            )
-          ).then((res) => {
-            unconfirmed = res.data().count;
-            stepController(5);
-          });
-          break;
-        case 5:
-          setPeserta({ confirmed, unconfirmed, paid, unpaid });
-          getKontingenPayment();
-          break;
-      }
-    };
-    stepController(1);
-  };
-
-  const getKontingenPayment = () => {
-    let confirmed = 0;
     let unconfirmed = 0;
-    let paid = 0;
-    let unpaid = 0;
-    const stepController = (step: number) => {
-      switch (step) {
-        case 1:
-          getCountFromServer(
-            query(
-              collection(firestore, "kontingens"),
-              where("pembayaran", "==", true)
-            )
-          ).then((res) => {
-            paid = res.data().count;
-            stepController(2);
-          });
-          break;
-        case 2:
-          getCountFromServer(
-            query(
-              collection(firestore, "kontingens"),
-              where("pembayaran", "==", false)
-            )
-          ).then((res) => {
-            unpaid = res.data().count;
-            stepController(3);
-          });
-          break;
-        case 3:
-          getCountFromServer(
-            query(
-              collection(firestore, "kontingens"),
-              where("confirmedPembayaran", "==", true)
-            )
-          ).then((res) => {
-            confirmed = res.data().count;
-            stepController(4);
-          });
-          break;
-        case 4:
-          getCountFromServer(
-            query(
-              collection(firestore, "kontingens"),
-              where("unconfirmedPembayaran", "==", true)
-            )
-          ).then((res) => {
-            unconfirmed = res.data().count;
-            stepController(5);
-          });
-          break;
-        case 5:
-          setKontingen({ confirmed, unconfirmed, paid, unpaid });
-          setLoading(false);
-          break;
+    let confirmed = 0;
+    pesertas.map((peserta: PesertaState) => {
+      if (!peserta.pembayaran) {
+        unpaid += 1;
       }
-    };
-    stepController(1);
+      if (!peserta.confirmedPembayaran && peserta.pembayaran) {
+        unconfirmed += 1;
+      }
+      if (peserta.confirmedPembayaran) {
+        confirmed += 1;
+      }
+    });
+    return { unpaid, unconfirmed, confirmed };
   };
 
-  const refresh = () => {
-    getPesertaPayment();
-    getKontingenPayment();
+  const getKontingensPayment = () => {
+    let unpaid = 0;
+    let paid = 0;
+    let unconfirmed = 0;
+    let unconfirmedData: KontingenState[] = [];
+    let confirmed = 0;
+    kontingens.map((kontingen: KontingenState) => {
+      if (getKontingenUnpaid(kontingen, pesertas) > 0) unpaid += 1;
+      if (kontingen.unconfirmedPembayaranIds.length) {
+        unconfirmed += 1;
+        unconfirmedData.push(kontingen);
+      }
+      if (kontingen.confirmedPembayaranIds.length) {
+        confirmed += 1;
+      }
+      if (kontingen.idPembayaran.length) {
+        paid += 1;
+      }
+    });
+    return { unpaid, unconfirmed, confirmed, paid };
   };
-
-  useEffect(() => {
-    refresh();
-  }, []);
 
   return (
     <div className="flex flex-col gap-2 bg-black p-2 text-center text-white rounded-md w-fit mt-2">
       <p className="font-semibold text-lg">Pembayaran</p>
-      <button className="btn_green w-fit mx-auto" onClick={refresh}>
-        Refresh
-      </button>
       <div className="grid grid-cols-[repeat(3,_auto)] grid-rows-[repeat(4,_auto)] w-fit">
         <p className="font-semibold text-lg border-r-2 border-r-white">
           Keterangan
@@ -187,31 +69,47 @@ const TabelPembayaran = () => {
           Confirmed
         </p>
         <p className="text-2xl font-extrabold text-green-500 border-r-2 border-r-white">
-          {loading ? <InlineLoading /> : peserta.confirmed}
+          {pesertasLoading ? <InlineLoading /> : getPesertasPayment().confirmed}
         </p>
         <p className="text-2xl font-extrabold text-green-500">
-          {loading ? <InlineLoading /> : kontingen.confirmed}
+          {kontingensLoading ? (
+            <InlineLoading />
+          ) : (
+            getKontingensPayment().confirmed
+          )}
         </p>
         <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white px-2">
           Unconfirmed
         </p>
         <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white">
-          {loading ? <InlineLoading /> : peserta.unconfirmed}
+          {pesertasLoading ? (
+            <InlineLoading />
+          ) : (
+            getPesertasPayment().unconfirmed
+          )}
         </p>
         <button
           className="text-2xl font-extrabold text-yellow-500 hover:underline"
-          onClick={getUnconfirmesKontingens}
+          onClick={getUnconfirmedKontingens}
         >
-          {loading ? <InlineLoading /> : kontingen.unconfirmed}
+          {kontingensLoading ? (
+            <InlineLoading />
+          ) : (
+            getKontingensPayment().unconfirmed
+          )}
         </button>
         <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
           Unpaid
         </p>
         <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
-          {loading ? <InlineLoading /> : peserta.unpaid}
+          {pesertasLoading ? <InlineLoading /> : getPesertasPayment().unpaid}
         </p>
         <p className="text-2xl font-extrabold text-red-500">
-          {loading ? <InlineLoading /> : kontingen.unpaid}
+          {kontingensLoading ? (
+            <InlineLoading />
+          ) : (
+            getKontingensPayment().unpaid
+          )}
         </p>
       </div>
     </div>

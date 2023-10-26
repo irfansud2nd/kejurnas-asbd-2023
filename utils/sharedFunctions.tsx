@@ -47,6 +47,8 @@ export const updateToast = (
 
 // FIND NAMA KONTINGEN
 export const findNamaKontingen = (kontingens: KontingenState[], id: string) => {
+  if (!kontingens[kontingens.findIndex((item) => item.id == id)])
+    return <span className="text-red-500">NOT FOUND</span>;
   return kontingens[kontingens.findIndex((item) => item.id == id)]
     .namaKontingen;
 };

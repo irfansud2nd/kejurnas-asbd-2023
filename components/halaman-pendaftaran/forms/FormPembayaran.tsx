@@ -1,3 +1,4 @@
+import InlineLoading from "@/components/loading/InlineLoading";
 import { MyContext } from "@/context/Context";
 import { FormContext } from "@/context/FormContext";
 import { firestore, storage } from "@/utils/firebase";
@@ -102,7 +103,7 @@ const FormPembayaran = ({
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitClicked(true);
-    if (unpaidPeserta.length) {
+    if (unpaidPeserta.length || !kontingenToPay.biayaKontingen) {
       if (getErrorMessage()) {
         sendPembayaran();
       }

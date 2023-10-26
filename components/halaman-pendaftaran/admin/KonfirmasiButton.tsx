@@ -18,6 +18,7 @@ import "rodal/lib/rodal.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AdminContext } from "@/context/AdminContext";
+import Link from "next/link";
 
 const KonfirmasiButton = ({
   idPembayaran,
@@ -96,6 +97,8 @@ const KonfirmasiButton = ({
         updateDoc(doc(firestore, "kontingens", data.id), {
           unconfirmedPembayaran:
             data.idPembayaran.length != data.confirmedPembayaranIds.length,
+          confirmedPembayaran:
+            data.idPembayaran.length != data.confirmedPembayaranIds.length,
           unconfirmedPembayaranIds: arrayRemove(idPembayaran),
           confirmedPembayaranIds: arrayUnion(idPembayaran),
           infoKonfirmasi: arrayUnion({
@@ -139,12 +142,6 @@ const KonfirmasiButton = ({
         <p>Jumlah Nominal: {infoPembayaran.nominal}</p>
         <div className="w-[300px] h-[400px] border-2 border-custom-navy relative">
           {infoPembayaran.buktiUrl ? (
-            // <Image
-            //   src={infoPembayaran.buktiUrl}
-            //   alt="bukti pembayaran"
-            //   fill
-            //   className="object-contain"
-            // />
             <img
               src={infoPembayaran.buktiUrl}
               alt="bukti pembayaran"

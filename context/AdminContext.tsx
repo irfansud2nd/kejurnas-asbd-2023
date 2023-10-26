@@ -21,16 +21,28 @@ export const AdminContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [error, setError] = useState<string | null>(null);
+
   const [kontingens, setKontingens] = useState<KontingenState[]>([]);
-  const [pesertas, setPesertas] = useState<PesertaState[]>([]);
-  const [officials, setOfficials] = useState<OfficialState[]>([]);
-  const [kontingensLoading, setKontingensLoading] = useState(true);
-  const [officialsLoading, setOfficialsLoading] = useState(true);
-  const [pesertasLoading, setPesertasLoading] = useState(true);
-  const [mode, setMode] = useState("");
   const [selectedKontingen, setSelectedKontingen] = useState<KontingenState>(
     kontingenInitialValue
   );
+  const [unconfirmedKongtingens, setUncofirmedKontingens] = useState<
+    KontingenState[]
+  >([]);
+  const [kontingensLoading, setKontingensLoading] = useState(true);
+
+  const [pesertas, setPesertas] = useState<PesertaState[]>([]);
+  const [selectedPesertas, setSelectedPesertas] = useState<PesertaState[]>([]);
+  const [pesertasLoading, setPesertasLoading] = useState(true);
+
+  const [officials, setOfficials] = useState<OfficialState[]>([]);
+  const [selectedOfficials, setSelectedOfficials] = useState<OfficialState[]>(
+    []
+  );
+  const [officialsLoading, setOfficialsLoading] = useState(true);
+
+  const [mode, setMode] = useState("");
+  const [selectedKategori, setSelectedKategori] = useState("");
 
   const { user } = MyContext();
 
@@ -49,7 +61,6 @@ export const AdminContextProvider = ({
   // GET KONTINGEN
   const refreshKontingens = () => {
     setSelectedKontingen(kontingenInitialValue);
-    console.log("refreshKontingen");
     setKontingensLoading(true);
     getAllKontingen()
       .then((res: any) => {
@@ -62,7 +73,6 @@ export const AdminContextProvider = ({
   // GET OFFICIALS
   const refreshOfficials = () => {
     setSelectedKontingen(kontingenInitialValue);
-    console.log("refreshOfficials");
     setOfficialsLoading(true);
     getAllOfficial()
       .then((res: any) => {
@@ -87,21 +97,26 @@ export const AdminContextProvider = ({
 
   useEffect(() => {
     if (selectedKontingen.id) {
-      setKontingens([selectedKontingen]);
-      setOfficials(getOfficialsByKontingen(officials, selectedKontingen.id));
-      setPesertas(getPesertasByKontingen(pesertas, selectedKontingen.id));
+      setUncofirmedKontingens([]);
+      setSelectedOfficials(
+        getOfficialsByKontingen(officials, selectedKontingen.id)
+      );
+      setSelectedPesertas(
+        getPesertasByKontingen(pesertas, selectedKontingen.id)
+      );
     } else {
-      refreshAll();
+      setSelectedOfficials([]);
+      setSelectedPesertas([]);
     }
   }, [selectedKontingen]);
 
-  const getUnconfirmesKontingens = () => {
+  const getUnconfirmedKontingens = () => {
     setMode("kontingen");
     let selected: KontingenState[] = [];
     kontingens.map((kontingen) => {
       if (kontingen.unconfirmedPembayaranIds.length) selected.push(kontingen);
     });
-    setKontingens(selected);
+    setUncofirmedKontingens(selected);
   };
 
   // CEK KUOTA
@@ -136,7 +151,6 @@ export const AdminContextProvider = ({
             : kategoriPertandingan.includes("Ganda")
             ? kuotaGanda
             : kuota}
-          {/* <span className="text-gray-500"> / 16</span> */}
         </span>
       );
     }
@@ -164,8 +178,16 @@ export const AdminContextProvider = ({
         setMode,
         selectedKontingen,
         setSelectedKontingen,
-        getUnconfirmesKontingens,
         cekKuota,
+        selectedKategori,
+        setSelectedKategori,
+        selectedPesertas,
+        setSelectedPesertas,
+        selectedOfficials,
+        setSelectedOfficials,
+        getUnconfirmedKontingens,
+        unconfirmedKongtingens,
+        setUncofirmedKontingens,
       }}
     >
       {children}

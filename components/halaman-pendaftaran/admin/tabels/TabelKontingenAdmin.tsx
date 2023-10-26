@@ -1,22 +1,31 @@
 import { AdminContext } from "@/context/AdminContext";
-import { formatTanggal, getKontingenUnpaid } from "@/utils/adminFunctions";
+import {
+  formatTanggal,
+  getKontingenUnpaid,
+  getOfficialsByKontingen,
+  getPesertasByKontingen,
+} from "@/utils/adminFunctions";
 import { KontingenState } from "@/utils/formTypes";
 import KonfirmasiButton from "../KonfirmasiButton";
 import { useDownloadExcel } from "react-export-table-to-excel";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import InlineLoading from "@/components/loading/InlineLoading";
 import { compare } from "@/utils/sharedFunctions";
 import UpdateKontingen from "../UpdateKontingen";
 import Link from "next/link";
 
 const TabelKontingenAdmin = () => {
+  const [kontingensToMap, setKontingensToMap] = useState<KontingenState[]>([]);
+
   const {
     kontingens,
+    unconfirmedKongtingens,
     setSelectedKontingen,
     selectedKontingen,
     refreshKontingens,
     kontingensLoading,
     pesertas,
+    officials,
   } = AdminContext();
 
   const tabelHead = [
@@ -33,21 +42,22 @@ const TabelKontingenAdmin = () => {
     "Waktu Perubahan",
   ];
 
-  const getUnpaidPeserta = (kontingen: KontingenState) => {
-    if (!kontingen.infoPembayaran || !kontingen.pesertas) return 0;
-    let paidNominal = 0;
-    kontingen.infoPembayaran.map(
-      (info) => (paidNominal += Number(info.nominal.replace(/[^0-9]/g, "")))
-    );
-    return kontingen.pesertas.length - Math.floor(paidNominal / 300000);
-  };
-
   const tabelRef = useRef(null);
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
     filename: "Tabel Kontingen",
     sheet: "Data Kontingen",
   });
+
+  useEffect(() => {
+    if (selectedKontingen.id) {
+      setKontingensToMap([selectedKontingen]);
+    } else if (unconfirmedKongtingens.length) {
+      setKontingensToMap(unconfirmedKongtingens);
+    } else {
+      setKontingensToMap(kontingens);
+    }
+  }, [selectedKontingen, unconfirmedKongtingens]);
 
   return (
     <div>
@@ -80,7 +90,7 @@ const TabelKontingenAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {kontingens
+          {kontingensToMap
             .sort(compare("waktuPendaftaran", "asc"))
             .map((kontingen: KontingenState, i: number) => (
               <tr key={kontingen.id} className="border_td">
@@ -90,12 +100,11 @@ const TabelKontingenAdmin = () => {
                   <button onClick={() => setSelectedKontingen(kontingen)}>
                     {kontingen.namaKontingen}
                   </button>
-                  {/* <Link href={"kontingen/" + kontingen.id}>
-                    {kontingen.namaKontingen}
-                  </Link> */}
                 </td>
-                <td>{kontingen.pesertas.length}</td>
-                <td>{kontingen.officials.length}</td>
+                <td>{getPesertasByKontingen(pesertas, kontingen.id).length}</td>
+                <td>
+                  {getOfficialsByKontingen(officials, kontingen.id).length}
+                </td>
                 <td>
                   <ul>
                     {kontingen.idPembayaran
@@ -127,27 +136,41 @@ const TabelKontingenAdmin = () => {
                               {kontingen.confirmedPembayaranIds.indexOf(
                                 idPembayaran
                               ) >= 0 ? (
-                                `Confirmed by ${
-                                  kontingen.infoKonfirmasi[
-                                    kontingen.infoKonfirmasi.findIndex(
-                                      (info) =>
-                                        info.idPembayaran == idPembayaran
-                                    )
-                                  ].email
-                                }`
-                              ) : (
-                                <KonfirmasiButton
-                                  idPembayaran={idPembayaran}
-                                  infoPembayaran={
-                                    kontingen.infoPembayaran[
-                                      kontingen.infoPembayaran.findIndex(
+                                <Link
+                                  href={`admin/pembayaran/${idPembayaran}`}
+                                  target="_blank"
+                                  className="hover:text-green-500 hover:underline transition"
+                                >
+                                  Confirmed by{" "}
+                                  {
+                                    kontingen.infoKonfirmasi[
+                                      kontingen.infoKonfirmasi.findIndex(
                                         (info) =>
                                           info.idPembayaran == idPembayaran
                                       )
-                                    ]
+                                    ].email
                                   }
-                                  data={kontingen}
-                                />
+                                </Link>
+                              ) : (
+                                // <KonfirmasiButton
+                                //   idPembayaran={idPembayaran}
+                                //   infoPembayaran={
+                                //     kontingen.infoPembayaran[
+                                //       kontingen.infoPembayaran.findIndex(
+                                //         (info) =>
+                                //           info.idPembayaran == idPembayaran
+                                //       )
+                                //     ]
+                                //   }
+                                //   data={kontingen}
+                                // />
+                                <Link
+                                  href={`admin/pembayaran/${idPembayaran}`}
+                                  target="_blank"
+                                  className="hover:text-green-500 hover:underline transition"
+                                >
+                                  Konfirmasi
+                                </Link>
                               )}
                             </span>
                           </li>
@@ -156,9 +179,6 @@ const TabelKontingenAdmin = () => {
                   </ul>
                 </td>
                 <td className="whitespace-nowrap">
-                  {/* {getKontingenUnpaid(kontingen, pesertas) < 0
-                  ? "0"
-                  : `Rp. ${getKontingenUnpaid(kontingen, pesertas)}`} */}
                   Rp.{" "}
                   {getKontingenUnpaid(kontingen, pesertas).toLocaleString("id")}
                 </td>

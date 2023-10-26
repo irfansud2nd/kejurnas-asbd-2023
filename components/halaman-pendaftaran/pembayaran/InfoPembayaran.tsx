@@ -5,6 +5,7 @@ import ContactPerson from "./ContactPerson";
 import { getGroupedUnpaidPeserta } from "@/utils/formFunctions";
 import { findNamaKontingen } from "@/utils/sharedFunctions";
 import { getPesertasByKontingen } from "@/utils/adminFunctions";
+import InlineLoading from "@/components/loading/InlineLoading";
 
 const InfoPembayaran = ({
   totalBiaya,
