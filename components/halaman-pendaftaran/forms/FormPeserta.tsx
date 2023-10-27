@@ -111,6 +111,8 @@ const FormPeserta = ({
     data.sabuk,
   ]);
 
+  const editOnly = true;
+
   return (
     <form
       onSubmit={(e) => submitHandler(e)}
@@ -122,11 +124,14 @@ const FormPeserta = ({
         <div className="w-full flex flex-wrap justify-center min-[825px]:grid min-[825px]:grid-cols-[auto_1fr] gap-3">
           {/* KOLOM KIRI */}
           {/* PAS FOTO */}
-          <div className="input_container max-w-[150px] ">
-            <label className="input_label text-center">Pas Foto</label>
-            <p className="-mt-2 text-sm text-gray-600 text-center">Maks. 1MB</p>
-            <div
-              className={`
+          {!editOnly && (
+            <div className="input_container max-w-[150px] ">
+              <label className="input_label text-center">Pas Foto</label>
+              <p className="-mt-2 text-sm text-gray-600 text-center">
+                Maks. 1MB
+              </p>
+              <div
+                className={`
               ${
                 errorMessage.pasFoto
                   ? "border-red-500"
@@ -135,74 +140,79 @@ const FormPeserta = ({
                   : "border-black"
               }
             bg-white w-[150px] h-[200px] relative border-2 rounded-md`}
-            >
-              {imagePreviewSrc && (
-                // <Image
-                //   src={imagePreviewSrc}
-                //   alt="preview"
-                //   fill
-                //   className="object-cover rounded-md"
-                // />
-                <img
-                  src={imagePreviewSrc}
-                  alt="preview"
-                  // className="w-[150px] h-[196px] object-cover rounded-sm"
-                  className="w-full h-full absolute object-cover rounded-sm"
-                />
-              )}
+              >
+                {imagePreviewSrc && (
+                  // <Image
+                  //   src={imagePreviewSrc}
+                  //   alt="preview"
+                  //   fill
+                  //   className="object-cover rounded-md"
+                  // />
+                  <img
+                    src={imagePreviewSrc}
+                    alt="preview"
+                    // className="w-[150px] h-[196px] object-cover rounded-sm"
+                    className="w-full h-full absolute object-cover rounded-sm"
+                  />
+                )}
+              </div>
+              <input
+                disabled={disable}
+                accept=".jpg, .jpeg, .png"
+                type="file"
+                multiple={false}
+                onChange={(e) =>
+                  e.target.files && imageChangeHandler(e.target.files[0])
+                }
+                className="input_file mt-1 w-full text-transparent"
+              />
+              <p className="text-red-500 text-center">{errorMessage.pasFoto}</p>
             </div>
-            <input
-              disabled={disable}
-              accept=".jpg, .jpeg, .png"
-              type="file"
-              multiple={false}
-              onChange={(e) =>
-                e.target.files && imageChangeHandler(e.target.files[0])
-              }
-              className="input_file mt-1 w-full text-transparent"
-            />
-            <p className="text-red-500 text-center">{errorMessage.pasFoto}</p>
-          </div>
+          )}
           {/* PAS FOTO */}
           {/* KOLOM KIRI */}
 
           {/* KOLOM KANAN */}
           <div className="w-full grid sm:grid-rows-5 md:grid-rows-4 lg:grid-rows-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 h-fit">
             {/* NAMA LENGKAP */}
-            <div className="input_container">
-              <label className="input_label">Nama Lengkap</label>
-              <input
-                disabled={disable}
-                className={`${
-                  errorMessage.namaLengkap ? "input_error" : "input"
-                } capitalize`}
-                type="text"
-                value={data.namaLengkap}
-                onChange={(e) =>
-                  setData({
-                    ...data,
-                    namaLengkap: e.target.value.toLowerCase(),
-                  })
-                }
-              />
-              <p className="text-red-500">{errorMessage.namaLengkap}</p>
-            </div>
+            {!editOnly && (
+              <div className="input_container">
+                <label className="input_label">Nama Lengkap</label>
+                <input
+                  disabled={disable}
+                  className={`${
+                    errorMessage.namaLengkap ? "input_error" : "input"
+                  } capitalize`}
+                  type="text"
+                  value={data.namaLengkap}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      namaLengkap: e.target.value.toLowerCase(),
+                    })
+                  }
+                />
+                <p className="text-red-500">{errorMessage.namaLengkap}</p>
+              </div>
+            )}
             {/* NAMA LENGKAP */}
 
             {/* NIK */}
-            <div className="input_container">
-              <label className="input_label">NIK</label>
-              <input
-                disabled={disable}
-                value={data.NIK}
-                type="text"
-                onChange={(e) => sanitizeNIK(e.target.value)}
-                className={`
+            {!editOnly && (
+              <div className="input_container">
+                <label className="input_label">NIK</label>
+                <input
+                  disabled={disable}
+                  value={data.NIK}
+                  type="text"
+                  onChange={(e) => sanitizeNIK(e.target.value)}
+                  className={`
                 ${errorMessage.NIK ? "input_error" : "input"}
                 `}
-              />
-              <p className="text-red-500">{errorMessage.NIK}</p>
-            </div>
+                />
+                <p className="text-red-500">{errorMessage.NIK}</p>
+              </div>
+            )}
             {/* NIK */}
 
             {/* JENIS KELAMIN */}
@@ -229,126 +239,140 @@ const FormPeserta = ({
             {/* JENIS KELAMIN */}
 
             {/* ALAMAT LENGKAP */}
-            <div className="input_container">
-              <label className="input_label">Alamat Lengkap</label>
-              <textarea
-                disabled={disable}
-                value={data.alamatLengkap}
-                onChange={(e) =>
-                  setData({
-                    ...data,
-                    alamatLengkap: e.target.value,
-                  })
-                }
-                className={`
+            {!editOnly && (
+              <div className="input_container">
+                <label className="input_label">Alamat Lengkap</label>
+                <textarea
+                  disabled={disable}
+                  value={data.alamatLengkap}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      alamatLengkap: e.target.value,
+                    })
+                  }
+                  className={`
                 ${errorMessage.alamatLengkap ? "input_error" : "input"}
                 `}
-              />
-              <p className="text-red-500">{errorMessage.alamatLengkap}</p>
-            </div>
+                />
+                <p className="text-red-500">{errorMessage.alamatLengkap}</p>
+              </div>
+            )}
             {/* ALAMAT LENGKAP */}
 
             {/* TEMPAT LAHIR */}
-            <div className="input_container">
-              <label className="input_label">Tempat Lahir</label>
-              <input
-                disabled={disable}
-                value={data.tempatLahir}
-                type="text"
-                onChange={(e) =>
-                  setData({
-                    ...data,
-                    tempatLahir: e.target.value,
-                  })
-                }
-                className={`
+            {!editOnly && (
+              <div className="input_container">
+                <label className="input_label">Tempat Lahir</label>
+                <input
+                  disabled={disable}
+                  value={data.tempatLahir}
+                  type="text"
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      tempatLahir: e.target.value,
+                    })
+                  }
+                  className={`
                 ${errorMessage.tempatLahir ? "input_error" : "input"}
                 `}
-              />
-              <p className="text-red-500">{errorMessage.tempatLahir}</p>
-            </div>
+                />
+                <p className="text-red-500">{errorMessage.tempatLahir}</p>
+              </div>
+            )}
             {/* TEMPAT LAHIR */}
 
             {/* TANGGAL LAHIR */}
-            <div className="input_container">
-              <label className="input_label">Tanggal Lahir</label>
-              <input
-                disabled={disable}
-                value={data.tanggalLahir}
-                type="date"
-                onChange={(e) => calculateAge(e.target.value)}
-                className={`
+            {!editOnly && (
+              <div className="input_container">
+                <label className="input_label">Tanggal Lahir</label>
+                <input
+                  disabled={disable}
+                  value={data.tanggalLahir}
+                  type="date"
+                  onChange={(e) => calculateAge(e.target.value)}
+                  className={`
                 ${errorMessage.tanggalLahir ? "input_error" : "input"}
                 `}
-              />
-              <p className="text-red-500">{errorMessage.tanggalLahir}</p>
-            </div>
+                />
+                <p className="text-red-500">{errorMessage.tanggalLahir}</p>
+              </div>
+            )}
             {/* TANGGAL LAHIR */}
 
             {/* TINGGI BADAN */}
-            <div className="input_container">
-              <label className="input_label">
-                Tinggi Badan <span className="text-sm text-gray-600">(CM)</span>
-              </label>
-              <input
-                disabled={disable}
-                value={data.tinggiBadan == 0 ? "" : data.tinggiBadan}
-                type="text"
-                onChange={(e) =>
-                  setData({
-                    ...data,
-                    tinggiBadan: sanitizeNumber(e.target.value),
-                  })
-                }
-                className={`
+            {!editOnly && (
+              <div className="input_container">
+                <label className="input_label">
+                  Tinggi Badan{" "}
+                  <span className="text-sm text-gray-600">(CM)</span>
+                </label>
+                <input
+                  disabled={disable}
+                  value={data.tinggiBadan == 0 ? "" : data.tinggiBadan}
+                  type="text"
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      tinggiBadan: sanitizeNumber(e.target.value),
+                    })
+                  }
+                  className={`
                 ${errorMessage.tinggiBadan ? "input_error" : "input"}
                 `}
-              />
-              <p className="text-red-500">{errorMessage.tinggiBadan}</p>
-            </div>
+                />
+                <p className="text-red-500">{errorMessage.tinggiBadan}</p>
+              </div>
+            )}
             {/* TINGGI BADAN */}
 
             {/* BERAT BADAN */}
-            <div className="input_container">
-              <label className="input_label">
-                Berat Badan <span className="text-sm text-gray-600">(KG)</span>
-              </label>
-              <input
-                disabled={disable}
-                value={data.beratBadan == 0 ? "" : data.beratBadan}
-                type="text"
-                step={0.1}
-                onChange={(e) =>
-                  setData({
-                    ...data,
-                    beratBadan: sanitizeNumber(e.target.value),
-                  })
-                }
-                className={`
+            {!editOnly && (
+              <div className="input_container">
+                <label className="input_label">
+                  Berat Badan{" "}
+                  <span className="text-sm text-gray-600">(KG)</span>
+                </label>
+                <input
+                  disabled={disable}
+                  value={data.beratBadan == 0 ? "" : data.beratBadan}
+                  type="text"
+                  step={0.1}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      beratBadan: sanitizeNumber(e.target.value),
+                    })
+                  }
+                  className={`
                 ${errorMessage.beratBadan ? "input_error" : "input"}
                 `}
-              />
-              <p className="text-red-500">{errorMessage.beratBadan}</p>
-            </div>
+                />
+                <p className="text-red-500">{errorMessage.beratBadan}</p>
+              </div>
+            )}
             {/* BERAT BADAN */}
 
             {/* NAMA KONTINGEN */}
-            <div className="input_container">
-              <label className="input_label">Nama Kontingen</label>
-              <select
-                value={data.idKontingen}
-                onChange={(e) =>
-                  setData({ ...data, idKontingen: e.target.value })
-                }
-              >
-                {kontingens.map((kontingen: KontingenState) => (
-                  <option value={kontingen.id}>
-                    {findNamaKontingen(kontingens, kontingen.id)}
-                  </option>
-                ))}
-              </select>
-              <p className="text-red-500">{errorMessage.idKontingen}</p>
-            </div>
+            {!editOnly && (
+              <div className="input_container">
+                <label className="input_label">Nama Kontingen</label>
+                <select
+                  value={data.idKontingen}
+                  onChange={(e) =>
+                    setData({ ...data, idKontingen: e.target.value })
+                  }
+                >
+                  {kontingens.map((kontingen: KontingenState) => (
+                    <option value={kontingen.id}>
+                      {findNamaKontingen(kontingens, kontingen.id)}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-red-500">{errorMessage.idKontingen}</p>
+              </div>
+            )}
             {/* NAMA KONTINGEN */}
 
             {/* TINGKATAN */}

@@ -33,7 +33,9 @@ const LoginButton = () => {
         href="/halaman-pendaftaran"
         className="bg-white px-2 py-1 hover:bg-red-500 hover:text-white transition w-[200px] flex gap-1 justify-center items-center"
       >
-        Halaman Pendaftaran <FiArrowRightCircle className="inline" />
+        {/* Halaman Pendaftaran */}
+        Edit Peserta & Pembayaran
+        <FiArrowRightCircle className="inline" />
       </Link>
     );
   }

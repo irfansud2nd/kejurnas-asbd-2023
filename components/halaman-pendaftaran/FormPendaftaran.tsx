@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AiFillHome } from "react-icons/ai";
 import { newToast } from "@/utils/sharedFunctions";
 import { FormContext } from "@/context/FormContext";
@@ -11,8 +11,11 @@ import Peserta from "./parts/Peserta";
 import Pembayaran from "./parts/Pembayaran";
 import Link from "next/link";
 import { MyContext } from "@/context/Context";
+import Rodal from "rodal";
+import "rodal/lib/rodal.css";
 
 const FormPendaftaran = ({ nav }: { nav: string }) => {
+  const [showRodal, setShowRodal] = useState(true);
   const { error } = FormContext();
   const { disable } = MyContext();
 
@@ -44,6 +47,54 @@ const FormPendaftaran = ({ nav }: { nav: string }) => {
   ];
   return (
     <div className="p-2 max-w-[100vw]">
+      <Rodal
+        visible={showRodal}
+        onClose={() => setShowRodal(false)}
+        customStyles={{ height: "500px" }}
+      >
+        <div className="text-justify">
+          <h1 className="font-bold text-lg text-center border-b-2 border-green-500">
+            Info Kejuaraan Nasional ASBD 2023
+          </h1>
+          <p>
+            Allhamdulillah Pendaftaran Kejuaraan Nasional ASBD 2023 telah resmi
+            di tutup.
+          </p>
+          <p>
+            Terimakasih atas antusiasme yang sangat luar biasa dari seluruh
+            Keluarga Besar ASBD.
+          </p>
+          <p>
+            Peserta yang terdaftar hanyalah peserta yang sudah menyelesaikan
+            pembayaran sebelum:
+          </p>
+          <p className="text-center">
+            <b>Senin, 30 Oktober 2023 Pukul 17:00 W.I.B</b>
+          </p>
+          <p>
+            Manager/Official/Pelatih, tetap dapat melakukan edit data apabila
+            ada data peserta yang masih keliru.
+          </p>
+          <p>
+            Edit data hanya bisa dilakukan apa bila ada kelas pertandingan,
+            kategori pertandingan atau jenis kelamin yang salah.
+          </p>
+          <p>Edit Data dapat dilakukan hingga:</p>
+          <p className="text-center">
+            <b>Senin, 30 Oktober 2023 Pukul 17:00 W.I.B</b>
+          </p>
+          <p>Atas Perhatianya Terima Kasih</p>
+          <p className="text-center">- Panpel -</p>
+        </div>
+        <div className="flex justify-center">
+          <button
+            className="btn_green btn_full"
+            onClick={() => setShowRodal(false)}
+          >
+            OK
+          </button>
+        </div>
+      </Rodal>
       <ToastContainer />
       <div className="bg-red-500 bg-opacity-50 text-black w-full rounded-md p-2">
         <div className="flex w-full justify-between items-center mb-2">

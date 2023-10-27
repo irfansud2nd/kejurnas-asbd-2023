@@ -225,14 +225,16 @@ const Kontingen = () => {
         <TabelKontingen handleEdit={handleEdit} handleDelete={handleDelete} />
       </div>
       {data.creatorUid ? (
-        <FormKontingen
-          sendKontingen={sendKontingen}
-          data={data}
-          setData={setData}
-          reset={reset}
-          errorMessage={errorMessage}
-          updating={updating}
-        />
+        <>
+          {/* <FormKontingen
+            sendKontingen={sendKontingen}
+            data={data}
+            setData={setData}
+            reset={reset}
+            errorMessage={errorMessage}
+            updating={updating}
+          /> */}
+        </>
       ) : (
         <p className="bg-white rounded-md p-2 mt-2">
           Memuat Data <InlineLoading />
