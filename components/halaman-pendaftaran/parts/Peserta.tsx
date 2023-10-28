@@ -312,20 +312,20 @@ const Peserta = () => {
       <div className="w-full bg-white rounded-md p-2">
         <TabelPeserta handleEdit={handleEdit} handleDelete={handleDelete} />
       </div>
-      {updating && (
-        <FormPeserta
-          data={data}
-          setData={setData}
-          submitHandler={submitHandler}
-          imageChangeHandler={imageChangeHandler}
-          imagePreviewSrc={imagePreviewSrc}
-          errorMessage={errorMessage}
-          kuotaKelas={kuotaKelas}
-          kuotaLoading={kuotaLoading}
-          reset={reset}
-          updating={updating}
-        />
-      )}
+      {/* {updating && ( */}
+      <FormPeserta
+        data={data}
+        setData={setData}
+        submitHandler={submitHandler}
+        imageChangeHandler={imageChangeHandler}
+        imagePreviewSrc={imagePreviewSrc}
+        errorMessage={errorMessage}
+        kuotaKelas={kuotaKelas}
+        kuotaLoading={kuotaLoading}
+        reset={reset}
+        updating={updating}
+      />
+      {/* )} */}
     </div>
   );
 };

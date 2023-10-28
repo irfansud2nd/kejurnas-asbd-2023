@@ -19,7 +19,7 @@ const FormOfficial = ({
   const { disable } = MyContext();
   const { kontingens } = FormContext();
 
-  const editOnly = true;
+  const editOnly = false;
 
   return (
     <form
