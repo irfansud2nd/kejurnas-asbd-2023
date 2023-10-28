@@ -93,7 +93,15 @@ const TabelKontingenAdmin = () => {
           {kontingensToMap
             .sort(compare("waktuPendaftaran", "asc"))
             .map((kontingen: KontingenState, i: number) => (
-              <tr key={kontingen.id} className="border_td">
+              <tr
+                key={kontingen.id}
+                className={`border_td ${
+                  getPesertasByKontingen(pesertas, kontingen.id).length == 0 &&
+                  getOfficialsByKontingen(officials, kontingen.id).length ==
+                    0 &&
+                  "text-red-500"
+                }`}
+              >
                 <td>{i + 1}</td>
                 <td>{kontingen.id}</td>
                 <td className="hover:text-green-500 hover:underline transition cursor-pointer">

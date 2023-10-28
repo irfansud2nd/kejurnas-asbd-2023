@@ -62,15 +62,15 @@ const CustomTabelSelector = () => {
     );
   }, [tingkatan, jenis, gender, sabuk]);
 
-  useEffect(() => {
-    if (kategori.includes(jenisKelamin[0])) {
-      setGender(jenisKelamin[0]);
-    } else if (kategori.includes(jenisKelamin[1])) {
-      setGender(jenisKelamin[1]);
-    } else {
-      setGender(jenisKelamin[0]);
-    }
-  }, [kategori]);
+  // useEffect(() => {
+  //   if (kategori.includes(jenisKelamin[0])) {
+  //     setGender(jenisKelamin[0]);
+  //   } else if (kategori.includes(jenisKelamin[1])) {
+  //     setGender(jenisKelamin[1]);
+  //   } else {
+  //     setGender(jenisKelamin[0]);
+  //   }
+  // }, [kategori]);
 
   const changeSelectedKategory = () => {
     if (jenis != jenisPertandingan[2]) {
