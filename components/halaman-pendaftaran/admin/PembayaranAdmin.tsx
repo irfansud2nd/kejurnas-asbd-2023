@@ -331,7 +331,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
             <thead>
               <tr className="border-x-black border-x">
                 <th>No</th>
-                <td>ID Kontingen</td>
+                <th>ID Kontingen</th>
                 <th>Nama Peserta</th>
                 <th>Jenis Kelamin</th>
                 <th>Tingkatan</th>
