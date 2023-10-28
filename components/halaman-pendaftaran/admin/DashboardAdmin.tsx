@@ -13,6 +13,9 @@ const DashboardAdmin = () => {
         <button className="btn_green" onClick={refreshAll}>
           Refresh All
         </button>
+        <button className="btn_green" onClick={() => setMode("custom")}>
+          Custom Table
+        </button>
         <button className="btn_green" onClick={() => setMode("id")}>
           ID Card
         </button>

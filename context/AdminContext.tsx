@@ -42,7 +42,14 @@ export const AdminContextProvider = ({
   const [officialsLoading, setOfficialsLoading] = useState(true);
 
   const [mode, setMode] = useState("");
-  const [selectedKategori, setSelectedKategori] = useState("");
+  const [selectedKategori, setSelectedKategori] = useState({
+    tingkatan: "",
+    jenis: "",
+    sabuk: "",
+    jurus: "",
+    kategori: "",
+    gender: "",
+  });
 
   const { user } = MyContext();
 
@@ -97,6 +104,7 @@ export const AdminContextProvider = ({
 
   useEffect(() => {
     if (selectedKontingen.id) {
+      resetKategori();
       setUncofirmedKontingens([]);
       setSelectedOfficials(
         getOfficialsByKontingen(officials, selectedKontingen.id)
@@ -157,6 +165,47 @@ export const AdminContextProvider = ({
     return <InlineLoading />;
   };
 
+  // RESET KATEGORI
+  const resetKategori = () => {
+    setSelectedKategori({
+      tingkatan: "",
+      jenis: "",
+      sabuk: "",
+      jurus: "",
+      kategori: "",
+      gender: "",
+    });
+  };
+
+  // GET PESERTAS BASED ON KATEGORI
+  useEffect(() => {
+    let result: PesertaState[] = [];
+    pesertas.map((peserta) => {
+      if (selectedKategori.sabuk && selectedKategori.jurus) {
+        if (
+          peserta.jenisPertandingan == selectedKategori.jenis &&
+          peserta.tingkatanPertandingan == selectedKategori.tingkatan &&
+          peserta.kategoriPertandingan == selectedKategori.kategori &&
+          peserta.jenisKelamin == selectedKategori.gender &&
+          peserta.sabuk == selectedKategori.sabuk &&
+          peserta.jurus == selectedKategori.jurus
+        ) {
+          result.push(peserta);
+        }
+      } else {
+        if (
+          peserta.jenisPertandingan == selectedKategori.jenis &&
+          peserta.tingkatanPertandingan == selectedKategori.tingkatan &&
+          peserta.kategoriPertandingan == selectedKategori.kategori &&
+          peserta.jenisKelamin == selectedKategori.gender
+        ) {
+          result.push(peserta);
+        }
+      }
+    });
+    setSelectedPesertas(result);
+  }, [selectedKategori]);
+
   return (
     <Context.Provider
       value={{
@@ -188,6 +237,7 @@ export const AdminContextProvider = ({
         getUnconfirmedKontingens,
         unconfirmedKongtingens,
         setUncofirmedKontingens,
+        resetKategori,
       }}
     >
       {children}

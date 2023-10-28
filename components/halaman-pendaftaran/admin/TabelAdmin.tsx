@@ -4,6 +4,7 @@ import TabelKontingenAdmin from "./tabels/TabelKontingenAdmin";
 import TabelOfficialAdmin from "./tabels/TabelOfficialAdmin";
 import { kontingenInitialValue } from "@/utils/formConstants";
 import IdCard from "./id-card/IdCard";
+import CustomTabel from "./tabels/CustomTabel";
 
 const TabelAdmin = () => {
   const {
@@ -13,6 +14,7 @@ const TabelAdmin = () => {
     setSelectedKontingen,
     setUncofirmedKontingens,
     refreshAll,
+    resetKategori,
   } = AdminContext();
   return (
     <div>
@@ -21,6 +23,7 @@ const TabelAdmin = () => {
         onClick={() => {
           setMode("");
           // refreshAll();
+          resetKategori();
           setSelectedKontingen(kontingenInitialValue);
           setUncofirmedKontingens([]);
         }}
@@ -33,6 +36,7 @@ const TabelAdmin = () => {
           Kontingen {selectedKontingen.namaKontingen}
         </h1>
       )}
+      {mode == "custom" && <CustomTabel />}
       {mode == "id" && <IdCard />}
       {mode == "kontingen" && <TabelKontingenAdmin />}
       {(mode == "peserta" || selectedKontingen.id) && <TabelPesertaAdmin />}

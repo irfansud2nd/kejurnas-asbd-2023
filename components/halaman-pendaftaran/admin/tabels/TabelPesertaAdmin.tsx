@@ -21,6 +21,7 @@ const TabelPesertaAdmin = () => {
     pesertasLoading,
     selectedKontingen,
     selectedPesertas,
+    selectedKategori,
   } = AdminContext();
 
   const tabelHead = [
@@ -56,7 +57,13 @@ const TabelPesertaAdmin = () => {
 
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
-    filename: "Tabel Peserta",
+    filename: selectedKategori.tingkatan
+      ? `Tabel Peserta ${selectedKategori.tingkatan} ${selectedKategori.jenis}${
+          selectedKategori.sabuk ? ` ${selectedKategori.sabuk}` : " "
+        }${selectedKategori.jurus ? ` ${selectedKategori.jurus} ` : ""}${
+          selectedKategori.kategori
+        } ${selectedKategori.gender} ${selectedPesertas.length} Peserta`
+      : "Tabel Peserta",
     sheet: "Data Peserta",
   });
 
@@ -78,10 +85,8 @@ const TabelPesertaAdmin = () => {
   };
 
   useEffect(() => {
-    if (selectedKontingen.id) {
-      let arr = [...selectedPesertas];
-      arr = arr.sort(compare("umur", "asc"));
-      setPesertasToMap(arr);
+    if (selectedKontingen.id || selectedKategori.tingkatan) {
+      setPesertasToMap(selectedPesertas);
     } else {
       setPesertasToMap(pesertas);
     }
@@ -91,7 +96,18 @@ const TabelPesertaAdmin = () => {
     <div>
       <ToastContainer />
       <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
-        Tabel Peserta
+        Tabel Peserta{" "}
+        {/* {selectedKategori.tingkatan && (
+          <p className="inline-block">
+            <span>{selectedKategori.tingkatan} - </span>
+            <span>{selectedKategori.jenis} - </span>
+            {selectedKategori.sabuk && <span>{selectedKategori.sabuk} - </span>}
+            {selectedKategori.jurus && <span>{selectedKategori.jurus} - </span>}
+            <span>{selectedKategori.kategori} - </span>
+            <span>{selectedKategori.gender} - </span>
+            <span>{selectedPesertas.length} Peserta</span>
+          </p>
+        )} */}
       </h1>
 
       {/* BUTTONS */}
