@@ -121,7 +121,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
         getGroupedPeserta(container).asbdTunggal * 250000 +
         getGroupedPeserta(container).asbdRegu * 225000;
 
-      if (biayaKontingen) {
+      if (biayaKontingen && kontingen.biayaKontingen == idPembayaran) {
         total += 125000;
       }
 
@@ -148,7 +148,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
     }
     setPesertasToConfirm(container);
     if (kontingen.id) {
-      if (kontingen.biayaKontingen) setBiayaKontingen(idPembayaran);
+      setBiayaKontingen(kontingen.biayaKontingen);
     }
   }, [pesertas, kontingen]);
 
@@ -310,7 +310,9 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
         container.push(peserta.id);
       });
       setPesertasToConfirm(container);
-      setBiayaKontingen(idPembayaran);
+      setBiayaKontingen(
+        kontingen.biayaKontingen ? kontingen.biayaKontingen : idPembayaran
+      );
     }
   };
 
@@ -320,6 +322,8 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
       <h1 className="font-bold text-xl">
         Konfirmasi Pembayaran - {kontingen.namaKontingen}
       </h1>
+      <p>{biayaKontingen}</p>
+      <p>{kontingen.biayaKontingen}</p>
       <div className="flex gap-2">
         <div className="flex flex-col gap-1 items-end">
           {/* TABEL PESERTA */}
