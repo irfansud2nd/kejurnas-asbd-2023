@@ -344,7 +344,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
               {(kontingen.biayaKontingen == "" ||
                 kontingen.biayaKontingen == idPembayaran) && (
                 <tr className="border_td">
-                  <td colSpan={6}>BIAYA PENDAFTARAN KONTINGEN</td>
+                  <td colSpan={7}>BIAYA PENDAFTARAN KONTINGEN</td>
                   <td className="text-center">
                     <button
                       onClick={() =>

@@ -107,7 +107,8 @@ export const getOfficialsByKontingen = (
 
 export const getKontingenUnpaid = (
   kontingen: KontingenState,
-  pesertas: PesertaState[]
+  pesertas: PesertaState[],
+  byPeserta: boolean = false
 ) => {
   let paidNominal = 0;
 
@@ -121,6 +122,21 @@ export const getKontingenUnpaid = (
     getGroupedPeserta(filteredPesertas).asbdTunggal * 250000 +
     getGroupedPeserta(filteredPesertas).asbdRegu * 225000 +
     125000;
+
+  if (byPeserta) {
+    paidNominal = 0;
+    let paidPesertas: PesertaState[] = [];
+    filteredPesertas.map((peserta) => {
+      if (peserta.idPembayaran) {
+        paidPesertas.push(peserta);
+      }
+    });
+    paidNominal +=
+      getGroupedPeserta(paidPesertas).nonAsbd * 325 +
+      getGroupedPeserta(paidPesertas).asbdTunggal * 250 +
+      getGroupedPeserta(paidPesertas).asbdRegu * 225 +
+      125;
+  }
 
   return nominalToPay - paidNominal * 1000;
 };

@@ -84,9 +84,29 @@ const TabelKontingenAdmin = () => {
       <table className="w-full" ref={tabelRef}>
         <thead>
           <tr>
-            {tabelHead.map((item) => (
+            {/* {tabelHead.map((item) => (
               <th key={item}>{item}</th>
-            ))}
+            ))} */}
+            <th>No</th>
+            <th>ID Kontingen</th>
+            <th>Nama Kontingen</th>
+            <th>Peserta</th>
+            <th>Official</th>
+            <th>Pembayaran</th>
+            <th>
+              Belum Lunas
+              <br />
+              Kontingen
+            </th>
+            <th>
+              Belum Lunas
+              <br />
+              Peserta
+            </th>
+            <th>Konfirmasi</th>
+            <th>Email Pendaftar</th>
+            <th>Waktu Pendaftaran</th>
+            <th>Waktu Perubahan</th>
           </tr>
         </thead>
         <tbody>
@@ -189,6 +209,12 @@ const TabelKontingenAdmin = () => {
                 <td className="whitespace-nowrap">
                   Rp.{" "}
                   {getKontingenUnpaid(kontingen, pesertas).toLocaleString("id")}
+                </td>
+                <td className="whitespace-nowrap">
+                  Rp.{" "}
+                  {getKontingenUnpaid(kontingen, pesertas, true).toLocaleString(
+                    "id"
+                  )}
                 </td>
                 <td>
                   {kontingen.unconfirmedPembayaranIds &&
