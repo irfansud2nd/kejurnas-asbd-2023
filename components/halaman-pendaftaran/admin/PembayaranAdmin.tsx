@@ -331,6 +331,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
             <thead>
               <tr className="border-x-black border-x">
                 <th>No</th>
+                <td>ID Kontingen</td>
                 <th>Nama Peserta</th>
                 <th>Jenis Kelamin</th>
                 <th>Tingkatan</th>
@@ -363,6 +364,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
               {pesertas.map((peserta, i) => (
                 <tr key={peserta.id} className="border_td">
                   <td>{i + 1}</td>
+                  <td>{peserta.idKontingen}</td>
                   <td>{peserta.namaLengkap.toUpperCase()}</td>
                   <td>{peserta.tingkatanPertandingan}</td>
                   <td>{peserta.jenisKelamin}</td>
