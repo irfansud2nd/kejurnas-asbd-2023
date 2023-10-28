@@ -209,16 +209,16 @@ const TabelPesertaAdmin = () => {
               <td>{formatTanggal(peserta.infoPembayaran.waktu)}</td>
               <td>{peserta.confirmedPembayaran ? "Yes" : "No"}</td>
               <td>
-                {/* {peserta.pembayaran ? (
+                {peserta.pembayaran ? (
                   "-"
-                ) : ( */}
-                <button
-                  className="btn_red"
-                  onClick={() => deleteHandler(peserta)}
-                >
-                  Delete
-                </button>
-                {/* )} */}
+                ) : (
+                  <button
+                    className="btn_red"
+                    onClick={() => deleteHandler(peserta)}
+                  >
+                    Delete
+                  </button>
+                )}
               </td>
               <td>{peserta.creatorEmail}</td>
               <td>{formatTanggal(peserta.waktuPendaftaran)}</td>
