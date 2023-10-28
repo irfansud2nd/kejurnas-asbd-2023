@@ -179,31 +179,33 @@ export const AdminContextProvider = ({
 
   // GET PESERTAS BASED ON KATEGORI
   useEffect(() => {
-    let result: PesertaState[] = [];
-    pesertas.map((peserta) => {
-      if (selectedKategori.sabuk && selectedKategori.jurus) {
-        if (
-          peserta.jenisPertandingan == selectedKategori.jenis &&
-          peserta.tingkatanPertandingan == selectedKategori.tingkatan &&
-          peserta.kategoriPertandingan == selectedKategori.kategori &&
-          peserta.jenisKelamin == selectedKategori.gender &&
-          peserta.sabuk == selectedKategori.sabuk &&
-          peserta.jurus == selectedKategori.jurus
-        ) {
-          result.push(peserta);
+    if (selectedKategori.tingkatan) {
+      let result: PesertaState[] = [];
+      pesertas.map((peserta) => {
+        if (selectedKategori.sabuk && selectedKategori.jurus) {
+          if (
+            peserta.jenisPertandingan == selectedKategori.jenis &&
+            peserta.tingkatanPertandingan == selectedKategori.tingkatan &&
+            peserta.kategoriPertandingan == selectedKategori.kategori &&
+            peserta.jenisKelamin == selectedKategori.gender &&
+            peserta.sabuk == selectedKategori.sabuk &&
+            peserta.jurus == selectedKategori.jurus
+          ) {
+            result.push(peserta);
+          }
+        } else {
+          if (
+            peserta.jenisPertandingan == selectedKategori.jenis &&
+            peserta.tingkatanPertandingan == selectedKategori.tingkatan &&
+            peserta.kategoriPertandingan == selectedKategori.kategori &&
+            peserta.jenisKelamin == selectedKategori.gender
+          ) {
+            result.push(peserta);
+          }
         }
-      } else {
-        if (
-          peserta.jenisPertandingan == selectedKategori.jenis &&
-          peserta.tingkatanPertandingan == selectedKategori.tingkatan &&
-          peserta.kategoriPertandingan == selectedKategori.kategori &&
-          peserta.jenisKelamin == selectedKategori.gender
-        ) {
-          result.push(peserta);
-        }
-      }
-    });
-    setSelectedPesertas(result);
+      });
+      setSelectedPesertas(result);
+    }
   }, [selectedKategori]);
 
   return (
