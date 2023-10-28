@@ -194,7 +194,9 @@ const FormPembayaran = ({
     if (id) {
       updateDoc(doc(firestore, "kontingens", id), {
         pembayaran: true,
-        biayaKontingen: true,
+        biayaKontingen: kontingenToPay.biayaKontingen
+          ? kontingenToPay.biayaKontingen
+          : idPembayaran,
         unconfirmedPembayaran: true,
         confirmedPembayaran: false,
         idPembayaran: arrayUnion(idPembayaran),

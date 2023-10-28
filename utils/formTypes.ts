@@ -81,7 +81,7 @@ export type KontingenState = {
   pesertas: string[] | [];
   officials: string[] | [];
   pembayaran: boolean;
-  biayaKontingen: boolean;
+  biayaKontingen: string;
   confirmedPembayaran: boolean;
   unconfirmedPembayaran: boolean;
   idPembayaran: string[];

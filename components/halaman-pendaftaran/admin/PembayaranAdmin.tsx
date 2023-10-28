@@ -34,7 +34,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
   const [pesertaToDeletePayment, setPesertaToDeletePayment] = useState<
     string[]
   >([]);
-  const [biayaKontingen, setBiayaKontingen] = useState(false);
+  const [biayaKontingen, setBiayaKontingen] = useState("");
   const [infoPembayaran, setInfoPembayaran] = useState<{
     idPembayaran: string;
     noHp: string;
@@ -148,7 +148,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
     }
     setPesertasToConfirm(container);
     if (kontingen.id) {
-      if (kontingen.biayaKontingen) setBiayaKontingen(true);
+      if (kontingen.biayaKontingen) setBiayaKontingen(idPembayaran);
     }
   }, [pesertas, kontingen]);
 
@@ -228,12 +228,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
     }
   };
 
-  if (
-    loading ||
-    !pesertas.length ||
-    !kontingen.id ||
-    !infoPembayaran?.idPembayaran
-  ) {
+  if (loading || !kontingen.id || !infoPembayaran?.idPembayaran) {
     return <FullLoading />;
   }
 
@@ -287,7 +282,8 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
   const deletePaymentKontingen = () => {
     updateDoc(doc(firestore, "kontingens", kontingen.id), {
       pembayaran: false,
-      biayaKontingen: kontingen.idPembayaran.length > 1,
+      biayaKontingen:
+        kontingen.biayaKontingen == idPembayaran ? "" : biayaKontingen,
       idPembayaran: arrayRemove(idPembayaran),
       unconfirmedPembayaranIds: arrayRemove(idPembayaran),
       infoPembayaran: arrayRemove({
@@ -308,13 +304,13 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
     let container: string[] = [];
     if (pesertas.length == pesertasToConfirm.length && biayaKontingen) {
       setPesertasToConfirm([]);
-      setBiayaKontingen(false);
+      setBiayaKontingen("");
     } else {
       pesertas.map((peserta) => {
         container.push(peserta.id);
       });
       setPesertasToConfirm(container);
-      setBiayaKontingen(true);
+      setBiayaKontingen(idPembayaran);
     }
   };
 
@@ -340,21 +336,26 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
               </tr>
             </thead>
             <tbody>
-              <tr className="border_td">
-                <td colSpan={6}>BIAYA PENDAFTARAN KONTINGEN</td>
-                <td className="text-center">
-                  <button
-                    onClick={() => setBiayaKontingen((prev) => !prev)}
-                    className={`text-${biayaKontingen ? "green" : "red"}-500`}
-                  >
-                    {biayaKontingen ? (
-                      <ImCheckboxChecked />
-                    ) : (
-                      <ImCheckboxUnchecked />
-                    )}
-                  </button>
-                </td>
-              </tr>
+              {(kontingen.biayaKontingen == "" ||
+                kontingen.biayaKontingen == idPembayaran) && (
+                <tr className="border_td">
+                  <td colSpan={6}>BIAYA PENDAFTARAN KONTINGEN</td>
+                  <td className="text-center">
+                    <button
+                      onClick={() =>
+                        setBiayaKontingen((prev) => (prev ? "" : idPembayaran))
+                      }
+                      className={`text-${biayaKontingen ? "green" : "red"}-500`}
+                    >
+                      {biayaKontingen ? (
+                        <ImCheckboxChecked />
+                      ) : (
+                        <ImCheckboxUnchecked />
+                      )}
+                    </button>
+                  </td>
+                </tr>
+              )}
               {pesertas.map((peserta, i) => (
                 <tr key={peserta.id} className="border_td">
                   <td>{i + 1}</td>

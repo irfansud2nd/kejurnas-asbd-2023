@@ -1,6 +1,7 @@
 import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
 import { firestore } from "@/utils/firebase";
+import { KontingenState } from "@/utils/formTypes";
 import { newToast, updateToast } from "@/utils/sharedFunctions";
 import { doc, updateDoc } from "firebase/firestore";
 import { useRef } from "react";
@@ -9,10 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const UpdateKontingen = () => {
   const { kontingens } = AdminContext();
-  const kontingensToUpdate = kontingens.splice(
-    kontingens.findIndex((item: any) => item.id == "0RRkbCN4dmxqdXcMnRq8"),
-    1
-  );
+  let kontingensToUpdate: KontingenState[] = kontingens;
 
   const toastId = useRef(null);
 
@@ -36,12 +34,9 @@ const UpdateKontingen = () => {
           );
         }
         updateDoc(doc(firestore, "kontingens", selectedKontingen.id), {
-          unconfirmedPembayaranIds: selectedKontingen.unconfirmedPembayaran,
-          confirmedPembayaranIds: selectedKontingen.confirmedPembayaran,
-          pembayaran: true,
-          biayaKontingen: true,
-          confirmedPembayaran: true,
-          unconfirmedPembayaran: false,
+          biayaKontingen: selectedKontingen.biayaKontingen
+            ? selectedKontingen.idPembayaran[0]
+            : "",
         })
           .then(() => repeater(index - 1))
           .catch((error) =>
@@ -62,7 +57,7 @@ const UpdateKontingen = () => {
       <button className="btn_green mb-1" onClick={updateAll}>
         Update all Kontingen{" "}
         {kontingensToUpdate.length ? (
-          kontingensToUpdate[0].namaKontingen
+          kontingensToUpdate.length
         ) : (
           <InlineLoading />
         )}

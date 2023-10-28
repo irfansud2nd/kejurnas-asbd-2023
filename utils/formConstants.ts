@@ -244,7 +244,7 @@ export const kontingenInitialValue: KontingenState = {
   pesertas: [],
   officials: [],
   pembayaran: false,
-  biayaKontingen: false,
+  biayaKontingen: "",
   confirmedPembayaran: false,
   unconfirmedPembayaran: false,
   idPembayaran: [],
