@@ -65,7 +65,7 @@ const TabelKontingenAdmin = () => {
         Tabel Kontingen
       </h1>
 
-      <UpdateKontingen />
+      {/* <UpdateKontingen /> */}
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
