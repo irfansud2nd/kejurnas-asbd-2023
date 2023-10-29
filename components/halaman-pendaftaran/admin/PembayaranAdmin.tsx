@@ -320,7 +320,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
     <div className="bg-white m-2 p-2">
       <ToastContainer />
       <h1 className="font-bold text-xl">
-        Konfirmasi Pembayaran - {kontingen.namaKontingen}
+        Konfirmasi Pembayaran - {kontingen.namaKontingen.toUpperCase()}
       </h1>
       <p>{biayaKontingen}</p>
       <p>{kontingen.biayaKontingen}</p>
