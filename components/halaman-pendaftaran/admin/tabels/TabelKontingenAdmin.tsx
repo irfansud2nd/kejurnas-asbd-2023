@@ -111,7 +111,7 @@ const TabelKontingenAdmin = () => {
         </thead>
         <tbody>
           {kontingensToMap
-            .sort(compare("waktuPendaftaran", "asc"))
+            .sort(compare("namaKontingen", "asc"))
             .map((kontingen: KontingenState, i: number) => (
               <tr
                 key={kontingen.id}
@@ -180,18 +180,6 @@ const TabelKontingenAdmin = () => {
                                   }
                                 </Link>
                               ) : (
-                                // <KonfirmasiButton
-                                //   idPembayaran={idPembayaran}
-                                //   infoPembayaran={
-                                //     kontingen.infoPembayaran[
-                                //       kontingen.infoPembayaran.findIndex(
-                                //         (info) =>
-                                //           info.idPembayaran == idPembayaran
-                                //       )
-                                //     ]
-                                //   }
-                                //   data={kontingen}
-                                // />
                                 <Link
                                   href={`admin/pembayaran/${idPembayaran}`}
                                   target="_blank"
