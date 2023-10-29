@@ -111,7 +111,7 @@ const FormPeserta = ({
     data.sabuk,
   ]);
 
-  const editOnly = false;
+  const editOnly = true;
 
   return (
     <form

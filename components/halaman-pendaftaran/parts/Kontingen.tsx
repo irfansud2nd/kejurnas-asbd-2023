@@ -226,14 +226,14 @@ const Kontingen = () => {
       </div>
       {data.creatorUid ? (
         <>
-          <FormKontingen
+          {/* <FormKontingen
             sendKontingen={sendKontingen}
             data={data}
             setData={setData}
             reset={reset}
             errorMessage={errorMessage}
             updating={updating}
-          />
+          /> */}
         </>
       ) : (
         <p className="bg-white rounded-md p-2 mt-2">
