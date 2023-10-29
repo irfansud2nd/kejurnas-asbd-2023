@@ -126,7 +126,7 @@ const TabelKontingenAdmin = () => {
                 <td>{kontingen.id}</td>
                 <td className="hover:text-green-500 hover:underline transition cursor-pointer">
                   <button onClick={() => setSelectedKontingen(kontingen)}>
-                    {kontingen.namaKontingen}
+                    {kontingen.namaKontingen.toUpperCase()}
                   </button>
                 </td>
                 <td>{getPesertasByKontingen(pesertas, kontingen.id).length}</td>
