@@ -40,7 +40,7 @@ const IdCard = () => {
   const printRef = useRef(null);
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    documentTitle: `${selectedKontingen.namaKontingen}`,
+    documentTitle: `${selectedKontingen.namaKontingen.toUpperCase()}`,
     onPrintError: () => alert("error"),
   });
 
