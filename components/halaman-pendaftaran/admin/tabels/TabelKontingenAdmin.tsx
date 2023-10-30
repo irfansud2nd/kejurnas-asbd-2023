@@ -117,8 +117,6 @@ const TabelKontingenAdmin = () => {
                 key={kontingen.id}
                 className={`border_td ${
                   getPesertasByKontingen(pesertas, kontingen.id).length == 0 &&
-                  getOfficialsByKontingen(officials, kontingen.id).length ==
-                    0 &&
                   "text-red-500"
                 }`}
               >
