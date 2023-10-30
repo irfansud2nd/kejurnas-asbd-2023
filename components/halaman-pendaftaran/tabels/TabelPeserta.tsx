@@ -21,6 +21,7 @@ const TabelPeserta = ({ handleDelete, handleEdit }: TabelProps) => {
   const tableHead = [
     "No",
     "Nama Lengkap",
+    "Jenis Kelamin",
     "Nama Kontingen",
     "Tingkatan",
     "Jenis Pertandingan",
@@ -54,6 +55,7 @@ const TabelPeserta = ({ handleDelete, handleEdit }: TabelProps) => {
                   <tr key={peserta.id}>
                     <td>{i + 1}</td>
                     <td className="uppercase">{peserta.namaLengkap}</td>
+                    <td>{peserta.jenisKelamin}</td>
                     <td className="whitespace-nowrap">
                       {findNamaKontingen(kontingens, peserta.idKontingen)}
                     </td>
