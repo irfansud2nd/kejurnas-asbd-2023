@@ -10,12 +10,19 @@ import KonfirmasiButton from "../KonfirmasiButton";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import { useRef, useState, useEffect } from "react";
 import InlineLoading from "@/components/loading/InlineLoading";
-import { compare } from "@/utils/sharedFunctions";
+import { compare, newToast, updateToast } from "@/utils/sharedFunctions";
 import UpdateKontingen from "../UpdateKontingen";
 import Link from "next/link";
+import { kontingenInitialValue } from "@/utils/formConstants";
+import RodalKontingen from "../../rodals/RodalKontingen";
+import { deleteDoc, doc } from "firebase/firestore";
+import { firestore } from "@/utils/firebase";
+import { deletePerson } from "@/utils/formFunctions";
 
 const TabelKontingenAdmin = () => {
   const [kontingensToMap, setKontingensToMap] = useState<KontingenState[]>([]);
+  const [dataToDelete, setDataToDelete] = useState(kontingenInitialValue);
+  const [deleteRodal, setDeleteRodal] = useState(false);
 
   const {
     kontingens,
@@ -43,6 +50,7 @@ const TabelKontingenAdmin = () => {
   ];
 
   const tabelRef = useRef(null);
+  const toastId = useRef(null);
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
     filename: "Tabel Kontingen",
@@ -59,6 +67,99 @@ const TabelKontingenAdmin = () => {
     }
   }, [selectedKontingen, unconfirmedKongtingens]);
 
+  // DELETE BUTTON HANDLER
+  const handleDelete = (data: KontingenState) => {
+    setDeleteRodal(true);
+    setDataToDelete(data);
+  };
+
+  // DELETE KONTINGEN START
+  const deleteData = () => {
+    setDeleteRodal(false);
+    deleteOfficials(dataToDelete.officials.length - 1);
+  };
+
+  // DELETE OFFICIALS IN KONTINGEN
+  const deleteOfficials = (officialIndex: number) => {
+    if (officialIndex >= 0) {
+      const id = dataToDelete.officials[officialIndex];
+      deletePerson(
+        "officials",
+        {
+          namaLengkap: `${dataToDelete.officials.length} official`,
+          idKontingen: dataToDelete.id,
+          fotoUrl: `officials/${id}-image`,
+          id: id,
+        },
+        dataToDelete,
+        toastId,
+        () => afterDeleteOfficial(officialIndex)
+      );
+    } else {
+      deletePesertas(dataToDelete.pesertas.length - 1);
+    }
+  };
+
+  const afterDeleteOfficial = (officialIndex: number) => {
+    if (officialIndex != 0) {
+      deleteOfficials(officialIndex - 1);
+    } else {
+      deletePesertas(dataToDelete.pesertas.length - 1);
+    }
+  };
+
+  // DELETE PESERTAS IN KONTINGEN
+  const deletePesertas = (pesertaIndex: number) => {
+    if (pesertaIndex >= 0) {
+      const id = dataToDelete.pesertas[pesertaIndex];
+      deletePerson(
+        "pesertas",
+        {
+          namaLengkap: `${dataToDelete.pesertas.length} peserta`,
+          idKontingen: dataToDelete.id,
+          fotoUrl: `pesertas/${id}-image`,
+          id: id,
+        },
+        dataToDelete,
+        toastId,
+        () => afterDeletePeserta(pesertaIndex)
+      );
+    } else {
+      deleteKontingen();
+    }
+  };
+
+  const afterDeletePeserta = (pesertaIndex: number) => {
+    if (pesertaIndex != 0) {
+      deletePesertas(pesertaIndex - 1);
+    } else {
+      deleteKontingen();
+    }
+  };
+
+  // DELETE KONTINGEN FINAL
+  const deleteKontingen = () => {
+    newToast(toastId, "loading", "Menghapus Kontingen");
+    deleteDoc(doc(firestore, "kontingens", dataToDelete.id))
+      .then(() => updateToast(toastId, "success", "Kontingen berhasil dihapus"))
+      .catch((error) => {
+        updateToast(
+          toastId,
+          "error",
+          `Gagal menghapus kontingen. ${error.code}`
+        );
+      })
+      .finally(() => {
+        refreshKontingens();
+        cancelDelete();
+      });
+  };
+
+  const cancelDelete = () => {
+    setDeleteRodal(false);
+    setDataToDelete(kontingenInitialValue);
+  };
+
   return (
     <div>
       <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
@@ -66,6 +167,15 @@ const TabelKontingenAdmin = () => {
       </h1>
 
       {/* <UpdateKontingen /> */}
+
+      {/* DELETE RODAL */}
+      <RodalKontingen
+        modalVisible={deleteRodal}
+        setModalVisible={setDeleteRodal}
+        dataToDelete={dataToDelete}
+        cancelDelete={cancelDelete}
+        deleteData={deleteData}
+      />
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
@@ -103,6 +213,7 @@ const TabelKontingenAdmin = () => {
               <br />
               Peserta
             </th>
+            <th>Delete</th>
             <th>Konfirmasi</th>
             <th>Email Pendaftar</th>
             <th>Waktu Pendaftaran</th>
@@ -200,6 +311,19 @@ const TabelKontingenAdmin = () => {
                   Rp.{" "}
                   {getKontingenUnpaid(kontingen, pesertas, true).toLocaleString(
                     "id"
+                  )}
+                </td>
+                <td>
+                  {getPesertasByKontingen(pesertas, kontingen.id).length ==
+                  0 ? (
+                    <button
+                      className="btn_red"
+                      onClick={() => handleDelete(kontingen)}
+                    >
+                      Delete
+                    </button>
+                  ) : (
+                    "-"
                   )}
                 </td>
                 <td>
