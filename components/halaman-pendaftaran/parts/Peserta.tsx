@@ -315,6 +315,7 @@ const Peserta = () => {
       {updating && (
         <FormPeserta
           data={data}
+          prevData={prevData}
           setData={setData}
           submitHandler={submitHandler}
           imageChangeHandler={imageChangeHandler}

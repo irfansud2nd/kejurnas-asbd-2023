@@ -15,6 +15,7 @@ import { useEffect } from "react";
 
 const FormPeserta = ({
   data,
+  prevData,
   setData,
   submitHandler,
   imageChangeHandler,
@@ -56,51 +57,58 @@ const FormPeserta = ({
 
   // DATA LISTENER TO CHANGE DEFAULT KATEGORI
   useEffect(() => {
-    let kategoriDefault =
-      data.jenisPertandingan == jenisPertandingan[0]
-        ? tingkatanKategori[
-            tingkatanKategori.findIndex(
-              (item) => item.tingkatan == data.tingkatanPertandingan
-            )
-          ].kategoriTanding[0]
-        : data.jenisKelamin == jenisKelamin[0]
-        ? tingkatanKategori[
-            tingkatanKategori.findIndex(
-              (item) => item.tingkatan == data.tingkatanPertandingan
-            )
-          ].kategoriSeni.putra[0]
-        : tingkatanKategori[
-            tingkatanKategori.findIndex(
-              (item) => item.tingkatan == data.tingkatanPertandingan
-            )
-          ].kategoriSeni.putri[0];
+    if (
+      prevData.tingkatanPertandingan != data.tingkatanPertandingan ||
+      prevData.jenisPertandingan != data.jenisPertandingan ||
+      prevData.jenisKelamin != data.jenisKelamin ||
+      prevData.sabuk != data.sabuk
+    ) {
+      let kategoriDefault =
+        data.jenisPertandingan == jenisPertandingan[0]
+          ? tingkatanKategori[
+              tingkatanKategori.findIndex(
+                (item) => item.tingkatan == data.tingkatanPertandingan
+              )
+            ].kategoriTanding[0]
+          : data.jenisKelamin == jenisKelamin[0]
+          ? tingkatanKategori[
+              tingkatanKategori.findIndex(
+                (item) => item.tingkatan == data.tingkatanPertandingan
+              )
+            ].kategoriSeni.putra[0]
+          : tingkatanKategori[
+              tingkatanKategori.findIndex(
+                (item) => item.tingkatan == data.tingkatanPertandingan
+              )
+            ].kategoriSeni.putri[0];
 
-    if (data.idKontingen) {
-      if (data.jenisPertandingan == jenisPertandingan[2]) {
-        const sabukDefault = data.sabuk
-          ? data.sabuk
-          : tingkatanKategoriJurusAsbd[0].sabuk;
-        const jurusDefault =
-          tingkatanKategoriJurusAsbd[
-            tingkatanKategoriJurusAsbd.findIndex(
-              (item) => item.sabuk == data.sabuk
-            )
-          ].jurus[0];
-        const kategoriDefaultAsbd =
-          data.jenisKelamin == jenisKelamin[0]
-            ? kategoriAsbd.putra[0]
-            : kategoriAsbd.putri[0];
-        setData({
-          ...data,
-          sabuk: sabukDefault,
-          jurus: jurusDefault,
-          kategoriPertandingan: kategoriDefaultAsbd,
-        });
-      } else {
-        setData({
-          ...data,
-          kategoriPertandingan: kategoriDefault,
-        });
+      if (data.idKontingen) {
+        if (data.jenisPertandingan == jenisPertandingan[2]) {
+          const sabukDefault = data.sabuk
+            ? data.sabuk
+            : tingkatanKategoriJurusAsbd[0].sabuk;
+          const jurusDefault =
+            tingkatanKategoriJurusAsbd[
+              tingkatanKategoriJurusAsbd.findIndex(
+                (item) => item.sabuk == data.sabuk
+              )
+            ].jurus[0];
+          const kategoriDefaultAsbd =
+            data.jenisKelamin == jenisKelamin[0]
+              ? kategoriAsbd.putra[0]
+              : kategoriAsbd.putri[0];
+          setData({
+            ...data,
+            sabuk: sabukDefault,
+            jurus: jurusDefault,
+            kategoriPertandingan: kategoriDefaultAsbd,
+          });
+        } else {
+          setData({
+            ...data,
+            kategoriPertandingan: kategoriDefault,
+          });
+        }
       }
     }
   }, [

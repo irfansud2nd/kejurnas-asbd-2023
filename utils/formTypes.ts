@@ -32,6 +32,7 @@ export type FormOfficialProps = {
 // FORM PESERTA PROPS
 export type FormPesertaProps = {
   data: PesertaState;
+  prevData: PesertaState;
   setData: React.Dispatch<React.SetStateAction<PesertaState>>;
   submitHandler: (e: React.FormEvent) => void;
   imageChangeHandler: (file: File) => void;
