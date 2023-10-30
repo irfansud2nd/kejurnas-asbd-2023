@@ -5,6 +5,7 @@ import TabelOfficialAdmin from "./tabels/TabelOfficialAdmin";
 import { kontingenInitialValue } from "@/utils/formConstants";
 import IdCard from "./id-card/IdCard";
 import CustomTabel from "./tabels/CustomTabel";
+import TabelPembayaranKontingen from "./tabels/TabelPembayaranKontingen";
 
 const TabelAdmin = () => {
   const {
@@ -41,6 +42,7 @@ const TabelAdmin = () => {
       {mode == "kontingen" && <TabelKontingenAdmin />}
       {(mode == "peserta" || selectedKontingen.id) && <TabelPesertaAdmin />}
       {(mode == "official" || selectedKontingen.id) && <TabelOfficialAdmin />}
+      {mode == "pembayaran" && <TabelPembayaranKontingen />}
     </div>
   );
 };

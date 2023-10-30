@@ -19,6 +19,9 @@ const DashboardAdmin = () => {
         <button className="btn_green" onClick={() => setMode("id")}>
           ID Card
         </button>
+        <button className="btn_green" onClick={() => setMode("pembayaran")}>
+          Tabel Pembayaran
+        </button>
       </div>
 
       {/* FIRST ROW */}
