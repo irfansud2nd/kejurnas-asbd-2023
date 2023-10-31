@@ -15,7 +15,7 @@ const Pembayaran = () => {
   if (!kontingens.length) {
     return (
       <div className="w-full bg-white rounded-md p-2 grid lg:grid-cols-2 gap-2">
-        <p className="text-red-500">Belum ada kontingen terdaftar</p>
+        <p className="text-red-500 font-bold">Belum ada kontingen terdaftar</p>
       </div>
     );
   }

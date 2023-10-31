@@ -77,10 +77,11 @@ const TabelPeserta = ({ handleDelete, handleEdit }: TabelProps) => {
                     </td>
                     {handleDelete && handleEdit ? (
                       <td>
-                        <TabelActionButtons
+                        {/* <TabelActionButtons
                           handleDelete={() => handleDelete(peserta)}
                           handleEdit={() => handleEdit(peserta)}
-                        />
+                        /> */}
+                        -
                       </td>
                     ) : (
                       <td className="whitespace-nowrap">

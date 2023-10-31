@@ -2,6 +2,7 @@ import { AdminContext } from "@/context/AdminContext";
 import TabelKuota from "./dashboard/TabelKuota";
 import TabelPembayaran from "./dashboard/TabelPembayaran";
 import InfoTerdaftar from "./dashboard/InfoTerdaftar";
+import TabelTingkatan from "./dashboard/TabelTingkatan";
 
 const DashboardAdmin = () => {
   const { refreshAll, setMode } = AdminContext();
@@ -16,9 +17,9 @@ const DashboardAdmin = () => {
         <button className="btn_green" onClick={() => setMode("custom")}>
           Custom Table
         </button>
-        <button className="btn_green" onClick={() => setMode("id")}>
+        {/* <button className="btn_green" onClick={() => setMode("id")}>
           ID Card
-        </button>
+        </button> */}
         <button className="btn_green" onClick={() => setMode("pembayaran")}>
           Tabel Pembayaran
         </button>
@@ -32,6 +33,9 @@ const DashboardAdmin = () => {
 
       {/* THIRD ROW */}
       <TabelKuota />
+
+      {/* FOURTH ROW */}
+      <TabelTingkatan />
     </div>
   );
 };
