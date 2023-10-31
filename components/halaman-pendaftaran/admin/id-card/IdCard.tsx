@@ -11,7 +11,7 @@ import {
   getPesertasByKontingen,
 } from "@/utils/adminFunctions";
 import test_foto from "@/public/images/pas-foto.jpg";
-import { findNamaKontingen } from "@/utils/sharedFunctions";
+import { compare, findNamaKontingen } from "@/utils/sharedFunctions";
 
 const IdCard = () => {
   const [pesertaFontSize, setPesertaFontSize] = useState("text-lg");
@@ -67,9 +67,11 @@ const IdCard = () => {
           }}
         >
           <option value=""></option>
-          {kontingens.map((kontingen: KontingenState) => (
-            <option value={kontingen.id}>{kontingen.namaKontingen}</option>
-          ))}
+          {kontingens
+            .sort(compare("namaKontingen", "asc"))
+            .map((kontingen: KontingenState) => (
+              <option value={kontingen.id}>{kontingen.namaKontingen}</option>
+            ))}
         </select>
       </div>
 
@@ -116,9 +118,20 @@ const IdCard = () => {
       </div>
       {selectedKontingen.id && (
         <>
-          <button onClick={handlePrint} className="btn_green mb-2">
-            Print
-          </button>
+          <div className="flex gap-2 mb-2">
+            <button onClick={handlePrint} className="btn_green">
+              Print
+            </button>
+            <button
+              onClick={() => {
+                setSelectedOfficials([]);
+                setSelectedPesertas([]);
+              }}
+              className="btn_green"
+            >
+              Clear
+            </button>
+          </div>
 
           <div
             ref={printRef}
