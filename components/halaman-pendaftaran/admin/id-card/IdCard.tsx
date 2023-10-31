@@ -125,8 +125,8 @@ const IdCard = () => {
             className="w-[1156px] h-[1634px] grid grid-cols-3 place-items-center"
           >
             {/* ID CARD PESERTA */}
-            {pesertas.length
-              ? pesertas.map((peserta: PesertaState) => (
+            {selectedPesertas.length
+              ? selectedPesertas.map((peserta: PesertaState) => (
                   <div className="p-5 border-2 border-red-500 mt-4">
                     <div className="h-[481px] relative bg-white">
                       <Image
@@ -151,7 +151,8 @@ const IdCard = () => {
                       <p
                         className={`absolute left-1/2 -translate-x-[48%] bottom-[108px] w-[290px] h-[20px] leading-none flex items-center justify-center text-center ${kontingenFontSize} font-bold z-[2] uppercase scale-75`}
                       >
-                        {findNamaKontingen(kontingens, peserta.idKontingen)}
+                        {/* {findNamaKontingen(kontingens, peserta.idKontingen)} */}
+                        {selectedKontingen.namaKontingen}
                       </p>
                       <p className="absolute left-1/2 -translate-x-[48%] bottom-[75px] text-xs font-bold z-[2] uppercase whitespace-nowrap scale-[.8]">
                         {peserta.kategoriPertandingan
@@ -167,8 +168,8 @@ const IdCard = () => {
             {/* ID CARD PESERTA */}
 
             {/* ID CARD OFFICIAL */}
-            {officials.length
-              ? officials.map((official: OfficialState) => (
+            {selectedOfficials.length
+              ? selectedOfficials.map((official: OfficialState) => (
                   <div className="p-5 border-2 border-red-500 mt-4">
                     <div className="h-[481px] relative">
                       <Image
@@ -193,7 +194,8 @@ const IdCard = () => {
                       <p
                         className={`absolute left-1/2 -translate-x-[48%] bottom-[70px] w-[290px] h-[30px] leading-none flex items-center justify-center text-center ${kontingenFontSize} font-bold z-[2] uppercase scale-75`}
                       >
-                        {findNamaKontingen(kontingens, official.idKontingen)}
+                        {/* {findNamaKontingen(kontingens, official.idKontingen)} */}
+                        {selectedKontingen.namaKontingen}
                       </p>
                     </div>
                   </div>
