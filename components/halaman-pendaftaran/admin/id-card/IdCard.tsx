@@ -11,6 +11,7 @@ import {
   getPesertasByKontingen,
 } from "@/utils/adminFunctions";
 import test_foto from "@/public/images/pas-foto.jpg";
+import { findNamaKontingen } from "@/utils/sharedFunctions";
 
 const IdCard = () => {
   const [pesertaFontSize, setPesertaFontSize] = useState("text-lg");
@@ -40,7 +41,7 @@ const IdCard = () => {
   const printRef = useRef(null);
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    documentTitle: selectedKontingen.namaKontingen.toUpperCase(),
+    documentTitle: "ID CARD ALL",
     onPrintError: () => alert("error"),
   });
 
@@ -121,87 +122,80 @@ const IdCard = () => {
 
           <div
             ref={printRef}
-            className="w-[818px] h-[1156px] grid grid-cols-2 place-items-center"
+            className="w-[1156px] h-[1634px] grid grid-cols-3 place-items-center"
           >
             {/* ID CARD PESERTA */}
-            {selectedPesertas.length
-              ? selectedPesertas.map((peserta) => (
-                  <div className="h-[576px] relative bg-green-500">
-                    <Image
-                      src={idCardPeserta}
-                      alt="idcard"
-                      className="w-fit h-full"
-                    />
-                    <div className="w-[96px] h-[127px] absolute left-[142px] top-[230px] z-[1]">
-                      <div className="bg-green-500 bg-opacity-50 w-full h-full relative">
-                        {/* <Image
-                          src={peserta.downloadFotoUrl}
-                          alt="pasfoto"
-                          fill
-                          className="object-cover"
-                        /> */}
-                        <img
-                          src={peserta.downloadFotoUrl}
-                          alt="pasfoto"
-                          className="w-[96px] h-[127px] object-cover"
-                        />
+            {pesertas.length
+              ? pesertas.map((peserta: PesertaState) => (
+                  <div className="p-5 border-2 border-red-500 mt-4">
+                    <div className="h-[481px] relative bg-white">
+                      <Image
+                        src={idCardPeserta}
+                        alt="idcard"
+                        className="w-fit h-full"
+                      />
+                      <div className="w-[80px] h-[106px] absolute left-[118px] top-[192px] z-[1]">
+                        <div className="bg-green-500 bg-opacity-50 w-full h-full relative">
+                          <img
+                            src={peserta.downloadFotoUrl}
+                            alt="pasfoto"
+                            className="w-[80px] h-[106px] object-cover"
+                          />
+                        </div>
                       </div>
+                      <p
+                        className={`absolute left-1/2 -translate-x-[48%] bottom-[142px] w-[225px] h-[20px] leading-none flex items-center justify-center text-center ${pesertaFontSize} font-bold z-[2] uppercase scale-75`}
+                      >
+                        {peserta.namaLengkap}
+                      </p>
+                      <p
+                        className={`absolute left-1/2 -translate-x-[48%] bottom-[108px] w-[290px] h-[20px] leading-none flex items-center justify-center text-center ${kontingenFontSize} font-bold z-[2] uppercase scale-75`}
+                      >
+                        {findNamaKontingen(kontingens, peserta.idKontingen)}
+                      </p>
+                      <p className="absolute left-1/2 -translate-x-[48%] bottom-[75px] text-xs font-bold z-[2] uppercase whitespace-nowrap scale-[.8]">
+                        {peserta.kategoriPertandingan
+                          .split("(")[0]
+                          .replace(/ Putra| Putri/g, "")}{" "}
+                        | {peserta.jenisKelamin} |{" "}
+                        {peserta.tingkatanPertandingan}
+                      </p>
                     </div>
-                    <p
-                      className={`absolute left-1/2 -translate-x-[48%] bottom-[172px] w-[225px] h-[20px] leading-none flex items-center justify-center text-center ${pesertaFontSize} font-bold z-[2] uppercase`}
-                    >
-                      {peserta.namaLengkap}
-                    </p>
-                    <p
-                      className={`absolute left-1/2 -translate-x-[48%] bottom-[130px] w-[290px] h-[20px] leading-none flex items-center justify-center text-center ${kontingenFontSize} font-bold z-[2] uppercase`}
-                    >
-                      {selectedKontingen.namaKontingen}
-                    </p>
-                    <p className="absolute left-1/2 -translate-x-[48%] bottom-[90px] text-sm font-bold z-[2] uppercase whitespace-nowrap">
-                      {peserta.kategoriPertandingan
-                        .split("(")[0]
-                        .replace(/ Putra| Putri/g, "")}{" "}
-                      | {peserta.jenisKelamin} | {peserta.tingkatanPertandingan}
-                    </p>
                   </div>
                 ))
               : null}
             {/* ID CARD PESERTA */}
 
             {/* ID CARD OFFICIAL */}
-            {selectedOfficials.length
-              ? selectedOfficials.map((official) => (
-                  <div className="h-[576px] relative">
-                    <Image
-                      src={idCardOfficial}
-                      alt="idcard"
-                      className="w-fit h-full"
-                    />
-                    <div className="w-[97px] h-[128px] absolute left-[141px] top-[230px] z-[1]">
-                      <div className="w-full h-full relative">
-                        {/* <Image
-                          src={official.downloadFotoUrl}
-                          alt="pasfoto"
-                          fill
-                          className="object-cover"
-                        /> */}
-                        <img
-                          src={official.downloadFotoUrl}
-                          alt="pasfoto"
-                          className="w-[97px] h-[128px] object-cover"
-                        />
+            {officials.length
+              ? officials.map((official: OfficialState) => (
+                  <div className="p-5 border-2 border-red-500 mt-4">
+                    <div className="h-[481px] relative">
+                      <Image
+                        src={idCardOfficial}
+                        alt="idcard"
+                        className="w-fit h-full"
+                      />
+                      <div className="w-[81px] h-[106px] absolute left-[118px] top-[192px] z-[1]">
+                        <div className="w-full h-full relative">
+                          <img
+                            src={official.downloadFotoUrl}
+                            alt="pasfoto"
+                            className="w-[81px] h-[106px] object-cover"
+                          />
+                        </div>
                       </div>
+                      <p
+                        className={`absolute left-1/2 -translate-x-[48%] bottom-[120px] w-[225px] h-[30px] leading-none flex items-center justify-center text-center ${officialFontSize} font-bold z-[2] uppercase scale-75`}
+                      >
+                        {official.namaLengkap}
+                      </p>
+                      <p
+                        className={`absolute left-1/2 -translate-x-[48%] bottom-[70px] w-[290px] h-[30px] leading-none flex items-center justify-center text-center ${kontingenFontSize} font-bold z-[2] uppercase scale-75`}
+                      >
+                        {findNamaKontingen(kontingens, official.idKontingen)}
+                      </p>
                     </div>
-                    <p
-                      className={`absolute left-1/2 -translate-x-[48%] bottom-[150px] w-[225px] h-[30px] leading-none flex items-center justify-center text-center ${officialFontSize} font-bold z-[2] uppercase`}
-                    >
-                      {official.namaLengkap}
-                    </p>
-                    <p
-                      className={`absolute left-1/2 -translate-x-[48%] bottom-[90px] w-[290px] h-[30px] leading-none flex items-center justify-center text-center ${kontingenFontSize} font-bold z-[2] uppercase`}
-                    >
-                      {selectedKontingen.namaKontingen}
-                    </p>
                   </div>
                 ))
               : null}
