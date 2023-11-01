@@ -15,7 +15,7 @@ import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 
 const FormPendaftaran = ({ nav }: { nav: string }) => {
-  const [showRodal, setShowRodal] = useState(true);
+  const [showRodal, setShowRodal] = useState(false);
   const { error } = FormContext();
   const { disable } = MyContext();
 

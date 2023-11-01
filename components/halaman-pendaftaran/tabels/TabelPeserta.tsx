@@ -40,11 +40,11 @@ const TabelPeserta = ({ handleDelete, handleEdit }: TabelProps) => {
                     {item}
                   </th>
                 ))}
-                {handleDelete && handleEdit ? (
+                {/* {handleDelete && handleEdit ? (
                   <th className="text-start">Aksi</th>
                 ) : (
                   <th>Status Pembayaran</th>
-                )}
+                )} */}
               </tr>
             </thead>
             <tbody>
@@ -75,13 +75,12 @@ const TabelPeserta = ({ handleDelete, handleEdit }: TabelProps) => {
                           "Tunggal" &&
                         ` | Tim ${peserta.namaTim}`}
                     </td>
-                    {handleDelete && handleEdit ? (
+                    {/* {handleDelete && handleEdit ? (
                       <td>
-                        {/* <TabelActionButtons
+                        <TabelActionButtons
                           handleDelete={() => handleDelete(peserta)}
                           handleEdit={() => handleEdit(peserta)}
-                        /> */}
-                        -
+                        />
                       </td>
                     ) : (
                       <td className="whitespace-nowrap">
@@ -99,7 +98,7 @@ const TabelPeserta = ({ handleDelete, handleEdit }: TabelProps) => {
                           <span className="text-red-500">Belum dibayar</span>
                         )}
                       </td>
-                    )}
+                    )} */}
                   </tr>
                 ))}
             </tbody>
