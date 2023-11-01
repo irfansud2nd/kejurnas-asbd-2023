@@ -16,7 +16,7 @@ const TopBar = () => {
         href="/"
         className="hidden sm:block col-span-6 lg:col-span-7 text-lg md:text-xl font-bold"
       >
-        <span className="hidden md:inline">Kejuraan Nasional</span>{" "}
+        <span className="hidden md:inline">Kejuaraan Nasional</span>{" "}
         <span className="hidden sm:inline md:hidden">Kejurnas</span> ASBD 2023
       </Link>
       <div className="w-full h-full col-span-2 sm:col-span-1 relative flex justify-end">
