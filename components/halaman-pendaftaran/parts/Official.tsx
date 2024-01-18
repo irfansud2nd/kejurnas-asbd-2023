@@ -207,17 +207,17 @@ const Official = () => {
       <div className="w-full bg-white rounded-md p-2">
         <TabelOfficial handleEdit={handleEdit} handleDelete={handleDelete} />
       </div>
-      {/* <FormOfficial
-          data={data}
-          setData={setData}
-          submitHandler={submitHandler}
-          imageChangeHandler={imageChangeHandler}
-          imagePreviewSrc={imagePreviewSrc}
-          setImageSelected={setImageSelected}
-          errorMessage={errorMessage}
-          reset={reset}
-          updating={updating}
-        /> */}
+      <FormOfficial
+        data={data}
+        setData={setData}
+        submitHandler={submitHandler}
+        imageChangeHandler={imageChangeHandler}
+        imagePreviewSrc={imagePreviewSrc}
+        setImageSelected={setImageSelected}
+        errorMessage={errorMessage}
+        reset={reset}
+        updating={updating}
+      />
     </div>
   );
 };

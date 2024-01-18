@@ -8,6 +8,7 @@ import { Metadata } from "next";
 import DownloadButton from "@/components/DownloadButton";
 import bw from "@/public/images/bg-bw.png";
 import { BsTicketPerforated } from "react-icons/bs";
+import RodalPortfolio from "@/components/rodals/RodalPortfolio";
 
 export const metadata: Metadata = {
   title: "Kerjurnas ASBD 2023",
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <main className="w-full h-full bg-red-500 bg-opacity-70 flex items-center">
+      <RodalPortfolio />
       <Head>
         <title>Kerjurnas ASBD 2023</title>
       </Head>

@@ -13,7 +13,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="text-sm md:text-base font-inter min-h-screen grid grid-rows-[auto_1fr_auto]">
-        <div className="w-screen h-screen overflow-hidden absolute -z-10">
+        <div className="w-full h-screen overflow-hidden absolute -z-10">
           <img
             src="/images/bg-bw.png"
             alt="bg-bw"

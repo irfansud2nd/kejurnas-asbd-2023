@@ -1,6 +1,6 @@
 "use client";
-import Authorized from "@/components/halaman-pendaftaran/admin/Authorized";
-import IsAuthorized from "@/components/halaman-pendaftaran/admin/IsAuthorized";
+import Authorized from "@/components/admin/Authorized";
+import IsAuthorized from "@/components/admin/IsAuthorized";
 import FullLoading from "@/components/loading/FullLoading";
 import { AdminContextProvider } from "@/context/AdminContext";
 import { MyContext } from "@/context/Context";
@@ -25,9 +25,9 @@ const AdminPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (user) checkAdminAuthorized(user);
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) checkAdminAuthorized(user);
+  // }, [user]);
 
   useEffect(() => {
     window.document.title = "Halaman Admin - Kejurnas ASBD 2023";

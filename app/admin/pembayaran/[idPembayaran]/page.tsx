@@ -1,6 +1,6 @@
 "use client";
-import IsAuthorized from "@/components/halaman-pendaftaran/admin/IsAuthorized";
-import PembayaranAdmin from "@/components/halaman-pendaftaran/admin/PembayaranAdmin";
+import IsAuthorized from "@/components/admin/IsAuthorized";
+import PembayaranAdmin from "@/components/admin/PembayaranAdmin";
 import { useEffect } from "react";
 
 const KonfirmasiPembayaranPage = ({

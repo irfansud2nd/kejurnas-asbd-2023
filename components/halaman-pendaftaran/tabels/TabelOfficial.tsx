@@ -38,9 +38,9 @@ const TabelOfficial = ({ handleDelete, handleEdit }: TabelProps) => {
                     {item}
                   </th>
                 ))}
-                {/* {handleDelete && handleEdit && (
+                {handleDelete && handleEdit && (
                   <th className="text-start">Aksi</th>
-                )} */}
+                )}
               </tr>
             </thead>
             <tbody>
@@ -56,14 +56,14 @@ const TabelOfficial = ({ handleDelete, handleEdit }: TabelProps) => {
                     <td className="whitespace-nowrap">
                       {findNamaKontingen(kontingens, official.idKontingen)}
                     </td>
-                    {/* {handleDelete && handleEdit && (
-                        <td>
-                          <TabelActionButtons
-                            handleDelete={() => handleDelete(official)}
-                            handleEdit={() => handleEdit(official)}
-                          />
-                        </td>
-                    )} */}
+                    {handleDelete && handleEdit && (
+                      <td>
+                        <TabelActionButtons
+                          handleDelete={() => handleDelete(official)}
+                          handleEdit={() => handleEdit(official)}
+                        />
+                      </td>
+                    )}
                   </tr>
                 ))}
             </tbody>

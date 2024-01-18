@@ -3,13 +3,13 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_KEY,
-  authDomain: "asbd-championship.firebaseapp.com",
-  projectId: "asbd-championship",
-  storageBucket: "asbd-championship.appspot.com",
-  messagingSenderId: "440750479331",
-  appId: "1:440750479331:web:4063edd5ef78635ebe72d6",
-  measurementId: "G-QCXQM69JJ9",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY_PORTFOLIO,
+  authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN_PORTFOLIO,
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID_PORTFOLIO,
+  storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET_PORTFOLIO,
+  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_USER_ID_PORTFOLIO,
+  appId: process.env.NEXT_PUBLIC_APP_ID_PORTFOLIO,
+  measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID_PORTFOLIO,
 };
 const app = initializeApp(firebaseConfig);
 export const firestore = getFirestore(app);

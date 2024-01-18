@@ -35,9 +35,9 @@ const TabelKontingen = ({ handleDelete, handleEdit }: TabelProps) => {
                     {item}
                   </th>
                 ))}
-                {/* {handleDelete && handleEdit && (
+                {handleDelete && handleEdit && (
                   <th className="text-start">Aksi</th>
-                )} */}
+                )}
               </tr>
             </thead>
             <tbody>
@@ -46,14 +46,14 @@ const TabelKontingen = ({ handleDelete, handleEdit }: TabelProps) => {
                   <td>{kontingen.namaKontingen}</td>
                   <td>{kontingen.officials.length}</td>
                   <td>{kontingen.pesertas.length}</td>
-                  {/* {handleDelete && handleEdit && (
+                  {handleDelete && handleEdit && (
                     <td>
                       <TabelActionButtons
                         handleDelete={() => handleDelete(kontingen)}
                         handleEdit={() => handleEdit(kontingen)}
                       />
                     </td>
-                  )} */}
+                  )}
                 </tr>
               ))}
             </tbody>
