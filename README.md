@@ -9,7 +9,7 @@ Kejuaaran Nasional ASBD is an annual event orginized by [Al-Azhar Seni Bela Diri
 
 Accommodating 1776 data consisting of:
 
-- 101 Kontingens
+- 101 Contingents
 - 1511 Athletes
 - 164 Officials
 
