@@ -10,7 +10,7 @@ import {
 import { KontingenState, OfficialState, PesertaState } from "./formTypes";
 import { firestore } from "./firebase";
 import Peserta from "@/components/halaman-pendaftaran/parts/Peserta";
-import { getGroupedPeserta, getGroupedUnpaidPeserta } from "./formFunctions";
+import { getGroupedPeserta } from "./peserta/pesertaFunctions";
 
 // GET KONTINGEN
 export const getAllKontingen = async () => {
@@ -117,11 +117,10 @@ export const getKontingenUnpaid = (
   });
 
   const filteredPesertas = getPesertasByKontingen(pesertas, kontingen.id);
+  const { nonAsbd, asbdTunggal, asbdRegu } =
+    getGroupedPeserta(filteredPesertas);
   let nominalToPay =
-    getGroupedPeserta(filteredPesertas).nonAsbd * 325000 +
-    getGroupedPeserta(filteredPesertas).asbdTunggal * 250000 +
-    getGroupedPeserta(filteredPesertas).asbdRegu * 225000 +
-    125000;
+    nonAsbd * 325000 + asbdTunggal * 250000 + asbdRegu * 225000 + 125000;
 
   if (byPeserta) {
     paidNominal = 0;
@@ -131,11 +130,8 @@ export const getKontingenUnpaid = (
         paidPesertas.push(peserta);
       }
     });
-    paidNominal +=
-      getGroupedPeserta(paidPesertas).nonAsbd * 325 +
-      getGroupedPeserta(paidPesertas).asbdTunggal * 250 +
-      getGroupedPeserta(paidPesertas).asbdRegu * 225 +
-      125;
+    const { nonAsbd, asbdTunggal, asbdRegu } = getGroupedPeserta(paidPesertas);
+    paidNominal += nonAsbd * 325 + asbdTunggal * 250 + asbdRegu * 225 + 125;
   }
 
   return nominalToPay - paidNominal * 1000;

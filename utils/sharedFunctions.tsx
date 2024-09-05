@@ -1,49 +1,50 @@
 import { Id, toast } from "react-toastify";
 import { KontingenState } from "./formTypes";
+import { ToastId } from "./constants";
 
 // NEW TOAST
-export const newToast = (
-  ref: React.MutableRefObject<Id | null>,
-  type: "loading" | "error",
-  message: string
-) => {
-  if (type == "loading") {
-    ref.current = toast.loading(message, {
-      position: "top-center",
-      theme: "colored",
-    });
-  } else {
-    ref.current = toast.error(message, {
-      position: "top-center",
-      autoClose: 5000,
-      closeButton: true,
-      theme: "colored",
-    });
-  }
-};
+// export const newToast = (
+//   ref: ToastId,
+//   type: "loading" | "error",
+//   message: string
+// ) => {
+//   if (type == "loading") {
+//     ref.current = toast.loading(message, {
+//       position: "top-center",
+//       theme: "colored",
+//     });
+//   } else {
+//     ref.current = toast.error(message, {
+//       position: "top-center",
+//       autoClose: 5000,
+//       closeButton: true,
+//       theme: "colored",
+//     });
+//   }
+// };
 
 // TOAST UPDATE
-export const updateToast = (
-  ref: React.MutableRefObject<Id | null>,
-  type: "success" | "error" | "loading",
-  message: string
-) => {
-  if (ref.current) {
-    if (type === "loading") {
-      toast.update(ref.current, {
-        render: message,
-      });
-    } else {
-      toast.update(ref.current, {
-        render: message,
-        type: type,
-        isLoading: false,
-        autoClose: 3000,
-        closeButton: true,
-      });
-    }
-  }
-};
+// export const updateToast = (
+//   ref: ToastId,
+//   type: "success" | "error" | "loading",
+//   message: string
+// ) => {
+//   if (ref.current) {
+//     if (type === "loading") {
+//       toast.update(ref.current, {
+//         render: message,
+//       });
+//     } else {
+//       toast.update(ref.current, {
+//         render: message,
+//         type: type,
+//         isLoading: false,
+//         autoClose: 3000,
+//         closeButton: true,
+//       });
+//     }
+//   }
+// };
 
 // FIND NAMA KONTINGEN
 export const findNamaKontingen = (kontingens: KontingenState[], id: string) => {
@@ -55,12 +56,12 @@ export const findNamaKontingen = (kontingens: KontingenState[], id: string) => {
 
 // CONTROL TOAST
 export const controlToast = (
-  ref: React.MutableRefObject<Id | null>,
+  ref: ToastId,
   type: "success" | "error" | "loading",
   message: string,
-  baru: boolean = false
+  isNew: boolean = false
 ) => {
-  if (baru) {
+  if (isNew) {
     if (type == "loading") {
       ref.current = toast.loading(message, {
         position: "top-center",

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { AiFillHome } from "react-icons/ai";
-import { newToast } from "@/utils/sharedFunctions";
+import { controlToast } from "@/utils/sharedFunctions";
 import { FormContext } from "@/context/FormContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,7 +23,7 @@ const FormPendaftaran = ({ nav }: { nav: string }) => {
 
   useEffect(() => {
     if (error) {
-      newToast(toastId, "error", error.message);
+      controlToast(toastId, "error", error.message, true);
     }
   }, [error]);
 

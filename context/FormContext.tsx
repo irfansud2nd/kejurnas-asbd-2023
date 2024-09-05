@@ -1,10 +1,13 @@
 "use client";
-// import { kontingenInitialValue } from "@/utils/formConstants";
+
 import { KontingenState, OfficialState, PesertaState } from "@/utils/formTypes";
 import { useState, useEffect, createContext, useContext, useRef } from "react";
 import { MyContext } from "./Context";
-import { getKontingen, getOfficials, getPesertas } from "@/utils/formFunctions";
 import { kontingenInitialValue } from "@/utils/formConstants";
+import { getKontingenByEmail } from "@/utils/kontingen/kontingenActions";
+import { getPesertasByEmail } from "@/utils/peserta/pesertaActions";
+import { getOfficialsByEmail } from "@/utils/official/officialActions";
+import { FirebaseError } from "firebase/app";
 
 const Context = createContext<any>(null);
 
@@ -17,7 +20,7 @@ export const FormContextProvider = ({
   const [error, setError] = useState<string | null>(null);
   const [pesertas, setPesertas] = useState<PesertaState[]>([]);
   const [officials, setOfficials] = useState<OfficialState[]>([]);
-  const [kontingensLoading, setkontingensLoading] = useState(true);
+  const [kontingensLoading, setKontingensLoading] = useState(true);
   const [officialsLoading, setOfficialsLoading] = useState(true);
   const [pesertasLoading, setPesertasLoading] = useState(true);
 
@@ -25,64 +28,122 @@ export const FormContextProvider = ({
 
   useEffect(() => {
     if (user) {
-      refreshKontingens();
-      refreshOfficials();
-      refreshPesertas();
+      fetchData();
     }
   }, [user]);
 
-  // GET KONTINGEN
-  const refreshKontingens = () => {
-    console.log("refreshKontingen");
-    setkontingensLoading(true);
-    getKontingen(user.uid)
-      .then((res: any) => {
-        setKontingens(res);
-        setkontingensLoading(false);
-      })
-      .catch((error) => setError(error));
+  const reduceData = (data: any[], key: string = "id") => {
+    const reducedData = Object.values(
+      data.reduce((acc, obj) => {
+        acc[obj[key]] = obj;
+        return acc;
+      }, {} as any)
+    );
+    return reducedData;
   };
 
-  // GET OFFICIALS
-  const refreshOfficials = () => {
-    console.log("refreshOfficials");
-    setOfficialsLoading(true);
-    getOfficials(user.uid)
-      .then((res: any) => {
-        setOfficials(res);
-        setOfficialsLoading(false);
-      })
-      .catch((error) => setError(error));
+  const fetchPesertas = async () => {
+    try {
+      setPesertasLoading(true);
+
+      const { result, error } = await getPesertasByEmail(user.email);
+
+      if (error) throw error;
+
+      setPesertas(result);
+      setPesertasLoading(false);
+    } catch (error: any) {
+      setError((error as FirebaseError).message);
+    }
   };
 
-  // GET PESERTA
-  const refreshPesertas = () => {
-    console.log("refreshPesertas");
-    setPesertasLoading(true);
-    getPesertas(user.uid)
-      .then((res: any) => {
-        setPesertas(res);
-        setPesertasLoading(false);
-      })
-      .catch((error) => setError(error));
+  const fetchOfficials = async () => {
+    try {
+      setOfficialsLoading(true);
+
+      const { result, error } = await getOfficialsByEmail(user.email);
+
+      if (error) throw error;
+
+      setOfficials(result);
+      setOfficialsLoading(false);
+    } catch (error: any) {
+      setError((error as FirebaseError).message);
+    }
   };
+
+  const fetchData = async () => {
+    fetchKontingen();
+    fetchPesertas();
+    fetchOfficials();
+  };
+
+  // KONTINGEN
+  // FETCH
+
+  const fetchKontingen = async () => {
+    try {
+      setKontingensLoading(true);
+
+      const { result, error } = await getKontingenByEmail(user.email);
+
+      if (error) throw error;
+
+      setKontingens(result);
+      setKontingensLoading(false);
+    } catch (error: any) {
+      setError((error as FirebaseError).message);
+    }
+  };
+
+  // ADD
+  const addKontingens = (newKontingens: KontingenState[]) => {
+    const data = reduceData([...kontingens, newKontingens]) as KontingenState[];
+    setKontingens(data);
+  };
+  // DELETE
+  const deleteKontingen = (idKontingen: string) => {
+    setKontingens(kontingens.filter((item) => item.id != idKontingen));
+  };
+
+  // PESERTA
+  // ADD
+  const addPesertas = (newPesertas: PesertaState[]) => {
+    const data = reduceData([...pesertas, newPesertas]) as PesertaState[];
+    setPesertas(data);
+  };
+  // DELETE
+  const deletePeserta = (idPeserta: string) => {
+    setPesertas(pesertas.filter((item) => item.id != idPeserta));
+  };
+
+  // OFFICIAL
+  // ADD
+  const addOfficials = (newOfficials: OfficialState[]) => {
+    const data = reduceData([...officials, newOfficials]) as OfficialState[];
+    setOfficials(data);
+  };
+  // DELETE
+  const deleteOfficial = (idOfficial: string) => {
+    setOfficials(officials.filter((item) => item.id != idOfficial));
+  };
+
   return (
     <Context.Provider
       value={{
-        error,
+        // error,
+        addKontingens,
+        deleteKontingen,
         kontingens,
         kontingensLoading,
-        setKontingens,
-        kontingenInitialValue,
-        refreshKontingens,
+        addPesertas,
+        deletePeserta,
         pesertas,
         pesertasLoading,
-        setPesertas,
-        refreshPesertas,
+        addOfficials,
+        deleteOfficial,
         officials,
         officialsLoading,
-        setOfficials,
-        refreshOfficials,
       }}
     >
       {children}
@@ -91,5 +152,18 @@ export const FormContextProvider = ({
 };
 
 export const FormContext = () => {
-  return useContext(Context);
+  return useContext(Context) as {
+    addKontingens: (kontingen: KontingenState[]) => void;
+    deleteKontingen: (kontingen: KontingenState) => void;
+    kontingens: KontingenState[];
+    kontingensLoading: boolean;
+    addPesertas: (peserta: PesertaState[]) => void;
+    deletePeserta: (peserta: PesertaState) => void;
+    pesertas: PesertaState[];
+    pesertasLoading: boolean;
+    addOfficials: (official: OfficialState[]) => void;
+    deleteOfficial: (official: OfficialState) => void;
+    officials: OfficialState[];
+    officialsLoading: boolean;
+  };
 };

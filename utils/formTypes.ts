@@ -20,9 +20,7 @@ export type FormOfficialProps = {
   data: OfficialState;
   imageChangeHandler: (file: File) => void;
   imagePreviewSrc: string;
-  setImageSelected: React.Dispatch<
-    React.SetStateAction<File | null | undefined>
-  >;
+  setImageSelected: React.Dispatch<React.SetStateAction<File | undefined>>;
   errorMessage: ErrorOfficial;
   setData: React.Dispatch<React.SetStateAction<OfficialState>>;
   reset: () => void;

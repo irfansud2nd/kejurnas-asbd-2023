@@ -2,7 +2,7 @@ import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
 import { firestore } from "@/utils/firebase";
 import { KontingenState } from "@/utils/formTypes";
-import { newToast, updateToast } from "@/utils/sharedFunctions";
+import { controlToast } from "@/utils/sharedFunctions";
 import { doc, updateDoc } from "firebase/firestore";
 import { useRef } from "react";
 import { ToastContainer } from "react-toastify";
@@ -17,17 +17,18 @@ const UpdateKontingen = () => {
   const updateAll = () => {
     const repeater = (index: number) => {
       if (index < 0) {
-        updateToast(toastId, "success", "Updating Complete");
+        controlToast(toastId, "success", "Updating Complete");
       } else {
         const selectedKontingen = kontingensToUpdate[index];
         if (index == kontingensToUpdate.length - 1) {
-          newToast(
+          controlToast(
             toastId,
             "loading",
-            `Updating kontingen ${index}, ${selectedKontingen.namaKontingen}`
+            `Updating kontingen ${index}, ${selectedKontingen.namaKontingen}`,
+            true
           );
         } else {
-          updateToast(
+          controlToast(
             toastId,
             "loading",
             `Updating kontingen ${index}, ${selectedKontingen.namaKontingen}`
@@ -40,7 +41,7 @@ const UpdateKontingen = () => {
         })
           .then(() => repeater(index - 1))
           .catch((error) =>
-            updateToast(
+            controlToast(
               toastId,
               "error",
               `Gagal update kontingen ${index}, ${selectedKontingen.namaKontingen}. ${error.code}`

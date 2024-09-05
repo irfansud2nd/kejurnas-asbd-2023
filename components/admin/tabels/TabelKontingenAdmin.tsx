@@ -10,7 +10,7 @@ import KonfirmasiButton from "../KonfirmasiButton";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import { useRef, useState, useEffect } from "react";
 import InlineLoading from "@/components/loading/InlineLoading";
-import { compare, newToast, updateToast } from "@/utils/sharedFunctions";
+import { compare, controlToast } from "@/utils/sharedFunctions";
 import UpdateKontingen from "../UpdateKontingen";
 import Link from "next/link";
 import { kontingenInitialValue } from "@/utils/formConstants";
@@ -139,11 +139,13 @@ const TabelKontingenAdmin = () => {
 
   // DELETE KONTINGEN FINAL
   const deleteKontingen = () => {
-    newToast(toastId, "loading", "Menghapus Kontingen");
+    controlToast(toastId, "loading", "Menghapus Kontingen", true);
     deleteDoc(doc(firestore, "kontingens", dataToDelete.id))
-      .then(() => updateToast(toastId, "success", "Kontingen berhasil dihapus"))
+      .then(() =>
+        controlToast(toastId, "success", "Kontingen berhasil dihapus")
+      )
       .catch((error) => {
-        updateToast(
+        controlToast(
           toastId,
           "error",
           `Gagal menghapus kontingen. ${error.code}`

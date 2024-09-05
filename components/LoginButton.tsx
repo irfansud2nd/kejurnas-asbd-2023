@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { newToast } from "@/utils/sharedFunctions";
 import InlineLoading from "./loading/InlineLoading";
+import { controlToast } from "@/utils/sharedFunctions";
 
 const LoginButton = () => {
   const { user, userLoading, googleLogin } = MyContext();
@@ -17,7 +17,7 @@ const LoginButton = () => {
     try {
       await googleLogin();
     } catch (error: any) {
-      newToast(toastId, "error", `Gagal login ${error.code}`);
+      controlToast(toastId, "error", `Gagal login ${error.code}`, true);
     }
   };
 

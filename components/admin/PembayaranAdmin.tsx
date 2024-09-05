@@ -6,9 +6,7 @@ import {
   jenisPertandingan,
   kontingenInitialValue,
 } from "@/utils/formConstants";
-import { getGroupedPeserta } from "@/utils/formFunctions";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
-import { newToast, updateToast } from "@/utils/sharedFunctions";
 import {
   arrayRemove,
   arrayUnion,
@@ -24,6 +22,8 @@ import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import "rodal/lib/rodal.css";
 import { ToastContainer } from "react-toastify";
 import { MyContext } from "@/context/Context";
+import { controlToast } from "@/utils/sharedFunctions";
+import { getGroupedPeserta } from "@/utils/peserta/pesertaFunctions";
 
 const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
   const [kontingen, setKontingen] = useState(kontingenInitialValue);
@@ -116,10 +116,9 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
         }
       });
 
-      total +=
-        getGroupedPeserta(container).nonAsbd * 325000 +
-        getGroupedPeserta(container).asbdTunggal * 250000 +
-        getGroupedPeserta(container).asbdRegu * 225000;
+      const { nonAsbd, asbdTunggal, asbdRegu } = getGroupedPeserta(container);
+
+      total += nonAsbd * 325000 + asbdTunggal * 250000 + asbdRegu * 225000;
 
       if (biayaKontingen && kontingen.biayaKontingen == idPembayaran) {
         total += 125000;
@@ -166,7 +165,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
 
   const konfirmasiPeserta = (index: number, time: number) => {
     if (index == pesertasToConfirm.length - 1)
-      newToast(toastId, "loading", "Mengkonfirmasi Pembayaran");
+      controlToast(toastId, "loading", "Mengkonfirmasi Pembayaran", true);
     if (index < 0) {
       konfirmasiKontingen(time);
     } else {
@@ -188,7 +187,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
   };
 
   const cancelPayment = () => {
-    newToast(toastId, "loading", "Membatalkan Pembayaran");
+    controlToast(toastId, "loading", "Membatalkan Pembayaran", true);
     if (confirm("Apakah anda Yakin")) {
       let container: string[] = [];
       pesertas.map((peserta) => container.push(peserta.id));
@@ -211,7 +210,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
       if (cancelPaymentKontingen) {
         deletePaymentKontingen();
       } else {
-        updateToast(toastId, "success", "Pembayaran Berhasil dibatalkan");
+        controlToast(toastId, "success", "Pembayaran Berhasil dibatalkan");
       }
     } else {
       updateDoc(doc(firestore, "pesertas", pesertaToDeletePayment[index]), {
@@ -271,7 +270,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
                 buktiUrl: infoPembayaran.buktiUrl,
               }),
             }).then(() =>
-              updateToast(toastId, "success", "Konfirmasi berhasil")
+              controlToast(toastId, "success", "Konfirmasi berhasil")
             );
           })
           .catch((error) => alert(error));
@@ -295,7 +294,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
       }),
     })
       .then(() =>
-        updateToast(toastId, "success", "Pembayaran Berhasil dibatalkan")
+        controlToast(toastId, "success", "Pembayaran Berhasil dibatalkan")
       )
       .catch((error) => alert(error));
   };

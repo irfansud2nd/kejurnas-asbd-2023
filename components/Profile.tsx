@@ -1,6 +1,5 @@
 "use client";
 import { MyContext } from "@/context/Context";
-import { newToast } from "@/utils/sharedFunctions";
 import Image from "next/image";
 import { useRef } from "react";
 import { BsGoogle } from "react-icons/bs";
@@ -8,6 +7,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import InlineLoading from "./loading/InlineLoading";
+import { controlToast } from "@/utils/sharedFunctions";
 const Profile = () => {
   const { user, userLoading, googleLogin, logout } = MyContext();
 
@@ -17,14 +17,14 @@ const Profile = () => {
     try {
       await googleLogin();
     } catch (error: any) {
-      newToast(toastId, "error", error.code);
+      controlToast(toastId, "error", error.code, true);
     }
   };
   const logoutHandler = async () => {
     try {
       await logout();
     } catch (error: any) {
-      newToast(toastId, "error", error.code);
+      controlToast(toastId, "error", error.code, true);
     }
   };
   return (

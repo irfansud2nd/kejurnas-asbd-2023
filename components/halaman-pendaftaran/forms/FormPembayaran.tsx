@@ -2,9 +2,9 @@ import InlineLoading from "@/components/loading/InlineLoading";
 import { MyContext } from "@/context/Context";
 import { FormContext } from "@/context/FormContext";
 import { firestore, storage } from "@/utils/firebase";
-import { limitImage } from "@/utils/formFunctions";
+import { validateImage } from "@/utils/formFunctions";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
-import { newToast, updateToast } from "@/utils/sharedFunctions";
+import { controlToast } from "@/utils/sharedFunctions";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Image from "next/image";
@@ -50,7 +50,7 @@ const FormPembayaran = ({
 
   // IMAGE CHANGE HANDLER
   const imageChangeHandler = (file: File) => {
-    if (limitImage(file, toastId)) {
+    if (validateImage(file, toastId)) {
       setImageSelected(file);
     }
   };
@@ -108,7 +108,12 @@ const FormPembayaran = ({
         sendPembayaran();
       }
     } else {
-      newToast(toastId, "error", "Tidak ada peserta yang harus dibayar");
+      controlToast(
+        toastId,
+        "error",
+        "Tidak ada peserta yang harus dibayar",
+        true
+      );
       reset();
     }
   };
@@ -116,7 +121,7 @@ const FormPembayaran = ({
   // SEND PEMBAYARAN
   const sendPembayaran = () => {
     if (!imageSelected) return;
-    newToast(toastId, "loading", "sending image");
+    controlToast(toastId, "loading", "Mengirim bukti pembayaran", true);
     setDisable(true);
     const time = Date.now();
     const idPembayaran = `${kontingenToPay.id}-${time}`;
@@ -125,7 +130,7 @@ const FormPembayaran = ({
     }`;
     uploadBytes(ref(storage, url), imageSelected).then((snapshot) =>
       getDownloadURL(snapshot.ref).then((downloadUrl) => {
-        updateToast(toastId, "loading", "sending url to pesertas");
+        controlToast(toastId, "loading", "sending url to pesertas");
         sendUrlToPesertas(
           downloadUrl,
           unpaidPeserta.length - 1,
@@ -158,14 +163,14 @@ const FormPembayaran = ({
           sendUrlToPesertasRepeater(url, pesertasIndex - 1, time, idPembayaran);
         })
         .catch((error) =>
-          updateToast(
+          controlToast(
             toastId,
             "error",
             `Gagal menyimpan data pembayaran ke peserta. ${error.code}`
           )
         );
     } else {
-      updateToast(toastId, "loading", "sending url to kontingen");
+      controlToast(toastId, "loading", "sending url to kontingen");
       sendUrlToKontingen(url, time, idPembayaran);
     }
   };
@@ -177,7 +182,7 @@ const FormPembayaran = ({
     idPembayaran: string
   ) => {
     if (pesertasIndex < 0) {
-      updateToast(toastId, "loading", "sending url to kontingen");
+      controlToast(toastId, "loading", "sending url to kontingen");
       sendUrlToKontingen(url, time, idPembayaran);
     } else {
       sendUrlToPesertas(url, pesertasIndex, time, idPembayaran);
@@ -213,7 +218,7 @@ const FormPembayaran = ({
         }),
       })
         .then(() => {
-          updateToast(
+          controlToast(
             toastId,
             "success",
             "Berhasil menyimpan bukti pembayaran"
@@ -222,7 +227,7 @@ const FormPembayaran = ({
         })
         .catch((error) => {
           alert(error);
-          updateToast(
+          controlToast(
             toastId,
             "error",
             `Gagal menyimpan data pembayaran ke kontingen ${error.code}`
@@ -232,7 +237,7 @@ const FormPembayaran = ({
           setDisable(false);
         });
     } else {
-      newToast(toastId, "error", "id undefined");
+      controlToast(toastId, "error", "id undefined", true);
     }
   };
 

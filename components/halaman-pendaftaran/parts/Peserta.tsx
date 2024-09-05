@@ -13,22 +13,23 @@ import { FormContext } from "@/context/FormContext";
 import TabelPeserta from "../tabels/TabelPeserta";
 import FormPeserta from "../forms/FormPeserta";
 import {
-  deletePerson,
-  getInputErrorPeserta,
-  limitImage,
-  sendPerson,
-  updatePerson,
+  deletePersonFinal,
+  sendPersonFinal,
+  updatePersonFinal,
+  validateImage,
 } from "@/utils/formFunctions";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "@/utils/firebase";
-import { newToast, updateToast } from "@/utils/sharedFunctions";
+import { controlToast } from "@/utils/sharedFunctions";
+import { getInputErrorPeserta } from "@/utils/peserta/pesertaFunctions";
+import { filterKontingenById } from "@/utils/kontingen/kontingenFunctions";
 
 const Peserta = () => {
   const [data, setData] = useState<PesertaState>(pesertaInitialValue);
   const [prevData, setPrevData] = useState<PesertaState>(pesertaInitialValue);
   const [updating, setUpdating] = useState<boolean>(false);
   const [dataToDelete, setDataToDelete] = useState(pesertaInitialValue);
-  const [imageSelected, setImageSelected] = useState<File | null>();
+  const [imageSelected, setImageSelected] = useState<File | undefined>();
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -39,19 +40,8 @@ const Peserta = () => {
   const [kuotaLoading, setKuotaLoading] = useState(false);
 
   const { user } = MyContext();
-  const {
-    kontingens,
-    refreshPesertas,
-    pesertasLoading,
-    kontingensLoading,
-    refreshKontingens,
-  }: {
-    kontingens: KontingenState[];
-    refreshPesertas: () => void;
-    refreshKontingens: () => void;
-    pesertasLoading: boolean;
-    kontingensLoading: boolean;
-  } = FormContext();
+  const { kontingens, kontingensLoading, addKontingens, addPesertas } =
+    FormContext();
   const toastId = useRef(null);
 
   // SET KONTINGEN AND USER INFO
@@ -68,7 +58,7 @@ const Peserta = () => {
 
   // RESETER
   const reset = () => {
-    setImageSelected(null);
+    setImageSelected(undefined);
     setImagePreviewSrc("");
     clearInputImage();
     setData({
@@ -78,8 +68,6 @@ const Peserta = () => {
       idKontingen: kontingens[0].id,
     });
     setSubmitClicked(false);
-    refreshPesertas();
-    refreshKontingens();
     setErrorMessage(errorPesertaInitialValue);
     setModalVisible(false);
     setDataToDelete(pesertaInitialValue);
@@ -175,7 +163,7 @@ const Peserta = () => {
 
   // IMAGE CHANGE HANDLER
   const imageChangeHandler = (file: File) => {
-    if (limitImage(file, toastId)) {
+    if (validateImage(file, toastId)) {
       setImageSelected(file);
     }
   };
@@ -197,13 +185,13 @@ const Peserta = () => {
       data.tingkatanPertandingan == "SMA" ||
       data.tingkatanPertandingan == "Dewasa"
     ) {
-      newToast(toastId, "loading", "Cek Kuota Kategori");
+      controlToast(toastId, "loading", "Cek Kuota Kategori");
       cekKuota().then((res) => {
         if (res) {
-          updateToast(toastId, "success", "Kuota Tersedia");
+          controlToast(toastId, "success", "Kuota Tersedia");
           sendPeserta();
         } else {
-          updateToast(
+          controlToast(
             toastId,
             "error",
             `Kuota Kategori yang dipilih sudah habis (Maks. 8 Orang)`
@@ -216,29 +204,47 @@ const Peserta = () => {
   };
 
   // SEND PESERTA
-  const sendPeserta = () => {
+  const sendPeserta = async () => {
     if (
-      getInputErrorPeserta(data, imagePreviewSrc, errorMessage, setErrorMessage)
-    ) {
-      if (!updating) {
-        if (imageSelected) {
-          sendPerson(
-            "peserta",
-            data,
-            imageSelected,
-            kontingens[
-              kontingens.findIndex(
-                (item: KontingenState) => item.id == data.idKontingen
-              )
-            ],
-            toastId,
-            reset
-          );
+      !getInputErrorPeserta(
+        data,
+        imagePreviewSrc,
+        errorMessage,
+        setErrorMessage
+      )
+    )
+      return;
+
+    if (!updating && imageSelected) {
+      const { person, kontingen } = await sendPersonFinal(
+        "peserta",
+        data,
+        imageSelected,
+        filterKontingenById(kontingens, data.idKontingen),
+        toastId
+      );
+
+      addPesertas([person as PesertaState]);
+      addKontingens([kontingen]);
+    } else {
+      const { person, kontingen } = await updatePersonFinal(
+        "peserta",
+        data,
+        toastId,
+        {
+          image: imageSelected,
+          kontingen: {
+            new: filterKontingenById(kontingens, data.idKontingen),
+            prev: filterKontingenById(kontingens, prevData.idKontingen),
+          },
         }
-      } else {
-        updateControl();
-      }
+      );
+
+      addPesertas([person as PesertaState]);
+      if (kontingen) addKontingens([kontingen.prev, kontingen.new]);
     }
+
+    reset();
   };
 
   // ERROR REMOVER
@@ -252,16 +258,6 @@ const Peserta = () => {
       );
     }
   }, [data, imageSelected, submitClicked]);
-
-  // UPDATE CONTROLLER
-  const updateControl = () => {
-    if (imageSelected) {
-      // updatePersonImage("peserta", data, toastId, imageSelected, reset);
-      updatePerson("peserta", prevData, data, toastId, reset, imageSelected);
-    } else {
-      updatePerson("peserta", prevData, data, toastId, reset);
-    }
-  };
 
   // EDIT BUTTON HANDLER
   const handleEdit = (data: PesertaState) => {
@@ -284,19 +280,19 @@ const Peserta = () => {
   };
 
   // DATA DELETER
-  const deleteData = () => {
+  const deleteData = async () => {
     setModalVisible(false);
-    deletePerson(
-      "pesertas",
+    const { person, kontingen } = await deletePersonFinal(
+      "peserta",
       dataToDelete,
-      kontingens[
-        kontingens.findIndex(
-          (item: KontingenState) => item.id == dataToDelete.idKontingen
-        )
-      ],
-      toastId,
-      reset
+      filterKontingenById(kontingens, dataToDelete.idKontingen),
+      toastId
     );
+
+    addPesertas([person as PesertaState]);
+    addKontingens([kontingen]);
+
+    reset();
   };
 
   return (

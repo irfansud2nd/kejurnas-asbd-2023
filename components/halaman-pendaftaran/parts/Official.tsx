@@ -16,19 +16,20 @@ import { FormContext } from "@/context/FormContext";
 import TabelOfficial from "../tabels/TabelOfficial";
 import FormOfficial from "../forms/FormOfficial";
 import {
-  deletePerson,
-  getInputErrorOfficial,
-  limitImage,
-  sendPerson,
-  updatePerson,
+  deletePersonFinal,
+  sendPersonFinal,
+  updatePersonFinal,
+  validateImage,
 } from "@/utils/formFunctions";
+import { getInputErrorOfficial } from "@/utils/official/officialFunctions";
+import { filterKontingenById } from "@/utils/kontingen/kontingenFunctions";
 
 const Official = () => {
   const [data, setData] = useState<OfficialState>(officialInitialValue);
   const [prevData, setPrevData] = useState<OfficialState>(officialInitialValue);
   const [updating, setUpdating] = useState<boolean>(false);
   const [dataToDelete, setDataToDelete] = useState(officialInitialValue);
-  const [imageSelected, setImageSelected] = useState<File | null>();
+  const [imageSelected, setImageSelected] = useState<File | undefined>();
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -37,13 +38,8 @@ const Official = () => {
   );
 
   const { user, disable, setDisable } = MyContext();
-  const {
-    kontingens,
-    refreshOfficials,
-    officialsLoading,
-    kontingensLoading,
-    refreshKontingens,
-  } = FormContext();
+  const { kontingens, kontingensLoading, addKontingens, addOfficials } =
+    FormContext();
   const toastId = useRef(null);
 
   useEffect(() => {
@@ -65,9 +61,7 @@ const Official = () => {
       creatorUid: user.uid,
       idKontingen: kontingens[0].id,
     });
-    setImageSelected(null);
-    refreshKontingens();
-    refreshOfficials();
+    setImageSelected(undefined);
     setModalVisible(false);
     setDataToDelete(officialInitialValue);
     setUpdating(false);
@@ -89,7 +83,7 @@ const Official = () => {
 
   // IMAGE CHANGE HANDLER
   const imageChangeHandler = (file: File) => {
-    if (limitImage(file, toastId)) {
+    if (validateImage(file, toastId)) {
       setImageSelected(file);
     }
   };
@@ -104,36 +98,48 @@ const Official = () => {
   }, [imageSelected]);
 
   // SUBMIT HANDLER
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitClicked(true);
     if (
-      getInputErrorOfficial(
+      !getInputErrorOfficial(
         data,
         imagePreviewSrc,
         errorMessage,
         setErrorMessage
       )
-    ) {
-      if (!updating) {
-        if (imageSelected) {
-          sendPerson(
-            "official",
-            data,
-            imageSelected,
-            kontingens[
-              kontingens.findIndex(
-                (item: KontingenState) => item.id == data.idKontingen
-              )
-            ],
-            toastId,
-            reset
-          );
+    )
+      return;
+    if (!updating && imageSelected) {
+      const { person, kontingen } = await sendPersonFinal(
+        "official",
+        data,
+        imageSelected,
+        filterKontingenById(kontingens, data.idKontingen),
+        toastId
+      );
+
+      addOfficials([person as OfficialState]);
+      addKontingens([kontingen]);
+    } else {
+      const { person, kontingen } = await updatePersonFinal(
+        "official",
+        data,
+        toastId,
+        {
+          image: imageSelected,
+          kontingen: {
+            new: filterKontingenById(kontingens, data.idKontingen),
+            prev: filterKontingenById(kontingens, prevData.idKontingen),
+          },
         }
-      } else {
-        updateControl();
-      }
+      );
+
+      addOfficials([person as OfficialState]);
+      if (kontingen) addKontingens([kontingen.prev, kontingen.new]);
     }
+
+    reset();
   };
 
   // ERROR REMOVER
@@ -155,16 +161,6 @@ const Official = () => {
     }
   }, [updating, data.downloadFotoUrl]);
 
-  // UPDATE CONTROLLER
-  const updateControl = () => {
-    if (imageSelected) {
-      // updatePersonImage("official", data, toastId, imageSelected, reset);
-      updatePerson("official", prevData, data, toastId, reset, imageSelected);
-    } else {
-      updatePerson("official", prevData, data, toastId, reset);
-    }
-  };
-
   // EDIT BUTTON HANDLER
   const handleEdit = (data: OfficialState) => {
     setData(data);
@@ -179,19 +175,19 @@ const Official = () => {
   };
 
   // DELETE OFFICIAL START
-  const deleteData = () => {
+  const deleteData = async () => {
     setModalVisible(false);
-    deletePerson(
-      "officials",
+    const { person, kontingen } = await deletePersonFinal(
+      "official",
       dataToDelete,
-      kontingens[
-        kontingens.findIndex(
-          (item: KontingenState) => item.id == data.idKontingen
-        )
-      ],
-      toastId,
-      reset
+      filterKontingenById(kontingens, dataToDelete.idKontingen),
+      toastId
     );
+
+    addOfficials([person as OfficialState]);
+    addKontingens([kontingen]);
+
+    reset();
   };
 
   return (

@@ -6,7 +6,6 @@ import { KontingenState } from "@/utils/formTypes";
 import { kontingenInitialValue } from "@/utils/formConstants";
 import { useEffect, useRef, useState } from "react";
 import { MyContext } from "@/context/Context";
-import { newToast, updateToast } from "@/utils/sharedFunctions";
 import { collection, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { firestore } from "@/utils/firebase";
 import { ToastContainer } from "react-toastify";
@@ -15,6 +14,7 @@ import RodalKontingen from "../rodals/RodalKontingen";
 import { deletePerson } from "@/utils/formFunctions";
 import FormKontingen from "../forms/FormKontingen";
 import InlineLoading from "@/components/loading/InlineLoading";
+import { controlToast } from "@/utils/sharedFunctions";
 
 const Kontingen = () => {
   const [data, setData] = useState<KontingenState>(kontingenInitialValue);
@@ -51,7 +51,7 @@ const Kontingen = () => {
       if (!updating) {
         // ADD NEW KONTINGEN
         setDisable(true);
-        newToast(toastId, "loading", "Mendaftarkan Kontingen");
+        controlToast(toastId, "loading", "Mendaftarkan Kontingen", true);
         const newDocRef = doc(collection(firestore, "kontingens"));
         setDoc(newDocRef, {
           ...data,
@@ -59,10 +59,10 @@ const Kontingen = () => {
           waktuPendaftaran: Date.now(),
         })
           .then(() => {
-            updateToast(toastId, "success", "Kontingen berhasil didaftarkan");
+            controlToast(toastId, "success", "Kontingen berhasil didaftarkan");
           })
           .catch((error) =>
-            updateToast(
+            controlToast(
               toastId,
               "error",
               `Gagal mendaftarkan kontingen. ${error.code}`
@@ -75,16 +75,16 @@ const Kontingen = () => {
       } else {
         // UPDATE DATA
         setDisable(true);
-        newToast(toastId, "loading", "Mengubah Data Kontingen");
+        controlToast(toastId, "loading", "Mengubah Data Kontingen", true);
         setDoc(doc(firestore, "kontingens", data.id), {
           ...data,
           waktuPerubahan: Date.now(),
         })
           .then(() => {
-            updateToast(toastId, "success", "Data berhasil dirubah");
+            controlToast(toastId, "success", "Data berhasil dirubah");
           })
           .catch((error) =>
-            updateToast(toastId, "error", `Gagal mengubah data. ${error.code}`)
+            controlToast(toastId, "error", `Gagal mengubah data. ${error.code}`)
           )
           .finally(() => {
             reset();
@@ -193,11 +193,13 @@ const Kontingen = () => {
 
   // DELETE KONTINGEN FINAL
   const deleteKontingen = () => {
-    newToast(toastId, "loading", "Menghapus Kontingen");
+    controlToast(toastId, "loading", "Menghapus Kontingen", true);
     deleteDoc(doc(firestore, "kontingens", dataToDelete.id))
-      .then(() => updateToast(toastId, "success", "Kontingen berhasil dihapus"))
+      .then(() =>
+        controlToast(toastId, "success", "Kontingen berhasil dihapus")
+      )
       .catch((error) => {
-        updateToast(
+        controlToast(
           toastId,
           "error",
           `Gagal menghapus kontingen. ${error.code}`

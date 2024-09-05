@@ -1,7 +1,6 @@
 import { MyContext } from "@/context/Context";
 import { firestore } from "@/utils/firebase";
 import { KontingenState } from "@/utils/formTypes";
-import { newToast, updateToast } from "@/utils/sharedFunctions";
 import {
   arrayRemove,
   arrayUnion,
@@ -19,6 +18,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AdminContext } from "@/context/AdminContext";
 import Link from "next/link";
+import { controlToast } from "@/utils/sharedFunctions";
 
 const KonfirmasiButton = ({
   idPembayaran,
@@ -72,7 +72,7 @@ const KonfirmasiButton = ({
   };
 
   const konfirmasiPeserta = (index: number, time: number) => {
-    newToast(toastId, "loading", "Mengkonfirmasi Pembayaran");
+    controlToast(toastId, "loading", "Mengkonfirmasi Pembayaran", true);
     updateDoc(doc(firestore, "pesertas", pesertasToConfirm[index]), {
       confirmedPembayaran: true,
       infoKonfirmasi: {
@@ -111,7 +111,7 @@ const KonfirmasiButton = ({
           .then(() => {
             setRodalVisible(false);
             refreshKontingens();
-            updateToast(toastId, "success", "Konfirmasi berhasil");
+            controlToast(toastId, "success", "Konfirmasi berhasil");
           })
           .catch((error) => alert(error));
       })
