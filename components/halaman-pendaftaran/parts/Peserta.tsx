@@ -2,6 +2,7 @@ import {
   errorPesertaInitialValue,
   jenisPertandingan,
   pesertaInitialValue,
+  tingkatanKategori,
 } from "@/utils/formConstants";
 import { ErrorPeserta, KontingenState, PesertaState } from "@/utils/formTypes";
 import { useEffect, useRef, useState } from "react";
@@ -18,11 +19,11 @@ import {
   updatePersonFinal,
   validateImage,
 } from "@/utils/formFunctions";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { firestore } from "@/utils/firebase";
 import { controlToast } from "@/utils/sharedFunctions";
 import { getInputErrorPeserta } from "@/utils/peserta/pesertaFunctions";
 import { filterKontingenById } from "@/utils/kontingen/kontingenFunctions";
+import { countMatch } from "@/utils/peserta/pesertaActions";
+import { toastError } from "@/utils/functions";
 
 const Peserta = () => {
   const [data, setData] = useState<PesertaState>(pesertaInitialValue);
@@ -109,56 +110,107 @@ const Peserta = () => {
     let kuotaGanda = kuota * 2;
     let kuotaRegu = kuota * 3;
     setKuotaLoading(true);
-    const q = query(
-      collection(firestore, "pesertas"),
-      where("tingkatanPertandingan", "==", data.tingkatanPertandingan),
-      where("kategoriPertandingan", "==", data.kategoriPertandingan),
-      where("jenisKelamin", "==", data.jenisKelamin)
-    );
-    return getDocs(q)
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          if (data.kategoriPertandingan.includes("Regu")) {
-            kuotaRegu -= 1;
-          } else if (data.kategoriPertandingan.includes("Ganda")) {
-            kuotaGanda -= 1;
-          } else {
-            kuota -= 1;
-          }
-        });
-        if (
-          updating &&
-          prevData.kategoriPertandingan == data.kategoriPertandingan &&
-          prevData.jenisKelamin == data.jenisKelamin &&
-          prevData.jenisPertandingan == data.jenisPertandingan
-        ) {
-          if (data.kategoriPertandingan.includes("Regu")) {
-            kuotaRegu += 1;
-          } else if (data.kategoriPertandingan.includes("Ganda")) {
-            kuotaGanda += 1;
-          } else {
-            kuota += 1;
-          }
-        }
+
+    try {
+      const { result: count, error } = await countMatch(
+        data.tingkatanPertandingan,
+        data.kategoriPertandingan,
+        data.jenisKelamin
+      );
+      if (error) throw error;
+
+      if (data.kategoriPertandingan.includes("Regu")) {
+        kuotaRegu -= count;
+      } else if (data.kategoriPertandingan.includes("Ganda")) {
+        kuotaGanda -= count;
+      } else {
+        kuota -= count;
+      }
+
+      if (
+        updating &&
+        prevData.kategoriPertandingan == data.kategoriPertandingan &&
+        prevData.jenisKelamin == data.jenisKelamin &&
+        prevData.jenisPertandingan == data.jenisPertandingan
+      ) {
         if (data.kategoriPertandingan.includes("Regu")) {
-          return kuotaRegu;
+          kuotaRegu += 1;
         } else if (data.kategoriPertandingan.includes("Ganda")) {
-          return kuotaGanda;
+          kuotaGanda += 1;
         } else {
-          return kuota;
+          kuota += 1;
         }
-      })
-      .finally(() => {
-        if (data.kategoriPertandingan.includes("Regu")) {
-          setKuotaKelas(kuotaRegu);
-        } else if (data.kategoriPertandingan.includes("Ganda")) {
-          setKuotaKelas(kuotaGanda);
-        } else {
-          setKuotaKelas(kuota);
-        }
-        // setKuotaKelas(kuota);
-        setKuotaLoading(false);
-      });
+      }
+      if (data.kategoriPertandingan.includes("Regu")) {
+        return kuotaRegu;
+      } else if (data.kategoriPertandingan.includes("Ganda")) {
+        return kuotaGanda;
+      } else {
+        return kuota;
+      }
+    } catch (error) {
+      toastError(toastId, error);
+      return;
+    } finally {
+      if (data.kategoriPertandingan.includes("Regu")) {
+        setKuotaKelas(kuotaRegu);
+      } else if (data.kategoriPertandingan.includes("Ganda")) {
+        setKuotaKelas(kuotaGanda);
+      } else {
+        setKuotaKelas(kuota);
+      }
+      setKuotaLoading(false);
+    }
+
+    // const q = query(
+    //   collection(firestore, "pesertas"),
+    //   where("tingkatanPertandingan", "==", data.tingkatanPertandingan),
+    //   where("kategoriPertandingan", "==", data.kategoriPertandingan),
+    //   where("jenisKelamin", "==", data.jenisKelamin)
+    // );
+    // return getDocs(q)
+    //   .then((querySnapshot) => {
+    //     querySnapshot.forEach((doc) => {
+    //       if (data.kategoriPertandingan.includes("Regu")) {
+    //         kuotaRegu -= 1;
+    //       } else if (data.kategoriPertandingan.includes("Ganda")) {
+    //         kuotaGanda -= 1;
+    //       } else {
+    //         kuota -= 1;
+    //       }
+    //     });
+    //     if (
+    //       updating &&
+    //       prevData.kategoriPertandingan == data.kategoriPertandingan &&
+    //       prevData.jenisKelamin == data.jenisKelamin &&
+    //       prevData.jenisPertandingan == data.jenisPertandingan
+    //     ) {
+    //       if (data.kategoriPertandingan.includes("Regu")) {
+    //         kuotaRegu += 1;
+    //       } else if (data.kategoriPertandingan.includes("Ganda")) {
+    //         kuotaGanda += 1;
+    //       } else {
+    //         kuota += 1;
+    //       }
+    //     }
+    //     if (data.kategoriPertandingan.includes("Regu")) {
+    //       return kuotaRegu;
+    //     } else if (data.kategoriPertandingan.includes("Ganda")) {
+    //       return kuotaGanda;
+    //     } else {
+    //       return kuota;
+    //     }
+    //   })
+    //   .finally(() => {
+    //     if (data.kategoriPertandingan.includes("Regu")) {
+    //       setKuotaKelas(kuotaRegu);
+    //     } else if (data.kategoriPertandingan.includes("Ganda")) {
+    //       setKuotaKelas(kuotaGanda);
+    //     } else {
+    //       setKuotaKelas(kuota);
+    //     }
+    //     setKuotaLoading(false);
+    //   });
   };
 
   // IMAGE CHANGE HANDLER

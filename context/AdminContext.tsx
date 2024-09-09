@@ -5,13 +5,15 @@ import { useState, useEffect, createContext, useContext, useRef } from "react";
 import { MyContext } from "./Context";
 import { kontingenInitialValue } from "@/utils/formConstants";
 import {
+  getOfficialsByKontingen,
+  getPesertasByKontingen,
+} from "@/utils/admin/adminFunctions";
+import InlineLoading from "@/components/loading/InlineLoading";
+import {
   getAllKontingen,
   getAllOfficial,
   getAllPeserta,
-  getOfficialsByKontingen,
-  getPesertasByKontingen,
-} from "@/utils/adminFunctions";
-import InlineLoading from "@/components/loading/InlineLoading";
+} from "@/utils/admin/adminActions";
 
 const Context = createContext<any>(null);
 
@@ -66,40 +68,48 @@ export const AdminContextProvider = ({
   };
 
   // GET KONTINGEN
-  const refreshKontingens = () => {
+  const refreshKontingens = async () => {
     setSelectedKontingen(kontingenInitialValue);
     setKontingensLoading(true);
-    getAllKontingen()
-      .then((res: any) => {
-        setKontingens(res);
-        setKontingensLoading(false);
-      })
-      .catch((error) => setError(error));
+    try {
+      const { result, error } = await getAllKontingen();
+      if (error) throw error;
+
+      setKontingens(result);
+      setKontingensLoading(false);
+    } catch (error) {
+      setError((error as { message: string }).message);
+    }
+  };
+
+  // GET PESERTAS
+  const refreshPesertas = async () => {
+    setSelectedKontingen(kontingenInitialValue);
+    setPesertasLoading(true);
+    try {
+      const { result, error } = await getAllPeserta();
+      if (error) throw error;
+
+      setPesertas(result);
+      setPesertasLoading(false);
+    } catch (error) {
+      setError((error as { message: string }).message);
+    }
   };
 
   // GET OFFICIALS
-  const refreshOfficials = () => {
+  const refreshOfficials = async () => {
     setSelectedKontingen(kontingenInitialValue);
     setOfficialsLoading(true);
-    getAllOfficial()
-      .then((res: any) => {
-        setOfficials(res);
-        setOfficialsLoading(false);
-      })
-      .catch((error) => setError(error));
-  };
+    try {
+      const { result, error } = await getAllOfficial();
+      if (error) throw error;
 
-  // GET PESERTA
-  const refreshPesertas = () => {
-    setSelectedKontingen(kontingenInitialValue);
-    console.log("refreshPesertas");
-    setPesertasLoading(true);
-    getAllPeserta()
-      .then((res: any) => {
-        setPesertas(res);
-        setPesertasLoading(false);
-      })
-      .catch((error) => setError(error));
+      setOfficials(result);
+      setOfficialsLoading(false);
+    } catch (error) {
+      setError((error as { message: string }).message);
+    }
   };
 
   useEffect(() => {

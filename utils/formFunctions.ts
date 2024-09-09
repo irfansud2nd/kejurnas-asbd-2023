@@ -1,44 +1,17 @@
-import {
-  DocumentData,
-  arrayRemove,
-  arrayUnion,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { firestore, storage } from "./firebase";
-import {
-  ErrorOfficial,
-  ErrorPeserta,
-  KontingenState,
-  OfficialState,
-  PesertaState,
-} from "./formTypes";
+import { DocumentData, collection, doc } from "firebase/firestore";
+import { KontingenState, OfficialState, PesertaState } from "./formTypes";
 import { controlToast } from "./sharedFunctions";
-import { Id } from "react-toastify";
-import {
-  deleteObject,
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
-import { jenisPertandingan } from "./formConstants";
 import { isFileValid, sendFile, toastError } from "./functions";
 import {
   createData,
   deleteData,
   deleteFile,
-  getNewDocRef,
+  getNewDocId,
   updateData,
 } from "./actions";
 import { managePersonOnKontingen } from "./kontingen/kontingenActions";
-import { FirebaseError } from "firebase/app";
 import { ToastId } from "./constants";
+import { firestore } from "./firebase";
 
 // VALIDATE IMAGE
 export const validateImage = (file: File, toastId: ToastId) => {
@@ -66,8 +39,8 @@ export const sendPersonFinal = async (
   toastId: ToastId
 ) => {
   try {
-    const newDocRef = await getNewDocRef(type + "s");
-    const { id } = newDocRef;
+    const id = await getNewDocId(type + "s");
+    console.log({ id });
 
     // UPLOAD IMAGE
     const fileUrl = getFileUrl(type, id);
@@ -77,7 +50,7 @@ export const sendPersonFinal = async (
     // UPLOAD PERSON
     controlToast(toastId, "loading", `Mendaftarkan ${type}`);
     const { result: newPerson, error: personError } = await createData(
-      newDocRef,
+      type + "s",
       {
         ...person,
         id,
@@ -201,4 +174,11 @@ export const deletePersonFinal = async (
     toastError(toastId, error);
     throw error;
   }
+};
+
+export const totalToNominal = (total: number, noHp: string) => {
+  return `Rp. ${(total / 1000).toLocaleString("id")}.${noHp
+    .split("")
+    .slice(-3)
+    .join("")}`;
 };

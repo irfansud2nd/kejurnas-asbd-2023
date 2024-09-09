@@ -30,3 +30,10 @@ export const getInputErrorOfficial = (
     return false;
   }
 };
+
+export const filterOfficialByIdKontingen = (
+  officials: OfficialState[],
+  idKontingen: string
+) => {
+  return officials.filter((item) => item.idKontingen == idKontingen);
+};

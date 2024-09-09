@@ -13,6 +13,7 @@ import { KontingenState } from "../formTypes";
 import { firestore } from "../firebase";
 import { ServerAction } from "../constants";
 import { action } from "../functions";
+import { kontingenInitialValue } from "../formConstants";
 
 // GET KONTINGEN
 export const getKontingenByEmail = async (
@@ -29,6 +30,27 @@ export const getKontingenByEmail = async (
     querySnapshot.forEach((doc) => result.push(doc.data()));
 
     return action.success(result as KontingenState[]);
+  } catch (error) {
+    return action.error(error);
+  }
+};
+
+export const getKontingenByIdPembayaran = async (
+  idPembayaran: string
+): Promise<ServerAction<KontingenState>> => {
+  try {
+    let kontingen: KontingenState | undefined = undefined;
+    const snapshot = await getDocs(
+      query(
+        collection(firestore, "kontingens"),
+        where("idPembayaran", "array-contains", idPembayaran)
+      )
+    );
+    snapshot.forEach((doc) => (kontingen = doc.data() as KontingenState));
+
+    if (!kontingen) throw { message: "Kontingen not found" };
+
+    return action.success(kontingen);
   } catch (error) {
     return action.error(error);
   }

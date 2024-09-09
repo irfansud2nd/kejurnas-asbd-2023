@@ -9,7 +9,7 @@ import { KontingenState, OfficialState, PesertaState } from "@/utils/formTypes";
 import {
   getOfficialsByKontingen,
   getPesertasByKontingen,
-} from "@/utils/adminFunctions";
+} from "@/utils/admin/adminFunctions";
 import test_foto from "@/public/images/pas-foto.jpg";
 import { compare, findNamaKontingen } from "@/utils/sharedFunctions";
 import { ImGit } from "react-icons/im";

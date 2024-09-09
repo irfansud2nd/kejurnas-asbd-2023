@@ -1,15 +1,6 @@
 import { FormContext } from "@/context/FormContext";
-import {
-  KontingenState,
-  OfficialState,
-  PesertaState,
-  TabelProps,
-} from "@/utils/formTypes";
+import { KontingenState, TabelProps } from "@/utils/formTypes";
 import TabelActionButtons from "./TabelActionButtons";
-import {
-  getOfficialsByKontingen,
-  getPesertasByKontingen,
-} from "@/utils/adminFunctions";
 import InlineLoading from "@/components/loading/InlineLoading";
 
 const TabelKontingen = ({ handleDelete, handleEdit }: TabelProps) => {

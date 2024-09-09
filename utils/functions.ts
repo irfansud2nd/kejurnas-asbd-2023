@@ -51,3 +51,17 @@ export const toastError = (
     isNew
   );
 };
+
+export const fetchData = async <T>(
+  asyncFunction: () => Promise<ServerAction<T>>
+): Promise<T> => {
+  try {
+    const { result, error } = await asyncFunction();
+
+    if (error) throw error;
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -89,7 +89,7 @@ export type KontingenState = {
   infoPembayaran: {
     idPembayaran: string;
     noHp: string;
-    waktu: string;
+    waktu: number;
     buktiUrl: string;
     nominal: string;
   }[];
@@ -97,7 +97,7 @@ export type KontingenState = {
     idPembayaran: string;
     nama: string;
     email: string;
-    waktu: string;
+    waktu: number;
   }[];
 };
 
@@ -146,12 +146,12 @@ export type PesertaState = {
   confirmedPembayaran: boolean;
   infoPembayaran: {
     noHp: string;
-    waktu: string;
+    waktu: number;
     buktiUrl: string;
   };
   infoKonfirmasi: {
     nama: string;
     email: string;
-    waktu: string;
+    waktu: number;
   };
 };

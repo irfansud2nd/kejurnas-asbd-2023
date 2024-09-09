@@ -98,40 +98,43 @@ export const FormContextProvider = ({
 
   // ADD
   const addKontingens = (newKontingens: KontingenState[]) => {
-    const data = reduceData([...kontingens, newKontingens]) as KontingenState[];
+    const data = reduceData([
+      ...kontingens,
+      ...newKontingens,
+    ]) as KontingenState[];
     setKontingens(data);
   };
   // DELETE
-  const deleteKontingen = (idKontingen: string) => {
-    setKontingens(kontingens.filter((item) => item.id != idKontingen));
+  const deleteKontingen = (id: string) => {
+    setKontingens(kontingens.filter((item) => item.id != id));
   };
 
   // PESERTA
   // ADD
   const addPesertas = (newPesertas: PesertaState[]) => {
-    const data = reduceData([...pesertas, newPesertas]) as PesertaState[];
+    const data = reduceData([...pesertas, ...newPesertas]) as PesertaState[];
     setPesertas(data);
   };
   // DELETE
-  const deletePeserta = (idPeserta: string) => {
-    setPesertas(pesertas.filter((item) => item.id != idPeserta));
+  const deletePeserta = (id: string) => {
+    setPesertas(pesertas.filter((item) => item.id != id));
   };
 
   // OFFICIAL
   // ADD
   const addOfficials = (newOfficials: OfficialState[]) => {
-    const data = reduceData([...officials, newOfficials]) as OfficialState[];
+    const data = reduceData([...officials, ...newOfficials]) as OfficialState[];
     setOfficials(data);
   };
   // DELETE
-  const deleteOfficial = (idOfficial: string) => {
-    setOfficials(officials.filter((item) => item.id != idOfficial));
+  const deleteOfficial = (id: string) => {
+    setOfficials(officials.filter((item) => item.id != id));
   };
 
   return (
     <Context.Provider
       value={{
-        // error,
+        error,
         addKontingens,
         deleteKontingen,
         kontingens,
@@ -153,16 +156,17 @@ export const FormContextProvider = ({
 
 export const FormContext = () => {
   return useContext(Context) as {
+    error: string;
     addKontingens: (kontingen: KontingenState[]) => void;
-    deleteKontingen: (kontingen: KontingenState) => void;
+    deleteKontingen: (id: string) => void;
     kontingens: KontingenState[];
     kontingensLoading: boolean;
     addPesertas: (peserta: PesertaState[]) => void;
-    deletePeserta: (peserta: PesertaState) => void;
+    deletePeserta: (id: string) => void;
     pesertas: PesertaState[];
     pesertasLoading: boolean;
     addOfficials: (official: OfficialState[]) => void;
-    deleteOfficial: (official: OfficialState) => void;
+    deleteOfficial: (id: string) => void;
     officials: OfficialState[];
     officialsLoading: boolean;
   };

@@ -1,13 +1,11 @@
-import InlineLoading from "@/components/loading/InlineLoading";
 import { MyContext } from "@/context/Context";
 import { FormContext } from "@/context/FormContext";
-import { firestore, storage } from "@/utils/firebase";
-import { validateImage } from "@/utils/formFunctions";
+import { updateData } from "@/utils/actions";
+import { totalToNominal, validateImage } from "@/utils/formFunctions";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
+import { sendFile, toastError } from "@/utils/functions";
+import { filterKontingenById } from "@/utils/kontingen/kontingenFunctions";
 import { controlToast } from "@/utils/sharedFunctions";
-import { arrayUnion, doc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { BiCopy } from "react-icons/bi";
 import { ToastContainer } from "react-toastify";
@@ -31,17 +29,7 @@ const FormPembayaran = ({
   const [unpaidPeserta, setUnpaidPeserta] = useState<string[]>([]);
 
   const { disable, setDisable } = MyContext();
-  const {
-    kontingens,
-    pesertas,
-    refreshPesertas,
-    refreshKontingens,
-  }: {
-    kontingens: KontingenState[];
-    pesertas: PesertaState[];
-    refreshPesertas: () => void;
-    refreshKontingens: () => void;
-  } = FormContext();
+  const { kontingens, pesertas, addKontingens, addPesertas } = FormContext();
   const toastId = useRef(null);
 
   useEffect(() => {
@@ -75,8 +63,6 @@ const FormPembayaran = ({
       noHp: "",
     });
     clearInputImage();
-    refreshPesertas();
-    refreshKontingens();
   };
 
   // CLEAR INPUT IMAGE
@@ -103,23 +89,17 @@ const FormPembayaran = ({
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitClicked(true);
-    if (unpaidPeserta.length || !kontingenToPay.biayaKontingen) {
-      if (getErrorMessage()) {
-        sendPembayaran();
-      }
-    } else {
-      controlToast(
-        toastId,
-        "error",
-        "Tidak ada peserta yang harus dibayar",
-        true
-      );
+
+    if (!unpaidPeserta.length || kontingenToPay.biayaKontingen) {
+      toastError(toastId, "Tidak ada peserta yang harus dibayar", true);
       reset();
+      return;
     }
+    if (getErrorMessage()) sendPembayaran();
   };
 
   // SEND PEMBAYARAN
-  const sendPembayaran = () => {
+  const sendPembayaran = async () => {
     if (!imageSelected) return;
     controlToast(toastId, "loading", "Mengirim bukti pembayaran", true);
     setDisable(true);
@@ -128,116 +108,92 @@ const FormPembayaran = ({
     const url = `buktiPembayarans/${idPembayaran}.${
       imageSelected.type.split("/")[1]
     }`;
-    uploadBytes(ref(storage, url), imageSelected).then((snapshot) =>
-      getDownloadURL(snapshot.ref).then((downloadUrl) => {
-        controlToast(toastId, "loading", "sending url to pesertas");
-        sendUrlToPesertas(
-          downloadUrl,
-          unpaidPeserta.length - 1,
-          time,
-          idPembayaran
-        );
-      })
-    );
+
+    try {
+      const downloadUrl = await sendFile(imageSelected, url);
+      controlToast(toastId, "loading", "sending url to pesertas");
+      await sendUrlToPesertas(pesertas, downloadUrl, time, idPembayaran);
+      await sendUrlToKontingen(downloadUrl, time, idPembayaran);
+    } catch (error) {
+      toastError(toastId, error);
+      throw error;
+    } finally {
+      setDisable(false);
+    }
   };
 
   // SEND URL TO ALL PESERTA
-  const sendUrlToPesertas = (
-    url: string,
-    pesertasIndex: number,
+  const sendUrlToPesertas = async (
+    pesertas: PesertaState[],
+    downloadUrl: string,
     time: number,
     idPembayaran: string
   ) => {
-    const id = unpaidPeserta[pesertasIndex];
-    if (pesertasIndex >= 0) {
-      updateDoc(doc(firestore, "pesertas", id), {
-        pembayaran: true,
-        idPembayaran: idPembayaran,
-        infoPembayaran: {
-          noHp: noHp,
-          waktu: time,
-          buktiUrl: url,
-        },
-      })
-        .then(() => {
-          sendUrlToPesertasRepeater(url, pesertasIndex - 1, time, idPembayaran);
-        })
-        .catch((error) =>
-          controlToast(
-            toastId,
-            "error",
-            `Gagal menyimpan data pembayaran ke peserta. ${error.code}`
-          )
-        );
-    } else {
-      controlToast(toastId, "loading", "sending url to kontingen");
-      sendUrlToKontingen(url, time, idPembayaran);
-    }
-  };
+    try {
+      if (!pesertas.length) return;
 
-  const sendUrlToPesertasRepeater = (
-    url: string,
-    pesertasIndex: number,
-    time: number,
-    idPembayaran: string
-  ) => {
-    if (pesertasIndex < 0) {
-      controlToast(toastId, "loading", "sending url to kontingen");
-      sendUrlToKontingen(url, time, idPembayaran);
-    } else {
-      sendUrlToPesertas(url, pesertasIndex, time, idPembayaran);
-    }
-  };
-
-  // SEND URL TO ALL KONTINGEN
-  const sendUrlToKontingen = (
-    url: string,
-    time: number,
-    idPembayaran: string
-  ) => {
-    const id = kontingenToPay.id;
-    if (id) {
-      updateDoc(doc(firestore, "kontingens", id), {
-        pembayaran: true,
-        biayaKontingen: kontingenToPay.biayaKontingen
-          ? kontingenToPay.biayaKontingen
-          : idPembayaran,
-        unconfirmedPembayaran: true,
-        confirmedPembayaran: false,
-        idPembayaran: arrayUnion(idPembayaran),
-        unconfirmedPembayaranIds: arrayUnion(idPembayaran),
-        infoPembayaran: arrayUnion({
+      const updatePromises = pesertas.map(async (peserta) => {
+        let data: PesertaState = {
+          ...peserta,
+          pembayaran: true,
           idPembayaran: idPembayaran,
-          nominal: `Rp. ${(totalBiaya / 1000).toLocaleString("id")}.${noHp
-            .split("")
-            .slice(-3)
-            .join("")}`,
-          noHp: noHp,
+          infoPembayaran: {
+            noHp: noHp,
+            waktu: time,
+            buktiUrl: downloadUrl,
+          },
+        };
+
+        const { result, error } = await updateData("pesertas", data);
+        if (error) throw error;
+
+        addPesertas([result]);
+      });
+
+      await Promise.all(updatePromises);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const sendUrlToKontingen = async (
+    downloadUrl: string,
+    time: number,
+    idPembayaran: string
+  ) => {
+    let kontingen = filterKontingenById(kontingens, kontingenToPay.id);
+
+    try {
+      if (!kontingen) throw { message: "Kontingen ID Undefinded" };
+
+      kontingen.pembayaran = true;
+      kontingen.biayaKontingen = kontingen.biayaKontingen ?? idPembayaran;
+      kontingen.unconfirmedPembayaran = true;
+      kontingen.confirmedPembayaran = false;
+      kontingen.idPembayaran = [...kontingen.idPembayaran, idPembayaran];
+      kontingen.unconfirmedPembayaranIds = [
+        ...kontingen.unconfirmedPembayaranIds,
+        idPembayaran,
+      ];
+      kontingen.infoPembayaran = [
+        ...kontingen.infoPembayaran,
+        {
+          idPembayaran,
+          nominal: totalToNominal(totalBiaya, noHp),
+          noHp,
           waktu: time,
-          buktiUrl: url,
-        }),
-      })
-        .then(() => {
-          controlToast(
-            toastId,
-            "success",
-            "Berhasil menyimpan bukti pembayaran"
-          );
-          reset();
-        })
-        .catch((error) => {
-          alert(error);
-          controlToast(
-            toastId,
-            "error",
-            `Gagal menyimpan data pembayaran ke kontingen ${error.code}`
-          );
-        })
-        .finally(() => {
-          setDisable(false);
-        });
-    } else {
-      controlToast(toastId, "error", "id undefined", true);
+          buktiUrl: downloadUrl,
+        },
+      ];
+
+      const { result, error } = await updateData("kontingens", kontingen);
+      if (error) throw error;
+
+      controlToast(toastId, "success", "Berhasil menyimpan bukti pembayaran");
+      addKontingens([result]);
+      reset();
+    } catch (error) {
+      throw error;
     }
   };
 

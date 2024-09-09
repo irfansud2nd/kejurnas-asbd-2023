@@ -1,8 +1,7 @@
 import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
-import { formatTanggal } from "@/utils/adminFunctions";
-import { jenisPertandingan, pesertaInitialValue } from "@/utils/formConstants";
-import { deletePerson } from "@/utils/formFunctions";
+import { formatTanggal } from "@/utils/admin/adminFunctions";
+import { jenisPertandingan } from "@/utils/formConstants";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
 import { compare, findNamaKontingen } from "@/utils/sharedFunctions";
 import Link from "next/link";
@@ -12,6 +11,8 @@ import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { deletePersonFinal } from "@/utils/formFunctions";
+import { filterKontingenById } from "@/utils/kontingen/kontingenFunctions";
 
 const TabelPesertaAdmin = () => {
   const {
@@ -71,14 +72,10 @@ const TabelPesertaAdmin = () => {
 
   const deleteHandler = (peserta: PesertaState) => {
     if (confirm("Apakah anda yakin")) {
-      deletePerson(
-        "pesertas",
+      deletePersonFinal(
+        "peserta",
         peserta,
-        kontingens[
-          kontingens.findIndex(
-            (item: KontingenState) => item.id == peserta.idKontingen
-          )
-        ],
+        filterKontingenById(kontingens, peserta.idKontingen),
         toastId
       );
     }

@@ -4,20 +4,18 @@ import {
   getKontingenUnpaid,
   getOfficialsByKontingen,
   getPesertasByKontingen,
-} from "@/utils/adminFunctions";
+} from "@/utils/admin/adminFunctions";
 import { KontingenState } from "@/utils/formTypes";
-import KonfirmasiButton from "../KonfirmasiButton";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import { useRef, useState, useEffect } from "react";
 import InlineLoading from "@/components/loading/InlineLoading";
 import { compare, controlToast } from "@/utils/sharedFunctions";
-import UpdateKontingen from "../UpdateKontingen";
 import Link from "next/link";
 import { kontingenInitialValue } from "@/utils/formConstants";
-import { deleteDoc, doc } from "firebase/firestore";
-import { firestore } from "@/utils/firebase";
-import { deletePerson } from "@/utils/formFunctions";
 import RodalKontingen from "@/components/halaman-pendaftaran/rodals/RodalKontingen";
+import { deletePersonFinal, getFileUrl } from "@/utils/formFunctions";
+import { deleteData } from "@/utils/actions";
+import { toastError } from "@/utils/functions";
 
 const TabelKontingenAdmin = () => {
   const [kontingensToMap, setKontingensToMap] = useState<KontingenState[]>([]);
@@ -74,27 +72,26 @@ const TabelKontingenAdmin = () => {
   };
 
   // DELETE KONTINGEN START
-  const deleteData = () => {
+  const executeDelete = () => {
     setDeleteRodal(false);
     deleteOfficials(dataToDelete.officials.length - 1);
   };
 
   // DELETE OFFICIALS IN KONTINGEN
-  const deleteOfficials = (officialIndex: number) => {
+  const deleteOfficials = async (officialIndex: number) => {
     if (officialIndex >= 0) {
       const id = dataToDelete.officials[officialIndex];
-      deletePerson(
-        "officials",
+      await deletePersonFinal(
+        "official",
         {
-          namaLengkap: `${dataToDelete.officials.length} official`,
+          id,
           idKontingen: dataToDelete.id,
-          fotoUrl: `officials/${id}-image`,
-          id: id,
+          fotoUrl: getFileUrl("official", id),
         },
         dataToDelete,
-        toastId,
-        () => afterDeleteOfficial(officialIndex)
+        toastId
       );
+      afterDeleteOfficial(officialIndex);
     } else {
       deletePesertas(dataToDelete.pesertas.length - 1);
     }
@@ -109,21 +106,20 @@ const TabelKontingenAdmin = () => {
   };
 
   // DELETE PESERTAS IN KONTINGEN
-  const deletePesertas = (pesertaIndex: number) => {
+  const deletePesertas = async (pesertaIndex: number) => {
     if (pesertaIndex >= 0) {
       const id = dataToDelete.pesertas[pesertaIndex];
-      deletePerson(
-        "pesertas",
+      await deletePersonFinal(
+        "peserta",
         {
-          namaLengkap: `${dataToDelete.pesertas.length} peserta`,
+          id,
           idKontingen: dataToDelete.id,
-          fotoUrl: `pesertas/${id}-image`,
-          id: id,
+          fotoUrl: getFileUrl("peserta", id),
         },
         dataToDelete,
-        toastId,
-        () => afterDeletePeserta(pesertaIndex)
+        toastId
       );
+      afterDeletePeserta(pesertaIndex);
     } else {
       deleteKontingen();
     }
@@ -138,23 +134,16 @@ const TabelKontingenAdmin = () => {
   };
 
   // DELETE KONTINGEN FINAL
-  const deleteKontingen = () => {
+  const deleteKontingen = async () => {
     controlToast(toastId, "loading", "Menghapus Kontingen", true);
-    deleteDoc(doc(firestore, "kontingens", dataToDelete.id))
-      .then(() =>
-        controlToast(toastId, "success", "Kontingen berhasil dihapus")
-      )
-      .catch((error) => {
-        controlToast(
-          toastId,
-          "error",
-          `Gagal menghapus kontingen. ${error.code}`
-        );
-      })
-      .finally(() => {
-        refreshKontingens();
-        cancelDelete();
-      });
+
+    const { result, error } = await deleteData("kontingens", dataToDelete.id);
+    if (error) toastError(toastId, error);
+
+    controlToast(toastId, "success", "Kontingen berhasil dihapus");
+
+    refreshKontingens();
+    cancelDelete();
   };
 
   const cancelDelete = () => {
@@ -176,7 +165,7 @@ const TabelKontingenAdmin = () => {
         setModalVisible={setDeleteRodal}
         dataToDelete={dataToDelete}
         cancelDelete={cancelDelete}
-        deleteData={deleteData}
+        deleteData={executeDelete}
       />
 
       {/* BUTTONS */}

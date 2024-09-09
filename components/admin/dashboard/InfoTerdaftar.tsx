@@ -1,10 +1,8 @@
-import InlineLoading from "@/components/loading/InlineLoading";
-import { firestore } from "@/utils/firebase";
-import { collection, getCountFromServer } from "firebase/firestore";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import TerdaftarCard from "./TerdaftarCard";
 import { AdminContext } from "@/context/AdminContext";
+import { countFromCollection } from "@/utils/actions";
+import { toastError } from "@/utils/functions";
 const InfoTerdaftar = () => {
   const { setMode } = AdminContext();
 
@@ -21,23 +19,38 @@ const InfoTerdaftar = () => {
     total: 0,
   });
 
-  const getKontingen = () => {
+  const getKontingen = async () => {
     setKontingen({ ...kontingen, loading: true });
-    getCountFromServer(collection(firestore, "kontingens")).then((res) =>
-      setKontingen({ loading: false, total: res.data().count })
-    );
+    try {
+      const { result, error } = await countFromCollection("kontingens");
+      if (error) throw error;
+
+      setKontingen({ loading: false, total: result });
+    } catch (error) {
+      alert(error);
+    }
   };
-  const getPeserta = () => {
-    setPeserta({ ...kontingen, loading: true });
-    getCountFromServer(collection(firestore, "pesertas")).then((res) =>
-      setPeserta({ loading: false, total: res.data().count })
-    );
+  const getPeserta = async () => {
+    setPeserta({ ...peserta, loading: true });
+    try {
+      const { result, error } = await countFromCollection("pesertas");
+      if (error) throw error;
+
+      setPeserta({ loading: false, total: result });
+    } catch (error) {
+      alert(error);
+    }
   };
-  const getOfficial = () => {
-    setOfficial({ ...kontingen, loading: true });
-    getCountFromServer(collection(firestore, "officials")).then((res) =>
-      setOfficial({ loading: false, total: res.data().count })
-    );
+  const getOfficial = async () => {
+    setOfficial({ ...official, loading: true });
+    try {
+      const { result, error } = await countFromCollection("officials");
+      if (error) throw error;
+
+      setOfficial({ loading: false, total: result });
+    } catch (error) {
+      alert(error);
+    }
   };
 
   const refreshAll = () => {

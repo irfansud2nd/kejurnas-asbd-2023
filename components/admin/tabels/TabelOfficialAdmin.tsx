@@ -1,6 +1,6 @@
 import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
-import { formatTanggal } from "@/utils/adminFunctions";
+import { formatTanggal } from "@/utils/admin/adminFunctions";
 import { OfficialState } from "@/utils/formTypes";
 import { findNamaKontingen } from "@/utils/sharedFunctions";
 import Image from "next/image";

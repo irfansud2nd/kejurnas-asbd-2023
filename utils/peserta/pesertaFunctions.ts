@@ -114,3 +114,10 @@ export const getGroupedPeserta = (pesertas: PesertaState[]) => {
 
   return { nonAsbd, asbdTunggal, asbdRegu };
 };
+
+export const filterPesertaByIdKontingen = (
+  pesertas: PesertaState[],
+  idKontignen: string
+) => {
+  return pesertas.filter((item) => item.idKontingen == idKontignen);
+};

@@ -326,12 +326,12 @@ export const pesertaInitialValue: PesertaState = {
   confirmedPembayaran: false,
   infoPembayaran: {
     noHp: "",
-    waktu: "",
+    waktu: 0,
     buktiUrl: "",
   },
   infoKonfirmasi: {
     nama: "",
     email: "",
-    waktu: "",
+    waktu: 0,
   },
 };

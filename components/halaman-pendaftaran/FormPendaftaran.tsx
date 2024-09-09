@@ -13,6 +13,7 @@ import Link from "next/link";
 import { MyContext } from "@/context/Context";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
+import { toastError } from "@/utils/functions";
 
 const FormPendaftaran = ({ nav }: { nav: string }) => {
   const [showRodal, setShowRodal] = useState(false);
@@ -23,7 +24,7 @@ const FormPendaftaran = ({ nav }: { nav: string }) => {
 
   useEffect(() => {
     if (error) {
-      controlToast(toastId, "error", error.message, true);
+      toastError(toastId, error);
     }
   }, [error]);
 

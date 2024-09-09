@@ -1,8 +1,7 @@
 "use client";
 import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
-import { getKontingenUnpaid } from "@/utils/adminFunctions";
-import { firestore } from "@/utils/firebase";
+import { getKontingenUnpaid } from "@/utils/admin/adminFunctions";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
 
 const TabelPembayaran = () => {

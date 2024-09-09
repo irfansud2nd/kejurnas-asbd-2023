@@ -8,30 +8,37 @@ import {
 import { firestore, storage } from "./firebase";
 import { action } from "./functions";
 import {
-  DocumentData,
-  DocumentReference,
   collection,
   deleteDoc,
   doc,
+  getCountFromServer,
   setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { ServerAction } from "./constants";
 
+export const getNewDocId = async (collectionName: string) => {
+  return doc(collection(firestore, collectionName)).id;
+};
+
 export const uploadFile = async (
   formData: FormData
 ): Promise<ServerAction<string>> => {
-  const file = formData.get("file") as File;
-  const directory = formData.get("directory") as string;
-
   try {
+    const file = formData.get("file") as File;
+    const directory = formData.get("directory") as string;
     if (!file || !directory) throw new Error("Invalid identifier");
 
+    console.log({ file, directory });
+
     const snapshot = await uploadBytes(ref(storage, directory), file);
+    console.log("SNAPSHOT", snapshot);
     const downloadUrl = await getDownloadURL(snapshot.ref);
+    console.log("DOWNLOAD URL", downloadUrl);
 
     return action.success(downloadUrl);
   } catch (error) {
+    console.log({ error });
     return action.error(error);
   }
 };
@@ -50,16 +57,15 @@ export const deleteFile = async (
   }
 };
 
-export const getNewDocRef = async (collectionName: string) => {
-  return doc(collection(firestore, collectionName));
-};
-
 export const createData = async <T>(
-  docRef: DocumentReference<DocumentData, DocumentData>,
+  collectionName: string,
   data: T
 ): Promise<ServerAction<T>> => {
   try {
-    await setDoc(docRef, data as any);
+    await setDoc(
+      doc(firestore, collectionName, (data as { id: string }).id),
+      data as any
+    );
     return action.success(data);
   } catch (error) {
     return action.error(error);
@@ -87,6 +93,19 @@ export const deleteData = async (
   try {
     await deleteDoc(doc(firestore, collectionName, docId));
     return action.success("success");
+  } catch (error) {
+    return action.error(error);
+  }
+};
+
+export const countFromCollection = async (
+  collectionName: string
+): Promise<ServerAction<number>> => {
+  try {
+    const result = await getCountFromServer(
+      collection(firestore, collectionName)
+    );
+    return action.success(result.data().count);
   } catch (error) {
     return action.error(error);
   }

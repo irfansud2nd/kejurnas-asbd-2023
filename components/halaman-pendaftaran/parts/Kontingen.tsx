@@ -6,15 +6,20 @@ import { KontingenState } from "@/utils/formTypes";
 import { kontingenInitialValue } from "@/utils/formConstants";
 import { useEffect, useRef, useState } from "react";
 import { MyContext } from "@/context/Context";
-import { collection, deleteDoc, doc, setDoc } from "firebase/firestore";
-import { firestore } from "@/utils/firebase";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RodalKontingen from "../rodals/RodalKontingen";
-import { deletePerson } from "@/utils/formFunctions";
+import { deletePersonFinal, getFileUrl } from "@/utils/formFunctions";
 import FormKontingen from "../forms/FormKontingen";
 import InlineLoading from "@/components/loading/InlineLoading";
 import { controlToast } from "@/utils/sharedFunctions";
+import {
+  createData,
+  deleteData as deleteFirebaseData,
+  getNewDocId,
+  updateData,
+} from "@/utils/actions";
+import { toastError } from "@/utils/functions";
 
 const Kontingen = () => {
   const [data, setData] = useState<KontingenState>(kontingenInitialValue);
@@ -25,14 +30,12 @@ const Kontingen = () => {
 
   const {
     kontingens,
-    refreshKontingens,
-    refreshOfficials,
-    refreshPesertas,
-  }: {
-    kontingens: KontingenState[];
-    refreshKontingens: () => void;
-    refreshOfficials: () => void;
-    refreshPesertas: () => void;
+    addKontingens,
+    pesertas,
+    officials,
+    deleteKontingen: deleteKontingenContext,
+    deleteOfficial,
+    deletePeserta,
   } = FormContext();
   const { user, setDisable } = MyContext();
   const toastId = useRef(null);
@@ -45,54 +48,52 @@ const Kontingen = () => {
   }, [user]);
 
   // SEND KONTINGEN
-  const sendKontingen = (e: React.FormEvent) => {
+  const sendKontingen = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (data.namaKontingen !== "") {
+
+    setDisable(true);
+    controlToast(
+      toastId,
+      "loading",
+      `${updating ? "Memperbaharui" : "Mendaftarkan"} Kontingen`,
+      true
+    );
+
+    try {
+      if (data.namaKontingen == "")
+        throw { message: "Tolong lengkapi Nama Kontingen" };
+
+      let kontingen = { ...data };
+
       if (!updating) {
-        // ADD NEW KONTINGEN
-        setDisable(true);
-        controlToast(toastId, "loading", "Mendaftarkan Kontingen", true);
-        const newDocRef = doc(collection(firestore, "kontingens"));
-        setDoc(newDocRef, {
-          ...data,
-          id: newDocRef.id,
-          waktuPendaftaran: Date.now(),
-        })
-          .then(() => {
-            controlToast(toastId, "success", "Kontingen berhasil didaftarkan");
-          })
-          .catch((error) =>
-            controlToast(
-              toastId,
-              "error",
-              `Gagal mendaftarkan kontingen. ${error.code}`
-            )
-          )
-          .finally(() => {
-            reset();
-            refreshKontingens();
-          });
+        // CREATE NEW KONTINGEN
+        kontingen.id = await getNewDocId("kontingens");
+        kontingen.waktuPendaftaran = Date.now();
+
+        console.log("create data");
+        const { error } = await createData("kontingens", kontingen);
+        console.log("data created");
+
+        if (error) throw error;
       } else {
-        // UPDATE DATA
-        setDisable(true);
-        controlToast(toastId, "loading", "Mengubah Data Kontingen", true);
-        setDoc(doc(firestore, "kontingens", data.id), {
-          ...data,
-          waktuPerubahan: Date.now(),
-        })
-          .then(() => {
-            controlToast(toastId, "success", "Data berhasil dirubah");
-          })
-          .catch((error) =>
-            controlToast(toastId, "error", `Gagal mengubah data. ${error.code}`)
-          )
-          .finally(() => {
-            reset();
-            refreshKontingens();
-          });
+        // UPDATE KONTINGEN
+        kontingen.waktuPerubahan = Date.now();
+
+        const { error } = await updateData("kontingens", kontingen);
+        if (error) throw error;
       }
-    } else {
-      setErrorMessage("Tolong lengkapi Nama Kontingen");
+
+      controlToast(
+        toastId,
+        "success",
+        `Kontingen berhasil di${updating ? "perbaharui" : "daftarkan"}`
+      );
+
+      addKontingens([kontingen]);
+    } catch (error) {
+      toastError(toastId, error);
+    } finally {
+      reset();
     }
   };
 
@@ -134,21 +135,21 @@ const Kontingen = () => {
   };
 
   // DELETE OFFICIALS IN KONTINGEN
-  const deleteOfficials = (officialIndex: number) => {
+  const deleteOfficials = async (officialIndex: number) => {
     if (officialIndex >= 0) {
       const id = dataToDelete.officials[officialIndex];
-      deletePerson(
-        "officials",
+      await deletePersonFinal(
+        "official",
         {
-          namaLengkap: `${dataToDelete.officials.length} official`,
+          id,
           idKontingen: dataToDelete.id,
-          fotoUrl: `officials/${id}-image`,
-          id: id,
+          fotoUrl: getFileUrl("official", id),
         },
         dataToDelete,
-        toastId,
-        () => afterDeleteOfficial(officialIndex)
+        toastId
       );
+      afterDeleteOfficial(officialIndex);
+      deleteOfficial(id);
     } else {
       deletePesertas(dataToDelete.pesertas.length - 1);
     }
@@ -163,21 +164,21 @@ const Kontingen = () => {
   };
 
   // DELETE PESERTAS IN KONTINGEN
-  const deletePesertas = (pesertaIndex: number) => {
+  const deletePesertas = async (pesertaIndex: number) => {
     if (pesertaIndex >= 0) {
       const id = dataToDelete.pesertas[pesertaIndex];
-      deletePerson(
-        "pesertas",
+      await deletePersonFinal(
+        "peserta",
         {
-          namaLengkap: `${dataToDelete.pesertas.length} peserta`,
+          id,
           idKontingen: dataToDelete.id,
-          fotoUrl: `pesertas/${id}-image`,
-          id: id,
+          fotoUrl: getFileUrl("peserta", id),
         },
         dataToDelete,
-        toastId,
-        () => afterDeletePeserta(pesertaIndex)
+        toastId
       );
+      afterDeletePeserta(pesertaIndex);
+      deletePeserta(id);
     } else {
       deleteKontingen();
     }
@@ -192,25 +193,18 @@ const Kontingen = () => {
   };
 
   // DELETE KONTINGEN FINAL
-  const deleteKontingen = () => {
+  const deleteKontingen = async () => {
     controlToast(toastId, "loading", "Menghapus Kontingen", true);
-    deleteDoc(doc(firestore, "kontingens", dataToDelete.id))
-      .then(() =>
-        controlToast(toastId, "success", "Kontingen berhasil dihapus")
-      )
-      .catch((error) => {
-        controlToast(
-          toastId,
-          "error",
-          `Gagal menghapus kontingen. ${error.code}`
-        );
-      })
-      .finally(() => {
-        refreshKontingens();
-        refreshOfficials();
-        refreshPesertas();
-        reset();
-      });
+    try {
+      const { error } = await deleteFirebaseData("kontingens", dataToDelete.id);
+      if (error) throw error;
+      controlToast(toastId, "success", "Kontingen berhasil dihapus");
+      deleteKontingenContext(dataToDelete.id);
+    } catch (error) {
+      toastError(toastId, error);
+    } finally {
+      reset();
+    }
   };
 
   return (

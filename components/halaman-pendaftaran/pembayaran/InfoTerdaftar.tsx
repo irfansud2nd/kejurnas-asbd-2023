@@ -2,7 +2,7 @@ import { FormContext } from "@/context/FormContext";
 import { KontingenState, OfficialState, PesertaState } from "@/utils/formTypes";
 import TabelOfficial from "../tabels/TabelOfficial";
 import TabelPeserta from "../tabels/TabelPeserta";
-import { getOfficialsByKontingen } from "@/utils/adminFunctions";
+import { getOfficialsByKontingen } from "@/utils/admin/adminFunctions";
 import TabelKontingen from "../tabels/TabelKontingen";
 
 const InfoTerdaftar = () => {

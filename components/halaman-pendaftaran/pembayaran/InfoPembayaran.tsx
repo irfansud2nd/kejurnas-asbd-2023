@@ -2,10 +2,9 @@ import { FormContext } from "@/context/FormContext";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
 import { useState, useEffect } from "react";
 import ContactPerson from "./ContactPerson";
-import { getGroupedUnpaidPeserta } from "@/utils/formFunctions";
 import { findNamaKontingen } from "@/utils/sharedFunctions";
-import { getPesertasByKontingen } from "@/utils/adminFunctions";
-import InlineLoading from "@/components/loading/InlineLoading";
+import { getPesertasByKontingen } from "@/utils/admin/adminFunctions";
+import { getGroupedUnpaidPeserta } from "@/utils/peserta/pesertaFunctions";
 
 const InfoPembayaran = ({
   totalBiaya,
@@ -35,10 +34,12 @@ const InfoPembayaran = ({
         pesertas,
         kontingenToPay.id
       );
+      const { nonAsbd, asbdTunggal, asbdRegu } =
+        getGroupedUnpaidPeserta(selectedPesertas);
       setTotalPeserta({
-        nonAsbd: getGroupedUnpaidPeserta(selectedPesertas).nonAsbd,
-        asbdTunggal: getGroupedUnpaidPeserta(selectedPesertas).asbdTunggal,
-        asbdRegu: getGroupedUnpaidPeserta(selectedPesertas).asbdRegu,
+        nonAsbd,
+        asbdTunggal,
+        asbdRegu,
       });
     }
   }, [pesertas, kontingenToPay]);
