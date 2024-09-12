@@ -17,6 +17,10 @@ import { fetchData, toastError } from "@/utils/functions";
 import { getKontingenByIdPembayaran } from "@/utils/kontingen/kontingenActions";
 import { getPesertasByIdPembayaran } from "@/utils/peserta/pesertaActions";
 import { updateData } from "@/utils/actions";
+import {
+  cancelPayment,
+  confirmPayment,
+} from "@/utils/pembayaran/pembayaranFunctions";
 
 const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
   const [kontingen, setKontingen] = useState(kontingenInitialValue);
@@ -26,9 +30,6 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
   const [pesertasToConfirm, setPesertasToConfirm] = useState<PesertaState[]>(
     []
   );
-  const [pesertaToDeletePayment, setPesertaToDeletePayment] = useState<
-    PesertaState[]
-  >([]);
   const [biayaKontingen, setBiayaKontingen] = useState("");
   const [infoPembayaran, setInfoPembayaran] = useState<{
     idPembayaran: string;
@@ -37,7 +38,6 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
     buktiUrl: string;
     nominal: string;
   }>();
-  const [cancelPaymentKontingen, setCancelPatmentKontingen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const { user } = MyContext();
@@ -70,11 +70,9 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
   useEffect(() => {
     if (kontingen.id) {
       setInfoPembayaran(
-        kontingen.infoPembayaran[
-          kontingen.infoPembayaran.findIndex(
-            (item) => item.idPembayaran == idPembayaran
-          )
-        ]
+        kontingen.infoPembayaran.find(
+          (item) => item.idPembayaran == idPembayaran
+        )
       );
     }
   }, [kontingen]);
@@ -139,164 +137,34 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
     }
   }, [pesertas, kontingen]);
 
-  const confirmPayment = async () => {
-    const time = Date.now();
-
-    controlToast(toastId, "loading", "Mengkonfirmasi Pembayaran", true);
-
-    try {
-      await confirmPesertas(pesertasToConfirm, time);
-
-      const pesertaToDeletePayment = pesertas.filter(
-        (peserta) =>
-          !pesertasToConfirm.find(
-            (pesertaToConfirm) => pesertaToConfirm.id == peserta.id
-          )
-      );
-
-      setPesertaToDeletePayment(pesertaToDeletePayment);
-
-      await confirmKontingen(kontingen, time);
-
-      controlToast(toastId, "success", "Konfirmasi berhasil");
-    } catch (error) {
-      toastError(toastId, error);
-      throw error;
+  const handleConfirm = async () => {
+    const pesertasToUnpaid = pesertas.filter(
+      (peserta) =>
+        !pesertasToConfirm.find(
+          (pesertaToConfirm) => pesertaToConfirm.id == peserta.id
+        )
+    );
+    if (!infoPembayaran) {
+      controlToast(toastId, "error", "Info pembayaran tidak lengkap", true);
+      return;
     }
+    await confirmPayment(
+      infoPembayaran,
+      kontingen,
+      {
+        toConfirm: pesertasToConfirm,
+        toUnpaid: pesertasToUnpaid,
+      },
+      biayaKontingen,
+      nominalToConfirm,
+      user,
+      toastId
+    );
   };
 
-  const confirmPesertas = async (pesertas: PesertaState[], time: number) => {
-    try {
-      const updatePromises = pesertas.map(async (peserta) => {
-        const { result, error } = await updateData("pesertas", {
-          ...peserta,
-          confirmedPembayaran: true,
-          infoKonfirmasi: {
-            nama: user.displayName,
-            email: user.email,
-            waktu: time,
-          },
-        });
-
-        if (error) throw error;
-      });
-
-      await Promise.all(updatePromises);
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const confirmKontingen = async (kontingen: KontingenState, time: number) => {
-    try {
-      if (!infoPembayaran) throw { message: "Info pembayaran tidak lengkap" };
-
-      let updatedKontingen: KontingenState = { ...kontingen };
-
-      updatedKontingen.biayaKontingen = biayaKontingen;
-
-      updatedKontingen.unconfirmedPembayaran =
-        updatedKontingen.idPembayaran.length >=
-        updatedKontingen.confirmedPembayaranIds.length;
-
-      updatedKontingen.confirmedPembayaran =
-        !updatedKontingen.unconfirmedPembayaran;
-
-      updatedKontingen.unconfirmedPembayaranIds =
-        updatedKontingen.unconfirmedPembayaranIds.filter(
-          (id) => id != idPembayaran
-        );
-
-      updatedKontingen.confirmedPembayaranIds = [
-        ...updatedKontingen.confirmedPembayaranIds,
-        idPembayaran,
-      ];
-
-      updatedKontingen.infoPembayaran = updatedKontingen.infoPembayaran.filter(
-        (item) => item.idPembayaran != idPembayaran
-      );
-
-      updatedKontingen.infoPembayaran = [
-        ...updatedKontingen.infoPembayaran,
-        {
-          idPembayaran: idPembayaran,
-          nominal: nominalToConfirm,
-          noHp: infoPembayaran.noHp,
-          waktu: infoPembayaran.waktu,
-          buktiUrl: infoPembayaran.buktiUrl,
-        },
-      ];
-
-      updatedKontingen.infoKonfirmasi = [
-        ...updatedKontingen.infoKonfirmasi,
-        {
-          idPembayaran: idPembayaran,
-          nama: user.displayName,
-          email: user.email,
-          waktu: time,
-        },
-      ];
-
-      const { result, error } = await updateData(
-        "kontingens",
-        updatedKontingen
-      );
-      if (error) throw error;
-
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const cancelPayment = () => {
-    controlToast(toastId, "loading", "Membatalkan Pembayaran", true);
-    if (confirm("Apakah anda Yakin")) {
-      setPesertaToDeletePayment(pesertas);
-      setCancelPatmentKontingen(true);
-    } else {
-      setPesertaToDeletePayment([]);
-      setCancelPatmentKontingen(false);
-    }
-  };
-
-  useEffect(() => {
-    if (pesertaToDeletePayment.length) {
-      const deletePayment = async () => {
-        try {
-          await deletePaymentPeserta(pesertaToDeletePayment);
-          if (deletePaymentKontingen) deletePaymentKontingen();
-        } catch (error) {
-          toastError(toastId, error);
-          throw error;
-        }
-      };
-
-      deletePayment();
-    }
-  }, [pesertaToDeletePayment]);
-
-  const deletePaymentPeserta = async (pesertas: PesertaState[]) => {
-    try {
-      if (!pesertas.length) throw { message: "No pesertas to delete payment" };
-
-      const updatePromises = pesertaToDeletePayment.map(async (peserta) => {
-        let data: PesertaState = { ...peserta };
-        peserta.idPembayaran = "";
-        peserta.pembayaran = false;
-        peserta.infoPembayaran = {
-          noHp: "",
-          waktu: 0,
-          buktiUrl: "",
-        };
-
-        const { error } = await updateData("pesertas", data);
-        if (error) throw error;
-      });
-
-      await Promise.all(updatePromises);
-    } catch (error) {
-      throw error;
+  const handleCancel = async () => {
+    if (window.confirm("Apakah anda Yakin")) {
+      await cancelPayment(kontingen, pesertas, idPembayaran, toastId);
     }
   };
 
@@ -304,38 +172,7 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
     return <FullLoading />;
   }
 
-  const deletePaymentKontingen = async () => {
-    try {
-      let data: KontingenState = { ...kontingen };
-
-      data.pembayaran = false;
-
-      data.biayaKontingen =
-        kontingen.biayaKontingen == idPembayaran ? "" : biayaKontingen;
-
-      data.idPembayaran = data.idPembayaran.filter(
-        (item) => item != idPembayaran
-      );
-
-      data.unconfirmedPembayaranIds = data.unconfirmedPembayaranIds.filter(
-        (item) => item != idPembayaran
-      );
-
-      data.infoPembayaran = data.infoPembayaran.filter(
-        (item) => item.idPembayaran != idPembayaran
-      );
-
-      const { error } = await updateData("kontingens", data);
-      if (error) throw error;
-
-      controlToast(toastId, "success", "Pembayaran Berhasil dibatalkan");
-    } catch (error) {
-      throw error;
-    }
-  };
-
   const checkAll = () => {
-    let container: string[] = [];
     if (pesertas.length == pesertasToConfirm.length && biayaKontingen) {
       setPesertasToConfirm([]);
       setBiayaKontingen("");
@@ -349,12 +186,11 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
 
   return (
     <div className="bg-white m-2 p-2">
-      <ToastContainer />
+      {/* <ToastContainer /> */}
+
       <h1 className="font-bold text-xl">
         Konfirmasi Pembayaran - {kontingen.namaKontingen.toUpperCase()}
       </h1>
-      <p>{biayaKontingen}</p>
-      <p>{kontingen.biayaKontingen}</p>
       <div className="flex gap-2">
         <div className="flex flex-col gap-1 items-end">
           {/* TABEL PESERTA */}
@@ -415,7 +251,9 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
                       ` | Tim ${peserta.namaTim}`}
                   </td>
                   <td className="text-xl text-center pt-1">
-                    {pesertasToConfirm.find((item) => item.id == peserta.id) ? (
+                    {!pesertasToConfirm.find(
+                      (item) => item.id == peserta.id
+                    ) ? (
                       <button
                         onClick={() => handleCheck(peserta, true)}
                         className="text-red-500"
@@ -506,12 +344,12 @@ const PembayaranAdmin = ({ idPembayaran }: { idPembayaran: string }) => {
           </table>
           {/* BUTTONS */}
           <div className="flex gap-1">
-            <button className="btn_green" onClick={confirmPayment}>
+            <button className="btn_green" onClick={handleConfirm}>
               Save Konfirmasi
             </button>
             <button
               className="btn_red disabled:border-none disabled:hover:text-gray-500"
-              onClick={cancelPayment}
+              onClick={handleCancel}
               disabled={kontingen.confirmedPembayaranIds.includes(idPembayaran)}
             >
               Batalkan Pembayaaran

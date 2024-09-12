@@ -96,7 +96,8 @@ const FormPendaftaran = ({ nav }: { nav: string }) => {
           </button>
         </div>
       </Rodal>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
+
       <div className="bg-red-500 bg-opacity-50 text-black w-full rounded-md p-2">
         <div className="flex w-full justify-between items-center mb-2">
           <h1 className="w-fit bg-black text-white text-lg sm:text-2xl font-bold rounded-md p-2">

@@ -11,7 +11,7 @@ import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { deletePersonFinal } from "@/utils/formFunctions";
+import { deletePerson } from "@/utils/formFunctions";
 import { filterKontingenById } from "@/utils/kontingen/kontingenFunctions";
 
 const TabelPesertaAdmin = () => {
@@ -72,7 +72,7 @@ const TabelPesertaAdmin = () => {
 
   const deleteHandler = (peserta: PesertaState) => {
     if (confirm("Apakah anda yakin")) {
-      deletePersonFinal(
+      deletePerson(
         "peserta",
         peserta,
         filterKontingenById(kontingens, peserta.idKontingen),
@@ -91,7 +91,8 @@ const TabelPesertaAdmin = () => {
 
   return (
     <div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
+
       <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
         Tabel Peserta{" "}
         {/* {selectedKategori.tingkatan && (

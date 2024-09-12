@@ -9,30 +9,31 @@ import { MyContext } from "@/context/Context";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RodalKontingen from "../rodals/RodalKontingen";
-import { deletePersonFinal, getFileUrl } from "@/utils/formFunctions";
+import { deletePerson, getFileUrl } from "@/utils/formFunctions";
 import FormKontingen from "../forms/FormKontingen";
 import InlineLoading from "@/components/loading/InlineLoading";
 import { controlToast } from "@/utils/sharedFunctions";
-import {
-  createData,
-  deleteData as deleteFirebaseData,
-  getNewDocId,
-  updateData,
-} from "@/utils/actions";
+import { deleteData as deleteFirebaseData } from "@/utils/actions";
 import { toastError } from "@/utils/functions";
+import {
+  createKontingen,
+  deleteKontingen,
+  updateKontingen,
+} from "@/utils/kontingen/kontingenFunctions";
+import { filterPesertaByIdKontingen } from "@/utils/peserta/pesertaFunctions";
+import { filterOfficialByIdKontingen } from "@/utils/official/officialFunctions";
 
 const Kontingen = () => {
   const [data, setData] = useState<KontingenState>(kontingenInitialValue);
   const [updating, setUpdating] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [dataToDelete, setDataToDelete] = useState(kontingenInitialValue);
+  const [kontingenToDelete, setDataToDelete] = useState(kontingenInitialValue);
   const [modalVisible, setModalVisible] = useState(false);
 
   const {
-    kontingens,
-    addKontingens,
     pesertas,
     officials,
+    addKontingens,
     deleteKontingen: deleteKontingenContext,
     deleteOfficial,
     deletePeserta,
@@ -50,51 +51,18 @@ const Kontingen = () => {
   // SEND KONTINGEN
   const sendKontingen = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setDisable(true);
-    controlToast(
-      toastId,
-      "loading",
-      `${updating ? "Memperbaharui" : "Mendaftarkan"} Kontingen`,
-      true
-    );
 
-    try {
-      if (data.namaKontingen == "")
-        throw { message: "Tolong lengkapi Nama Kontingen" };
+    let kontingen = data;
 
-      let kontingen = { ...data };
-
-      if (!updating) {
-        // CREATE NEW KONTINGEN
-        kontingen.id = await getNewDocId("kontingens");
-        kontingen.waktuPendaftaran = Date.now();
-
-        console.log("create data");
-        const { error } = await createData("kontingens", kontingen);
-        console.log("data created");
-
-        if (error) throw error;
-      } else {
-        // UPDATE KONTINGEN
-        kontingen.waktuPerubahan = Date.now();
-
-        const { error } = await updateData("kontingens", kontingen);
-        if (error) throw error;
-      }
-
-      controlToast(
-        toastId,
-        "success",
-        `Kontingen berhasil di${updating ? "perbaharui" : "daftarkan"}`
-      );
-
-      addKontingens([kontingen]);
-    } catch (error) {
-      toastError(toastId, error);
-    } finally {
-      reset();
+    if (updating) {
+      kontingen = await updateKontingen(data, toastId);
+    } else {
+      kontingen = await createKontingen(data, toastId);
     }
+
+    addKontingens([kontingen]);
+    reset();
   };
 
   // ERROR REMOVER
@@ -129,79 +97,34 @@ const Kontingen = () => {
   };
 
   // DELETE KONTINGEN START
-  const deleteData = () => {
+  const deleteData = async () => {
     setModalVisible(false);
-    deleteOfficials(dataToDelete.officials.length - 1);
-  };
-
-  // DELETE OFFICIALS IN KONTINGEN
-  const deleteOfficials = async (officialIndex: number) => {
-    if (officialIndex >= 0) {
-      const id = dataToDelete.officials[officialIndex];
-      await deletePersonFinal(
-        "official",
-        {
-          id,
-          idKontingen: dataToDelete.id,
-          fotoUrl: getFileUrl("official", id),
-        },
-        dataToDelete,
-        toastId
-      );
-      afterDeleteOfficial(officialIndex);
-      deleteOfficial(id);
-    } else {
-      deletePesertas(dataToDelete.pesertas.length - 1);
-    }
-  };
-
-  const afterDeleteOfficial = (officialIndex: number) => {
-    if (officialIndex != 0) {
-      deleteOfficials(officialIndex - 1);
-    } else {
-      deletePesertas(dataToDelete.pesertas.length - 1);
-    }
-  };
-
-  // DELETE PESERTAS IN KONTINGEN
-  const deletePesertas = async (pesertaIndex: number) => {
-    if (pesertaIndex >= 0) {
-      const id = dataToDelete.pesertas[pesertaIndex];
-      await deletePersonFinal(
-        "peserta",
-        {
-          id,
-          idKontingen: dataToDelete.id,
-          fotoUrl: getFileUrl("peserta", id),
-        },
-        dataToDelete,
-        toastId
-      );
-      afterDeletePeserta(pesertaIndex);
-      deletePeserta(id);
-    } else {
-      deleteKontingen();
-    }
-  };
-
-  const afterDeletePeserta = (pesertaIndex: number) => {
-    if (pesertaIndex != 0) {
-      deletePesertas(pesertaIndex - 1);
-    } else {
-      deleteKontingen();
-    }
-  };
-
-  // DELETE KONTINGEN FINAL
-  const deleteKontingen = async () => {
-    controlToast(toastId, "loading", "Menghapus Kontingen", true);
+    let pesertasToDelete = filterPesertaByIdKontingen(
+      pesertas,
+      kontingenToDelete.id
+    );
+    let officialsToDelete = filterOfficialByIdKontingen(
+      officials,
+      kontingenToDelete.id
+    );
     try {
-      const { error } = await deleteFirebaseData("kontingens", dataToDelete.id);
-      if (error) throw error;
-      controlToast(toastId, "success", "Kontingen berhasil dihapus");
-      deleteKontingenContext(dataToDelete.id);
+      await deleteKontingen(
+        kontingenToDelete,
+        pesertasToDelete,
+        officialsToDelete,
+        toastId
+      );
+
+      pesertasToDelete.map((peserta) => {
+        deletePeserta(peserta.id);
+      });
+      officialsToDelete.map((official) => {
+        deleteOfficial(official.id);
+      });
+
+      deleteKontingenContext(kontingenToDelete.id);
     } catch (error) {
-      toastError(toastId, error);
+      throw error;
     } finally {
       reset();
     }
@@ -209,11 +132,11 @@ const Kontingen = () => {
 
   return (
     <div className="h-fit">
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <RodalKontingen
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
-        dataToDelete={dataToDelete}
+        dataToDelete={kontingenToDelete}
         cancelDelete={reset}
         deleteData={deleteData}
       />

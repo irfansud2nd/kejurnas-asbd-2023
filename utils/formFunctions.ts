@@ -11,7 +11,6 @@ import {
 } from "./actions";
 import { managePersonOnKontingen } from "./kontingen/kontingenActions";
 import { ToastId } from "./constants";
-import { firestore } from "./firebase";
 
 // VALIDATE IMAGE
 export const validateImage = (file: File, toastId: ToastId) => {
@@ -26,12 +25,17 @@ export const validateImage = (file: File, toastId: ToastId) => {
 };
 
 // GET FILE URL
-export const getFileUrl = (type: "peserta" | "official", docId: string) => {
-  return `${type}s/${docId}-image`;
+export const getFileUrl = (
+  type: "peserta" | "official" | "pembayaran",
+  docId: string
+) => {
+  let folder = type + "s";
+  if (type == "pembayaran") folder = "buktiPembayarans";
+  return `${folder}/${docId}-image`;
 };
 
 // SEND PERSON
-export const sendPersonFinal = async (
+export const createPerson = async (
   type: "peserta" | "official",
   person: PesertaState | OfficialState | DocumentData,
   image: File,
@@ -40,7 +44,6 @@ export const sendPersonFinal = async (
 ) => {
   try {
     const id = await getNewDocId(type + "s");
-    console.log({ id });
 
     // UPLOAD IMAGE
     const fileUrl = getFileUrl(type, id);
@@ -77,10 +80,10 @@ export const sendPersonFinal = async (
 };
 
 // UPDATE PERSON
-export const updatePersonFinal = async (
+export const updatePerson = async (
   type: "peserta" | "official",
   person: PesertaState | OfficialState,
-  toastId: ToastId,
+  toastId?: ToastId,
   options?: {
     image?: File;
     kontingen?: {
@@ -92,12 +95,12 @@ export const updatePersonFinal = async (
   let updatedPerson = { ...person };
   let kontingen = options?.kontingen;
 
-  controlToast(toastId, "loading", `Memperbaharui ${type}`, true);
+  toastId && controlToast(toastId, "loading", `Memperbaharui ${type}`, true);
 
   try {
     // UPDATE IMAGE
     if (options?.image) {
-      controlToast(toastId, "loading", "Memperbaharui foto");
+      toastId && controlToast(toastId, "loading", "Memperbaharui foto");
       updatedPerson.downloadFotoUrl = await sendFile(
         options.image,
         updatedPerson.fotoUrl
@@ -106,7 +109,7 @@ export const updatePersonFinal = async (
 
     // UPDATE KONTINGEN
     if (options?.kontingen && kontingen?.new.id != kontingen?.prev.id) {
-      controlToast(toastId, "loading", "Memperbaharui kontingen");
+      toastId && controlToast(toastId, "loading", "Memperbaharui kontingen");
 
       const { result: prevKontingen, error: prevKontingenError } =
         await managePersonOnKontingen(
@@ -131,47 +134,88 @@ export const updatePersonFinal = async (
     }
 
     // UPDATE PERSON
-    controlToast(toastId, "loading", `Memperbaharui ${type}`);
+    toastId && controlToast(toastId, "loading", `Memperbaharui ${type}`);
     const { error } = await updateData(type + "s", updatedPerson);
 
     if (error) throw error;
 
-    controlToast(toastId, "success", "Data berhasil diperbaharui");
+    toastId && controlToast(toastId, "success", "Data berhasil diperbaharui");
     return { person: updatedPerson, kontingen };
   } catch (error) {
-    toastError(toastId, error);
+    toastId && toastError(toastId, error);
     throw error;
   }
 };
 
 // DELETE PERSON
-export const deletePersonFinal = async (
+export const deletePerson = async (
   type: "official" | "peserta",
   person: PesertaState | OfficialState | DocumentData,
-  kontingen: KontingenState,
-  toastId: ToastId
+  kontingen?: KontingenState,
+  toastId?: ToastId
 ) => {
   try {
     // DELETE IMAGE
-    controlToast(toastId, "loading", "Menghapus foto");
+    toastId && controlToast(toastId, "loading", "Menghapus foto", true);
     const { error: fileError } = await deleteFile(person.fotoUrl);
     if (fileError) throw fileError;
 
     // DELETE PERSON FROM KONTINGEN
-    controlToast(toastId, "loading", `Menghapus ${type} dari kontingen`);
-    const { result: updatedKontingen, error: kontingenError } =
-      await managePersonOnKontingen(kontingen, type, person.id, true);
-    if (kontingenError) throw kontingenError;
+    let updatedKontingen;
+    if (kontingen) {
+      toastId &&
+        controlToast(toastId, "loading", `Menghapus ${type} dari kontingen`);
+
+      const { result, error: kontingenError } = await managePersonOnKontingen(
+        kontingen,
+        type,
+        person.id,
+        true
+      );
+      if (kontingenError) throw kontingenError;
+
+      updatedKontingen = result;
+    }
 
     // DELETE PERSON
-    controlToast(toastId, "loading", `Menghapus ${type}`);
+    toastId && controlToast(toastId, "loading", `Menghapus ${type}`);
     await deleteData(type + "s", person.id);
 
-    controlToast(toastId, "success", "Data berhasil dihapus");
+    toastId && controlToast(toastId, "success", "Data berhasil dihapus");
 
     return { kontingen: updatedKontingen, person };
   } catch (error) {
-    toastError(toastId, error);
+    toastId && toastError(toastId, error);
+    throw error;
+  }
+};
+
+export const deletePersons = async (
+  type: "official" | "peserta",
+  persons: (PesertaState | OfficialState)[]
+) => {
+  try {
+    const deletePromises = persons.map(async (person) => {
+      await deletePerson(type, person);
+    });
+
+    Promise.all(deletePromises);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updatePersons = async (
+  type: "official" | "peserta",
+  persons: (PesertaState | OfficialState)[]
+) => {
+  try {
+    const updatePromises = persons.map(async (person) => {
+      await updatePerson(type, person);
+    });
+
+    Promise.all(updatePromises);
+  } catch (error) {
     throw error;
   }
 };

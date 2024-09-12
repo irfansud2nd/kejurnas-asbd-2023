@@ -75,9 +75,10 @@ export const managePersonOnKontingen = async (
       if (type == "peserta") updatedKontingen.pembayaran = false;
     }
 
-    await updateDoc(doc(firestore, "kontingens", kontingen.id), {
-      updatedKontingen,
-    });
+    await updateDoc(
+      doc(firestore, "kontingens", kontingen.id),
+      updatedKontingen
+    );
 
     return action.success(updatedKontingen);
   } catch (error) {

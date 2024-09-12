@@ -29,7 +29,8 @@ const Profile = () => {
   };
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
+
       <button
         className="w-fit h-full bg-red-500 text-white rounded-full p-1 flex justify-around items-center hover:bg-white hover:text-red-500 group transition"
         onClick={() => (user ? logoutHandler() : loginHandler())}

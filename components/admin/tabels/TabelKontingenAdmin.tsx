@@ -13,7 +13,7 @@ import { compare, controlToast } from "@/utils/sharedFunctions";
 import Link from "next/link";
 import { kontingenInitialValue } from "@/utils/formConstants";
 import RodalKontingen from "@/components/halaman-pendaftaran/rodals/RodalKontingen";
-import { deletePersonFinal, getFileUrl } from "@/utils/formFunctions";
+import { deletePerson, getFileUrl } from "@/utils/formFunctions";
 import { deleteData } from "@/utils/actions";
 import { toastError } from "@/utils/functions";
 
@@ -81,7 +81,7 @@ const TabelKontingenAdmin = () => {
   const deleteOfficials = async (officialIndex: number) => {
     if (officialIndex >= 0) {
       const id = dataToDelete.officials[officialIndex];
-      await deletePersonFinal(
+      await deletePerson(
         "official",
         {
           id,
@@ -109,7 +109,7 @@ const TabelKontingenAdmin = () => {
   const deletePesertas = async (pesertaIndex: number) => {
     if (pesertaIndex >= 0) {
       const id = dataToDelete.pesertas[pesertaIndex];
-      await deletePersonFinal(
+      await deletePerson(
         "peserta",
         {
           id,

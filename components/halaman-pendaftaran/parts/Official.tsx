@@ -16,9 +16,9 @@ import { FormContext } from "@/context/FormContext";
 import TabelOfficial from "../tabels/TabelOfficial";
 import FormOfficial from "../forms/FormOfficial";
 import {
-  deletePersonFinal,
-  sendPersonFinal,
-  updatePersonFinal,
+  deletePerson,
+  createPerson,
+  updatePerson,
   validateImage,
 } from "@/utils/formFunctions";
 import { getInputErrorOfficial } from "@/utils/official/officialFunctions";
@@ -28,7 +28,7 @@ const Official = () => {
   const [data, setData] = useState<OfficialState>(officialInitialValue);
   const [prevData, setPrevData] = useState<OfficialState>(officialInitialValue);
   const [updating, setUpdating] = useState<boolean>(false);
-  const [dataToDelete, setDataToDelete] = useState(officialInitialValue);
+  const [officialToDelete, setDataToDelete] = useState(officialInitialValue);
   const [imageSelected, setImageSelected] = useState<File | undefined>();
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -38,8 +38,13 @@ const Official = () => {
   );
 
   const { user, disable, setDisable } = MyContext();
-  const { kontingens, kontingensLoading, addKontingens, addOfficials } =
-    FormContext();
+  const {
+    kontingens,
+    kontingensLoading,
+    addKontingens,
+    addOfficials,
+    deleteOfficial,
+  } = FormContext();
   const toastId = useRef(null);
 
   useEffect(() => {
@@ -111,7 +116,7 @@ const Official = () => {
     )
       return;
     if (!updating && imageSelected) {
-      const { person, kontingen } = await sendPersonFinal(
+      const { person, kontingen } = await createPerson(
         "official",
         data,
         imageSelected,
@@ -122,7 +127,7 @@ const Official = () => {
       addOfficials([person as OfficialState]);
       addKontingens([kontingen]);
     } else {
-      const { person, kontingen } = await updatePersonFinal(
+      const { person, kontingen } = await updatePerson(
         "official",
         data,
         toastId,
@@ -177,26 +182,27 @@ const Official = () => {
   // DELETE OFFICIAL START
   const deleteData = async () => {
     setModalVisible(false);
-    const { person, kontingen } = await deletePersonFinal(
+    const { person, kontingen } = await deletePerson(
       "official",
-      dataToDelete,
-      filterKontingenById(kontingens, dataToDelete.idKontingen),
+      officialToDelete,
+      filterKontingenById(kontingens, officialToDelete.idKontingen),
       toastId
     );
 
-    addOfficials([person as OfficialState]);
-    addKontingens([kontingen]);
+    deleteOfficial(officialToDelete.id);
+    kontingen && addKontingens([kontingen]);
 
     reset();
   };
 
   return (
     <div className="h-fit">
-      <ToastContainer />
+      {/* <ToastContainer /> */}
+
       <RodalOfficial
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
-        dataToDelete={dataToDelete}
+        dataToDelete={officialToDelete}
         cancelDelete={reset}
         deleteData={deleteData}
       />

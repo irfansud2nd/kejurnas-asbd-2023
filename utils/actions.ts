@@ -29,16 +29,11 @@ export const uploadFile = async (
     const directory = formData.get("directory") as string;
     if (!file || !directory) throw new Error("Invalid identifier");
 
-    console.log({ file, directory });
-
     const snapshot = await uploadBytes(ref(storage, directory), file);
-    console.log("SNAPSHOT", snapshot);
     const downloadUrl = await getDownloadURL(snapshot.ref);
-    console.log("DOWNLOAD URL", downloadUrl);
 
     return action.success(downloadUrl);
   } catch (error) {
-    console.log({ error });
     return action.error(error);
   }
 };

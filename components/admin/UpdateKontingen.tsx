@@ -54,7 +54,8 @@ const UpdateKontingen = () => {
 
   return (
     <div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
+
       <button className="btn_green mb-1" onClick={updateAll}>
         Update all Kontingen{" "}
         {kontingensToUpdate.length ? (

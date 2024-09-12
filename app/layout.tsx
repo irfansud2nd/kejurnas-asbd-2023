@@ -3,7 +3,7 @@ import TopBar from "@/components/TopBar";
 import "./globals.css";
 import { ContextProvider } from "@/context/Context";
 import Footer from "@/components/Footer";
-import BackgroundImage from "@/components/BackgroundImage";
+import { ToastContainer } from "react-toastify";
 
 export default function RootLayout({
   children,

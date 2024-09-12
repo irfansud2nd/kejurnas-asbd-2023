@@ -5,12 +5,14 @@ import logo_al_azhar from "@/public/images/logo-al_azhar.png";
 import logo_asbd from "@/public/images/logo-asbd.png";
 import Profile from "./Profile";
 import Link from "next/link";
+import { ToastContainer } from "react-toastify";
 
 const TopBar = () => {
   return (
     <div className="grid grid-cols-10 sm:grid-cols-12 w-full h-[40px] sm:h-[50px] md:h-[60px] bg-black p-1 items-center gap-2 shadow-xl text-white">
       <div className="col-span-2 lg:col-span-1">
         <Profile />
+        <ToastContainer />
       </div>
       <Link
         href="/"

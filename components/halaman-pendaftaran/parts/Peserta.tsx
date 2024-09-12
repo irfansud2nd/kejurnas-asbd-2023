@@ -14,9 +14,9 @@ import { FormContext } from "@/context/FormContext";
 import TabelPeserta from "../tabels/TabelPeserta";
 import FormPeserta from "../forms/FormPeserta";
 import {
-  deletePersonFinal,
-  sendPersonFinal,
-  updatePersonFinal,
+  deletePerson,
+  createPerson,
+  updatePerson,
   validateImage,
 } from "@/utils/formFunctions";
 import { controlToast } from "@/utils/sharedFunctions";
@@ -29,7 +29,7 @@ const Peserta = () => {
   const [data, setData] = useState<PesertaState>(pesertaInitialValue);
   const [prevData, setPrevData] = useState<PesertaState>(pesertaInitialValue);
   const [updating, setUpdating] = useState<boolean>(false);
-  const [dataToDelete, setDataToDelete] = useState(pesertaInitialValue);
+  const [pesertaToDelete, setDataToDelete] = useState(pesertaInitialValue);
   const [imageSelected, setImageSelected] = useState<File | undefined>();
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,8 +41,13 @@ const Peserta = () => {
   const [kuotaLoading, setKuotaLoading] = useState(false);
 
   const { user } = MyContext();
-  const { kontingens, kontingensLoading, addKontingens, addPesertas } =
-    FormContext();
+  const {
+    kontingens,
+    kontingensLoading,
+    addKontingens,
+    addPesertas,
+    deletePeserta,
+  } = FormContext();
   const toastId = useRef(null);
 
   // SET KONTINGEN AND USER INFO
@@ -161,56 +166,6 @@ const Peserta = () => {
       }
       setKuotaLoading(false);
     }
-
-    // const q = query(
-    //   collection(firestore, "pesertas"),
-    //   where("tingkatanPertandingan", "==", data.tingkatanPertandingan),
-    //   where("kategoriPertandingan", "==", data.kategoriPertandingan),
-    //   where("jenisKelamin", "==", data.jenisKelamin)
-    // );
-    // return getDocs(q)
-    //   .then((querySnapshot) => {
-    //     querySnapshot.forEach((doc) => {
-    //       if (data.kategoriPertandingan.includes("Regu")) {
-    //         kuotaRegu -= 1;
-    //       } else if (data.kategoriPertandingan.includes("Ganda")) {
-    //         kuotaGanda -= 1;
-    //       } else {
-    //         kuota -= 1;
-    //       }
-    //     });
-    //     if (
-    //       updating &&
-    //       prevData.kategoriPertandingan == data.kategoriPertandingan &&
-    //       prevData.jenisKelamin == data.jenisKelamin &&
-    //       prevData.jenisPertandingan == data.jenisPertandingan
-    //     ) {
-    //       if (data.kategoriPertandingan.includes("Regu")) {
-    //         kuotaRegu += 1;
-    //       } else if (data.kategoriPertandingan.includes("Ganda")) {
-    //         kuotaGanda += 1;
-    //       } else {
-    //         kuota += 1;
-    //       }
-    //     }
-    //     if (data.kategoriPertandingan.includes("Regu")) {
-    //       return kuotaRegu;
-    //     } else if (data.kategoriPertandingan.includes("Ganda")) {
-    //       return kuotaGanda;
-    //     } else {
-    //       return kuota;
-    //     }
-    //   })
-    //   .finally(() => {
-    //     if (data.kategoriPertandingan.includes("Regu")) {
-    //       setKuotaKelas(kuotaRegu);
-    //     } else if (data.kategoriPertandingan.includes("Ganda")) {
-    //       setKuotaKelas(kuotaGanda);
-    //     } else {
-    //       setKuotaKelas(kuota);
-    //     }
-    //     setKuotaLoading(false);
-    //   });
   };
 
   // IMAGE CHANGE HANDLER
@@ -268,7 +223,7 @@ const Peserta = () => {
       return;
 
     if (!updating && imageSelected) {
-      const { person, kontingen } = await sendPersonFinal(
+      const { person, kontingen } = await createPerson(
         "peserta",
         data,
         imageSelected,
@@ -279,7 +234,7 @@ const Peserta = () => {
       addPesertas([person as PesertaState]);
       addKontingens([kontingen]);
     } else {
-      const { person, kontingen } = await updatePersonFinal(
+      const { person, kontingen } = await updatePerson(
         "peserta",
         data,
         toastId,
@@ -334,26 +289,27 @@ const Peserta = () => {
   // DATA DELETER
   const deleteData = async () => {
     setModalVisible(false);
-    const { person, kontingen } = await deletePersonFinal(
+
+    const { person, kontingen } = await deletePerson(
       "peserta",
-      dataToDelete,
-      filterKontingenById(kontingens, dataToDelete.idKontingen),
+      pesertaToDelete,
+      filterKontingenById(kontingens, pesertaToDelete.idKontingen),
       toastId
     );
 
-    addPesertas([person as PesertaState]);
-    addKontingens([kontingen]);
+    deletePeserta(pesertaToDelete.id);
+    kontingen && addKontingens([kontingen]);
 
     reset();
   };
 
   return (
     <div className="h-fit">
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <RodalPeserta
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
-        dataToDelete={dataToDelete}
+        dataToDelete={pesertaToDelete}
         cancelDelete={reset}
         deleteData={deleteData}
       />

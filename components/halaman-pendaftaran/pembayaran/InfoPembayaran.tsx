@@ -115,7 +115,7 @@ const InfoPembayaran = ({
                   Rp. {(totalPeserta.asbdRegu * 225000).toLocaleString("id")}
                 </td>
               </tr>
-              {!kontingenToPay.biayaKontingen ? (
+              {!kontingenToPay.biayaKontingen.length ? (
                 <tr>
                   <td>Biaya Kontingen</td>
                   <td>1</td>

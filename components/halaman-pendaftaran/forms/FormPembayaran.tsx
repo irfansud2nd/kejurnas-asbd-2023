@@ -5,6 +5,8 @@ import { totalToNominal, validateImage } from "@/utils/formFunctions";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
 import { sendFile, toastError } from "@/utils/functions";
 import { filterKontingenById } from "@/utils/kontingen/kontingenFunctions";
+import { createPembayaran } from "@/utils/pembayaran/pembayaranFunctions";
+import { filterPesertaByIdKontingen } from "@/utils/peserta/pesertaFunctions";
 import { controlToast } from "@/utils/sharedFunctions";
 import { useState, useRef, useEffect } from "react";
 import { BiCopy } from "react-icons/bi";
@@ -26,7 +28,7 @@ const FormPembayaran = ({
     noHp: "",
   });
   const [submitClicked, setSubmitClicked] = useState(false);
-  const [unpaidPeserta, setUnpaidPeserta] = useState<string[]>([]);
+  const [unpaidPeserta, setUnpaidPeserta] = useState<PesertaState[]>([]);
 
   const { disable, setDisable } = MyContext();
   const { kontingens, pesertas, addKontingens, addPesertas } = FormContext();
@@ -90,7 +92,7 @@ const FormPembayaran = ({
     e.preventDefault();
     setSubmitClicked(true);
 
-    if (!unpaidPeserta.length || kontingenToPay.biayaKontingen) {
+    if (!unpaidPeserta.length && kontingenToPay.biayaKontingen) {
       toastError(toastId, "Tidak ada peserta yang harus dibayar", true);
       reset();
       return;
@@ -101,100 +103,22 @@ const FormPembayaran = ({
   // SEND PEMBAYARAN
   const sendPembayaran = async () => {
     if (!imageSelected) return;
-    controlToast(toastId, "loading", "Mengirim bukti pembayaran", true);
     setDisable(true);
-    const time = Date.now();
-    const idPembayaran = `${kontingenToPay.id}-${time}`;
-    const url = `buktiPembayarans/${idPembayaran}.${
-      imageSelected.type.split("/")[1]
-    }`;
 
-    try {
-      const downloadUrl = await sendFile(imageSelected, url);
-      controlToast(toastId, "loading", "sending url to pesertas");
-      await sendUrlToPesertas(pesertas, downloadUrl, time, idPembayaran);
-      await sendUrlToKontingen(downloadUrl, time, idPembayaran);
-    } catch (error) {
-      toastError(toastId, error);
-      throw error;
-    } finally {
-      setDisable(false);
-    }
-  };
+    const { kontingen: updatedKontingen, pesertas: updatedPesertas } =
+      await createPembayaran(
+        imageSelected,
+        noHp,
+        totalToNominal(totalBiaya, noHp),
+        kontingenToPay,
+        unpaidPeserta,
+        toastId
+      );
 
-  // SEND URL TO ALL PESERTA
-  const sendUrlToPesertas = async (
-    pesertas: PesertaState[],
-    downloadUrl: string,
-    time: number,
-    idPembayaran: string
-  ) => {
-    try {
-      if (!pesertas.length) return;
+    addKontingens([updatedKontingen]);
+    addPesertas(updatedPesertas);
 
-      const updatePromises = pesertas.map(async (peserta) => {
-        let data: PesertaState = {
-          ...peserta,
-          pembayaran: true,
-          idPembayaran: idPembayaran,
-          infoPembayaran: {
-            noHp: noHp,
-            waktu: time,
-            buktiUrl: downloadUrl,
-          },
-        };
-
-        const { result, error } = await updateData("pesertas", data);
-        if (error) throw error;
-
-        addPesertas([result]);
-      });
-
-      await Promise.all(updatePromises);
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const sendUrlToKontingen = async (
-    downloadUrl: string,
-    time: number,
-    idPembayaran: string
-  ) => {
-    let kontingen = filterKontingenById(kontingens, kontingenToPay.id);
-
-    try {
-      if (!kontingen) throw { message: "Kontingen ID Undefinded" };
-
-      kontingen.pembayaran = true;
-      kontingen.biayaKontingen = kontingen.biayaKontingen ?? idPembayaran;
-      kontingen.unconfirmedPembayaran = true;
-      kontingen.confirmedPembayaran = false;
-      kontingen.idPembayaran = [...kontingen.idPembayaran, idPembayaran];
-      kontingen.unconfirmedPembayaranIds = [
-        ...kontingen.unconfirmedPembayaranIds,
-        idPembayaran,
-      ];
-      kontingen.infoPembayaran = [
-        ...kontingen.infoPembayaran,
-        {
-          idPembayaran,
-          nominal: totalToNominal(totalBiaya, noHp),
-          noHp,
-          waktu: time,
-          buktiUrl: downloadUrl,
-        },
-      ];
-
-      const { result, error } = await updateData("kontingens", kontingen);
-      if (error) throw error;
-
-      controlToast(toastId, "success", "Berhasil menyimpan bukti pembayaran");
-      addKontingens([result]);
-      reset();
-    } catch (error) {
-      throw error;
-    }
+    setDisable(false);
   };
 
   // ERROR REMOVER
@@ -204,17 +128,18 @@ const FormPembayaran = ({
 
   // GENERATE UNPAID PESERTA
   const getUnpaidPeserta = (override?: boolean) => {
-    let unpaidPeserta: string[] = [];
+    let unpaidPeserta: PesertaState[] = [];
     pesertas.map((peserta) => {
       if (!peserta.pembayaran && peserta.idKontingen == kontingenToPay.id)
-        unpaidPeserta.push(peserta.id);
+        unpaidPeserta.push(peserta);
     });
     setUnpaidPeserta(unpaidPeserta);
   };
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
+
       <div className="bg-white w-full rounded-md p-2 mt-2">
         <p className="text-center text-xl bg-red-500 w-fit rounded-md mx-auto px-2 text-white mb-2">
           Pembayaran untuk <b>{kontingenToPay.namaKontingen}</b>
@@ -241,16 +166,9 @@ const FormPembayaran = ({
             bg-white w-[150px] h-[200px] relative border-2 rounded-md`}
             >
               {imagePreviewSrc && (
-                // <Image
-                //   src={imagePreviewSrc}
-                //   alt="preview"
-                //   fill
-                //   className="object-cover rounded-md"
-                // />
                 <img
                   src={imagePreviewSrc}
                   alt="preview"
-                  // className="w-[150px] h-[196px] object-cover rounded-sm"
                   className="w-full h-full absolute object-cover rounded-sm"
                 />
               )}

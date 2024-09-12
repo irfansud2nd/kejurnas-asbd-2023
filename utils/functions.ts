@@ -44,12 +44,9 @@ export const toastError = (
   error: any,
   isNew: boolean = false
 ) => {
-  controlToast(
-    toastId,
-    "error",
-    (error as FirebaseError)?.message || "Unkown Error",
-    isNew
-  );
+  let message = (error as FirebaseError)?.message;
+  if (typeof error == "string") message = error;
+  controlToast(toastId, "error", message, isNew);
 };
 
 export const fetchData = async <T>(
