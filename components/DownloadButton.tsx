@@ -1,10 +1,9 @@
 "use client";
-import { storage } from "@/utils/firebase";
-import { getDownloadURL, ref } from "firebase/storage";
 import { useState, useEffect } from "react";
 import { BsCloudDownload } from "react-icons/bs";
 import InlineLoading from "./loading/InlineLoading";
 import FileSaver from "file-saver";
+import { getProposalLink } from "@/utils/actions";
 
 const DownloadButton = () => {
   const [downloadLink, setDownloadLink] = useState("");
@@ -13,14 +12,15 @@ const DownloadButton = () => {
   useEffect(() => {
     getLink();
   }, []);
-  const getLink = () => {
-    getDownloadURL(ref(storage, "admin/PROPOSAL KEJURNAS ASBD 2023.pdf"))
-      .then((url) => {
-        setDownloadLink(url);
-      })
-      .catch((error) => {
-        setErrorMessage("Download proposal tidak tersedia");
-      });
+  const getLink = async () => {
+    try {
+      const { result, error } = await getProposalLink();
+      if (error) throw error;
+
+      setDownloadLink(result);
+    } catch (error) {
+      setErrorMessage("Download proposal tidak tersedia");
+    }
   };
 
   return (

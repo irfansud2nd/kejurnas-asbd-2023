@@ -105,3 +105,14 @@ export const countFromCollection = async (
     return action.error(error);
   }
 };
+
+export const getProposalLink = async (): Promise<ServerAction<string>> => {
+  try {
+    const url = await getDownloadURL(
+      ref(storage, "admin/PROPOSAL KEJURNAS ASBD 2023.pdf")
+    );
+    return action.success(url);
+  } catch (error) {
+    return action.error(error);
+  }
+};
