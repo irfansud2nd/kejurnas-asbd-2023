@@ -2,8 +2,7 @@ import { createData, deleteData, getNewDocId, updateData } from "../actions";
 import { ToastId } from "../constants";
 import { deletePersons } from "../formFunctions";
 import { KontingenState, OfficialState, PesertaState } from "../formTypes";
-import { toastError } from "../functions";
-import { controlToast } from "../sharedFunctions";
+import { controlToast, toastError } from "../functions";
 
 export const filterKontingenById = (
   kontingens: KontingenState[],
@@ -70,12 +69,12 @@ export const deleteKontingen = async (
   toastId: ToastId
 ) => {
   try {
+    controlToast(toastId, "loading", "Menghapus kontingen", true);
+
     if (kontingen.idPembayaran.length)
       throw new Error(
         "Kontingen yang telah melakukan pembayaran tidak dapat dihapus"
       );
-
-    controlToast(toastId, "loading", "Menghapus kontingen", true);
 
     // DELETE PESERTAS
     if (pesertas.length) {
@@ -98,4 +97,12 @@ export const deleteKontingen = async (
     toastError(toastId, error);
     throw error;
   }
+};
+
+// FIND NAMA KONTINGEN
+export const findNamaKontingen = (kontingens: KontingenState[], id: string) => {
+  if (!kontingens[kontingens.findIndex((item) => item.id == id)])
+    return "NOT FOUND";
+  return kontingens[kontingens.findIndex((item) => item.id == id)]
+    .namaKontingen;
 };

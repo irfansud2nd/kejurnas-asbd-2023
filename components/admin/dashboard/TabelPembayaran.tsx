@@ -53,6 +53,18 @@ const TabelPembayaran = () => {
     return { unpaid, unconfirmed, confirmed, paid };
   };
 
+  const {
+    confirmed: confirmedKontingen,
+    unconfirmed: unconfirmedKontingen,
+    unpaid: unpaidKontingen,
+  } = getKontingensPayment();
+
+  const {
+    confirmed: confirmedPeserta,
+    unconfirmed: unconfirmedPeserta,
+    unpaid: unpaidPeserta,
+  } = getPesertasPayment();
+
   return (
     <div className="flex flex-col gap-2 bg-black p-2 text-center text-white rounded-md w-fit mt-2">
       <p className="font-semibold text-lg">Pembayaran</p>
@@ -68,47 +80,31 @@ const TabelPembayaran = () => {
           Confirmed
         </p>
         <p className="text-2xl font-extrabold text-green-500 border-r-2 border-r-white">
-          {pesertasLoading ? <InlineLoading /> : getPesertasPayment().confirmed}
+          {pesertasLoading ? <InlineLoading /> : confirmedPeserta}
         </p>
         <p className="text-2xl font-extrabold text-green-500">
-          {kontingensLoading ? (
-            <InlineLoading />
-          ) : (
-            getKontingensPayment().confirmed
-          )}
+          {kontingensLoading ? <InlineLoading /> : confirmedKontingen}
         </p>
         <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white px-2">
           Unconfirmed
         </p>
         <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white">
-          {pesertasLoading ? (
-            <InlineLoading />
-          ) : (
-            getPesertasPayment().unconfirmed
-          )}
+          {pesertasLoading ? <InlineLoading /> : unconfirmedPeserta}
         </p>
         <button
           className="text-2xl font-extrabold text-yellow-500 hover:underline"
           onClick={getUnconfirmedKontingens}
         >
-          {kontingensLoading ? (
-            <InlineLoading />
-          ) : (
-            getKontingensPayment().unconfirmed
-          )}
+          {kontingensLoading ? <InlineLoading /> : unconfirmedKontingen}
         </button>
         <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
           Unpaid
         </p>
         <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
-          {pesertasLoading ? <InlineLoading /> : getPesertasPayment().unpaid}
+          {pesertasLoading ? <InlineLoading /> : unpaidPeserta}
         </p>
         <p className="text-2xl font-extrabold text-red-500">
-          {kontingensLoading ? (
-            <InlineLoading />
-          ) : (
-            getKontingensPayment().unpaid
-          )}
+          {kontingensLoading ? <InlineLoading /> : unpaidKontingen}
         </p>
       </div>
     </div>

@@ -19,7 +19,7 @@ import {
   updatePerson,
   validateImage,
 } from "@/utils/formFunctions";
-import { controlToast } from "@/utils/sharedFunctions";
+import { controlToast } from "@/utils/functions";
 import { getInputErrorPeserta } from "@/utils/peserta/pesertaFunctions";
 import { filterKontingenById } from "@/utils/kontingen/kontingenFunctions";
 import { countMatch } from "@/utils/peserta/pesertaActions";
@@ -185,28 +185,29 @@ const Peserta = () => {
   }, [imageSelected]);
 
   // SUBMIT HANDLER
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitClicked(true);
+
     if (
-      data.tingkatanPertandingan == "SMA" ||
-      data.tingkatanPertandingan == "Dewasa"
+      data.tingkatanPertandingan != "SMA" &&
+      data.tingkatanPertandingan != "Dewasa"
     ) {
-      controlToast(toastId, "loading", "Cek Kuota Kategori");
-      cekKuota().then((res) => {
-        if (res) {
-          controlToast(toastId, "success", "Kuota Tersedia");
-          sendPeserta();
-        } else {
-          controlToast(
-            toastId,
-            "error",
-            `Kuota Kategori yang dipilih sudah habis (Maks. 8 Orang)`
-          );
-        }
-      });
-    } else {
       sendPeserta();
+      return;
+    }
+
+    try {
+      controlToast(toastId, "loading", "Cek Kuota Kategori", true);
+      const result = await cekKuota();
+
+      if (!result)
+        throw new Error("Kuota kategori yang dipilih tidak tersedia");
+
+      controlToast(toastId, "success", "Kuota tersedia");
+      sendPeserta();
+    } catch (error) {
+      toastError(toastId, error);
     }
   };
 

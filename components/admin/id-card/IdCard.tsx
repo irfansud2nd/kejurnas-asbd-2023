@@ -6,13 +6,8 @@ import idCardOfficial from "@/public/images/idcard-official.png";
 import { kontingenInitialValue } from "@/utils/formConstants";
 import { AdminContext } from "@/context/AdminContext";
 import { KontingenState, OfficialState, PesertaState } from "@/utils/formTypes";
-import {
-  getOfficialsByKontingen,
-  getPesertasByKontingen,
-} from "@/utils/admin/adminFunctions";
-import test_foto from "@/public/images/pas-foto.jpg";
-import { compare, findNamaKontingen } from "@/utils/sharedFunctions";
-import { ImGit } from "react-icons/im";
+import { compare } from "@/utils/functions";
+import { findNamaKontingen } from "@/utils/kontingen/kontingenFunctions";
 
 const IdCard = () => {
   const [pesertaFontSize, setPesertaFontSize] = useState("text-xl");

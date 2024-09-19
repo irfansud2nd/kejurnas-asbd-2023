@@ -2,9 +2,9 @@ import { FormContext } from "@/context/FormContext";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
 import { useState, useEffect } from "react";
 import ContactPerson from "./ContactPerson";
-import { findNamaKontingen } from "@/utils/sharedFunctions";
 import { getPesertasByKontingen } from "@/utils/admin/adminFunctions";
 import { getGroupedUnpaidPeserta } from "@/utils/peserta/pesertaFunctions";
+import { findNamaKontingen } from "@/utils/kontingen/kontingenFunctions";
 
 const InfoPembayaran = ({
   totalBiaya,

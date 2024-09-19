@@ -2,7 +2,7 @@ import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
 import { firestore } from "@/utils/firebase";
 import { KontingenState } from "@/utils/formTypes";
-import { controlToast } from "@/utils/sharedFunctions";
+import { controlToast } from "@/utils/functions";
 import { doc, updateDoc } from "firebase/firestore";
 import { useRef } from "react";
 import { ToastContainer } from "react-toastify";

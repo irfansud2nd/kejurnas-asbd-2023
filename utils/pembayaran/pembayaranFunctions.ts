@@ -2,8 +2,7 @@ import { deleteFile, updateData } from "../actions";
 import { ToastId } from "../constants";
 import { getFileUrl, totalToNominal, updatePersons } from "../formFunctions";
 import { KontingenState, PesertaState } from "../formTypes";
-import { sendFile, toastError } from "../functions";
-import { controlToast } from "../sharedFunctions";
+import { controlToast, sendFile, toastError } from "../functions";
 
 export const confirmPayment = async (
   infoPembayaran: {

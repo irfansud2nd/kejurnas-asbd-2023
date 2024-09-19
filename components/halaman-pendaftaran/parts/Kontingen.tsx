@@ -12,7 +12,7 @@ import RodalKontingen from "../rodals/RodalKontingen";
 import { deletePerson, getFileUrl } from "@/utils/formFunctions";
 import FormKontingen from "../forms/FormKontingen";
 import InlineLoading from "@/components/loading/InlineLoading";
-import { controlToast } from "@/utils/sharedFunctions";
+import { controlToast } from "@/utils/functions";
 import { deleteData as deleteFirebaseData } from "@/utils/actions";
 import { toastError } from "@/utils/functions";
 import {

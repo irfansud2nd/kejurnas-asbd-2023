@@ -9,7 +9,7 @@ import {
   tingkatanKategoriJurusAsbd,
 } from "@/utils/formConstants";
 import { FormPesertaProps, KontingenState } from "@/utils/formTypes";
-import { findNamaKontingen } from "@/utils/sharedFunctions";
+import { findNamaKontingen } from "@/utils/kontingen/kontingenFunctions";
 import Image from "next/image";
 import { useEffect } from "react";
 

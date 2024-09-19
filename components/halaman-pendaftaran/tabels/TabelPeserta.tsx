@@ -3,7 +3,8 @@ import { KontingenState, PesertaState, TabelProps } from "@/utils/formTypes";
 import TabelActionButtons from "./TabelActionButtons";
 import InlineLoading from "@/components/loading/InlineLoading";
 import { jenisPertandingan } from "@/utils/formConstants";
-import { compare, findNamaKontingen } from "@/utils/sharedFunctions";
+import { compare } from "@/utils/functions";
+import { findNamaKontingen } from "@/utils/kontingen/kontingenFunctions";
 
 const TabelPeserta = ({ handleDelete, handleEdit }: TabelProps) => {
   const {

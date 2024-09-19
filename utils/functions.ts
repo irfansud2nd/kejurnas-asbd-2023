@@ -1,7 +1,7 @@
 import { FirebaseError } from "firebase/app";
 import { ServerAction, ToastId } from "./constants";
 import { uploadFile } from "./actions";
-import { controlToast } from "./sharedFunctions";
+import { toast } from "react-toastify";
 
 export const action = {
   success: <T>(result: T): ServerAction<T> => {
@@ -61,4 +61,57 @@ export const fetchData = async <T>(
   } catch (error) {
     throw error;
   }
+};
+
+// CONTROL TOAST
+export const controlToast = (
+  ref: ToastId,
+  type: "success" | "error" | "loading",
+  message: string,
+  isNew: boolean = false
+) => {
+  if (isNew) {
+    if (type == "loading") {
+      ref.current = toast.loading(message, {
+        position: "top-center",
+        theme: "colored",
+      });
+    } else {
+      ref.current = toast[type](message, {
+        position: "top-center",
+        autoClose: 5000,
+        closeButton: true,
+        theme: "colored",
+      });
+    }
+  } else {
+    if (ref.current) {
+      if (type === "loading") {
+        toast.update(ref.current, {
+          render: message,
+        });
+      } else {
+        toast.update(ref.current, {
+          render: message,
+          type: type,
+          isLoading: false,
+          autoClose: 3000,
+          closeButton: true,
+        });
+      }
+    }
+  }
+};
+
+//COMPARE FOR DATA SORTER
+export const compare = (query: string, type: "asc" | "desc") => {
+  return (a: any, b: any) => {
+    if (a[query] < b[query]) {
+      return type == "asc" ? -1 : 1;
+    }
+    if (a[query] > b[query]) {
+      return type == "asc" ? 1 : -1;
+    }
+    return 0;
+  };
 };

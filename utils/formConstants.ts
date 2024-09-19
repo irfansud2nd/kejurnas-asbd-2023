@@ -10,11 +10,6 @@ import {
 export const jenisPertandingan = ["Tanding", "Seni", "Jurus ASBD"];
 
 // KATEGORI SENI
-// SENI TUNGGAL
-const seniTunggal = {
-  putra: ["Tunggal Putra"],
-  putri: ["Tunggal Putri"],
-};
 
 const seniSd = {
   putra: [

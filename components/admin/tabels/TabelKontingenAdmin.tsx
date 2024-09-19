@@ -9,13 +9,12 @@ import { KontingenState } from "@/utils/formTypes";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import { useRef, useState, useEffect } from "react";
 import InlineLoading from "@/components/loading/InlineLoading";
-import { compare, controlToast } from "@/utils/sharedFunctions";
 import Link from "next/link";
 import { kontingenInitialValue } from "@/utils/formConstants";
 import RodalKontingen from "@/components/halaman-pendaftaran/rodals/RodalKontingen";
 import { deletePerson, getFileUrl } from "@/utils/formFunctions";
 import { deleteData } from "@/utils/actions";
-import { toastError } from "@/utils/functions";
+import { compare, controlToast, toastError } from "@/utils/functions";
 
 const TabelKontingenAdmin = () => {
   const [kontingensToMap, setKontingensToMap] = useState<KontingenState[]>([]);

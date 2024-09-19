@@ -6,7 +6,7 @@ import { useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import InlineLoading from "./loading/InlineLoading";
-import { controlToast } from "@/utils/sharedFunctions";
+import { controlToast } from "@/utils/functions";
 
 const LoginButton = () => {
   const { user, userLoading, googleLogin } = MyContext();

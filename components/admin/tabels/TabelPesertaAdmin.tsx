@@ -2,17 +2,18 @@ import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
 import { formatTanggal } from "@/utils/admin/adminFunctions";
 import { jenisPertandingan } from "@/utils/formConstants";
-import { KontingenState, PesertaState } from "@/utils/formTypes";
-import { compare, findNamaKontingen } from "@/utils/sharedFunctions";
+import { PesertaState } from "@/utils/formTypes";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { deletePerson } from "@/utils/formFunctions";
-import { filterKontingenById } from "@/utils/kontingen/kontingenFunctions";
+import {
+  filterKontingenById,
+  findNamaKontingen,
+} from "@/utils/kontingen/kontingenFunctions";
 
 const TabelPesertaAdmin = () => {
   const {

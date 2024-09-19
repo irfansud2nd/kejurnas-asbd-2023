@@ -11,7 +11,7 @@ import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import "rodal/lib/rodal.css";
 import { ToastContainer } from "react-toastify";
 import { MyContext } from "@/context/Context";
-import { controlToast } from "@/utils/sharedFunctions";
+import { controlToast } from "@/utils/functions";
 import { getGroupedPeserta } from "@/utils/peserta/pesertaFunctions";
 import { fetchData, toastError } from "@/utils/functions";
 import { getKontingenByIdPembayaran } from "@/utils/kontingen/kontingenActions";

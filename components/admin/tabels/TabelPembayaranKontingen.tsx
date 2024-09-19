@@ -1,7 +1,7 @@
 import InlineLoading from "@/components/loading/InlineLoading";
 import { AdminContext } from "@/context/AdminContext";
 import { KontingenState, PesertaState } from "@/utils/formTypes";
-import { compare } from "@/utils/sharedFunctions";
+import { compare } from "@/utils/functions";
 import { useEffect, useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 

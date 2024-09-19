@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { jabatanOfficial, jenisKelaminDewasa } from "@/utils/formConstants";
 import { FormContext } from "@/context/FormContext";
-import { findNamaKontingen } from "@/utils/sharedFunctions";
+import { findNamaKontingen } from "@/utils/kontingen/kontingenFunctions";
 
 const FormOfficial = ({
   data,

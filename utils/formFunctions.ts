@@ -1,7 +1,6 @@
 import { DocumentData, collection, doc } from "firebase/firestore";
 import { KontingenState, OfficialState, PesertaState } from "./formTypes";
-import { controlToast } from "./sharedFunctions";
-import { isFileValid, sendFile, toastError } from "./functions";
+import { controlToast, isFileValid, sendFile, toastError } from "./functions";
 import {
   createData,
   deleteData,
@@ -155,6 +154,12 @@ export const deletePerson = async (
   toastId?: ToastId
 ) => {
   try {
+    toastId && controlToast(toastId, "loading", `Menghapus ${type}`, true);
+    if ((person as PesertaState).idPembayaran.length)
+      throw new Error(
+        "Peserta yang telah melakukan pembayaran tidak dapat dihapus"
+      );
+
     // DELETE IMAGE
     toastId && controlToast(toastId, "loading", "Menghapus foto", true);
     const { error: fileError } = await deleteFile(person.fotoUrl);

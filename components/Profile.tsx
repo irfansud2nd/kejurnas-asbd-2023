@@ -7,7 +7,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import InlineLoading from "./loading/InlineLoading";
-import { controlToast } from "@/utils/sharedFunctions";
+import { controlToast } from "@/utils/functions";
 const Profile = () => {
   const { user, userLoading, googleLogin, logout } = MyContext();
 
