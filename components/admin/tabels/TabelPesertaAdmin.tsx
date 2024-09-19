@@ -19,7 +19,8 @@ const TabelPesertaAdmin = () => {
   const {
     pesertas,
     kontingens,
-    refreshPesertas,
+    fetchPesertas,
+    deletePeserta,
     pesertasLoading,
     selectedKontingen,
     selectedPesertas,
@@ -79,11 +80,13 @@ const TabelPesertaAdmin = () => {
         filterKontingenById(kontingens, peserta.idKontingen),
         toastId
       );
+
+      deletePeserta(peserta.id);
     }
   };
 
   useEffect(() => {
-    if (selectedKontingen.id || selectedKategori.tingkatan) {
+    if (selectedKontingen || selectedKategori.tingkatan) {
       setPesertasToMap(selectedPesertas);
     } else {
       setPesertasToMap(pesertas);
@@ -111,8 +114,8 @@ const TabelPesertaAdmin = () => {
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
-        {!selectedKontingen.id && (
-          <button className="btn_green" onClick={refreshPesertas}>
+        {!selectedKontingen && (
+          <button className="btn_green" onClick={fetchPesertas}>
             Refresh
           </button>
         )}

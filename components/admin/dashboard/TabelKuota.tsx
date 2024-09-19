@@ -2,7 +2,7 @@ import { AdminContext } from "@/context/AdminContext";
 import { tingkatanKategori } from "@/utils/formConstants";
 
 const TabelKuota = () => {
-  const { cekKuota, setSelectedKategori, setMode } = AdminContext();
+  const { cekKuota } = AdminContext();
   return (
     <div className="flex flex-col gap-2 bg-black p-2 text-center text-white rounded-md w-fit min-w-[500px] mt-2">
       <p className="font-semibold text-lg">Sisa Kuota</p>

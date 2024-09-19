@@ -14,7 +14,6 @@ const TabelAdmin = () => {
     selectedKontingen,
     setSelectedKontingen,
     setUncofirmedKontingens,
-    refreshAll,
     resetKategori,
   } = AdminContext();
   return (
@@ -23,7 +22,6 @@ const TabelAdmin = () => {
         className="btn_green mb-1"
         onClick={() => {
           setMode("");
-          // refreshAll();
           resetKategori();
           setSelectedKontingen(kontingenInitialValue);
           setUncofirmedKontingens([]);
@@ -32,7 +30,7 @@ const TabelAdmin = () => {
         Dashboard
       </button>
 
-      {selectedKontingen.id && (
+      {selectedKontingen && (
         <h1 className="capitalize mb-1 text-3xl font-extrabold p-1 w-fit bg-black text-white">
           Kontingen {selectedKontingen.namaKontingen}
         </h1>
@@ -40,8 +38,8 @@ const TabelAdmin = () => {
       {mode == "custom" && <CustomTabel />}
       {mode == "id" && <IdCard />}
       {mode == "kontingen" && <TabelKontingenAdmin />}
-      {(mode == "peserta" || selectedKontingen.id) && <TabelPesertaAdmin />}
-      {(mode == "official" || selectedKontingen.id) && <TabelOfficialAdmin />}
+      {(mode == "peserta" || selectedKontingen) && <TabelPesertaAdmin />}
+      {(mode == "official" || selectedKontingen) && <TabelOfficialAdmin />}
       {mode == "pembayaran" && <TabelPembayaranKontingen />}
     </div>
   );

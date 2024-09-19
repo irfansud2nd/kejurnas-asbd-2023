@@ -15,6 +15,9 @@ import RodalKontingen from "@/components/halaman-pendaftaran/rodals/RodalKonting
 import { deletePerson, getFileUrl } from "@/utils/formFunctions";
 import { deleteData } from "@/utils/actions";
 import { compare, controlToast, toastError } from "@/utils/functions";
+import { deleteKontingen } from "@/utils/kontingen/kontingenFunctions";
+import { filterPesertaByIdKontingen } from "@/utils/peserta/pesertaFunctions";
+import { filterOfficialByIdKontingen } from "@/utils/official/officialFunctions";
 
 const TabelKontingenAdmin = () => {
   const [kontingensToMap, setKontingensToMap] = useState<KontingenState[]>([]);
@@ -23,13 +26,16 @@ const TabelKontingenAdmin = () => {
 
   const {
     kontingens,
+    fetchKontingens,
     unconfirmedKongtingens,
     setSelectedKontingen,
     selectedKontingen,
-    refreshKontingens,
+    deleteKontingen: deleteKontingenContext,
     kontingensLoading,
     pesertas,
+    deletePeserta,
     officials,
+    deleteOfficial,
   } = AdminContext();
 
   const tabelHead = [
@@ -55,7 +61,7 @@ const TabelKontingenAdmin = () => {
   });
 
   useEffect(() => {
-    if (selectedKontingen.id) {
+    if (selectedKontingen) {
       setKontingensToMap([selectedKontingen]);
     } else if (unconfirmedKongtingens.length) {
       setKontingensToMap(unconfirmedKongtingens);
@@ -71,78 +77,28 @@ const TabelKontingenAdmin = () => {
   };
 
   // DELETE KONTINGEN START
-  const executeDelete = () => {
+  const executeDelete = async () => {
     setDeleteRodal(false);
-    deleteOfficials(dataToDelete.officials.length - 1);
-  };
+    let pesertasToDelete = filterPesertaByIdKontingen(
+      pesertas,
+      dataToDelete.id
+    );
+    let officialsToDelete = filterOfficialByIdKontingen(
+      officials,
+      dataToDelete.id
+    );
+    await deleteKontingen(
+      dataToDelete,
+      pesertasToDelete,
+      officialsToDelete,
+      toastId
+    );
 
-  // DELETE OFFICIALS IN KONTINGEN
-  const deleteOfficials = async (officialIndex: number) => {
-    if (officialIndex >= 0) {
-      const id = dataToDelete.officials[officialIndex];
-      await deletePerson(
-        "official",
-        {
-          id,
-          idKontingen: dataToDelete.id,
-          fotoUrl: getFileUrl("official", id),
-        },
-        dataToDelete,
-        toastId
-      );
-      afterDeleteOfficial(officialIndex);
-    } else {
-      deletePesertas(dataToDelete.pesertas.length - 1);
-    }
-  };
+    pesertasToDelete.map((peserta) => deletePeserta(peserta.id));
+    officialsToDelete.map((official) => deletePeserta(official.id));
+    deleteKontingenContext(dataToDelete.id);
 
-  const afterDeleteOfficial = (officialIndex: number) => {
-    if (officialIndex != 0) {
-      deleteOfficials(officialIndex - 1);
-    } else {
-      deletePesertas(dataToDelete.pesertas.length - 1);
-    }
-  };
-
-  // DELETE PESERTAS IN KONTINGEN
-  const deletePesertas = async (pesertaIndex: number) => {
-    if (pesertaIndex >= 0) {
-      const id = dataToDelete.pesertas[pesertaIndex];
-      await deletePerson(
-        "peserta",
-        {
-          id,
-          idKontingen: dataToDelete.id,
-          fotoUrl: getFileUrl("peserta", id),
-        },
-        dataToDelete,
-        toastId
-      );
-      afterDeletePeserta(pesertaIndex);
-    } else {
-      deleteKontingen();
-    }
-  };
-
-  const afterDeletePeserta = (pesertaIndex: number) => {
-    if (pesertaIndex != 0) {
-      deletePesertas(pesertaIndex - 1);
-    } else {
-      deleteKontingen();
-    }
-  };
-
-  // DELETE KONTINGEN FINAL
-  const deleteKontingen = async () => {
-    controlToast(toastId, "loading", "Menghapus Kontingen", true);
-
-    const { result, error } = await deleteData("kontingens", dataToDelete.id);
-    if (error) toastError(toastId, error);
-
-    controlToast(toastId, "success", "Kontingen berhasil dihapus");
-
-    refreshKontingens();
-    cancelDelete();
+    cancelDelete;
   };
 
   const cancelDelete = () => {
@@ -169,8 +125,8 @@ const TabelKontingenAdmin = () => {
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
-        {!selectedKontingen.id && (
-          <button className="btn_green" onClick={refreshKontingens}>
+        {!selectedKontingen && (
+          <button className="btn_green" onClick={fetchKontingens}>
             Refresh
           </button>
         )}

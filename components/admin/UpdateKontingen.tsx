@@ -5,7 +5,6 @@ import { KontingenState } from "@/utils/formTypes";
 import { controlToast } from "@/utils/functions";
 import { doc, updateDoc } from "firebase/firestore";
 import { useRef } from "react";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const UpdateKontingen = () => {

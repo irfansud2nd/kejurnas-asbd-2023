@@ -14,6 +14,7 @@ import {
   getAllOfficial,
   getAllPeserta,
 } from "@/utils/admin/adminActions";
+import { reduceData } from "@/utils/functions";
 
 const Context = createContext<any>(null);
 
@@ -25,9 +26,9 @@ export const AdminContextProvider = ({
   const [error, setError] = useState<string | null>(null);
 
   const [kontingens, setKontingens] = useState<KontingenState[]>([]);
-  const [selectedKontingen, setSelectedKontingen] = useState<KontingenState>(
-    kontingenInitialValue
-  );
+  const [selectedKontingen, setSelectedKontingen] = useState<
+    KontingenState | undefined
+  >(undefined);
   const [unconfirmedKongtingens, setUncofirmedKontingens] = useState<
     KontingenState[]
   >([]);
@@ -53,15 +54,11 @@ export const AdminContextProvider = ({
     gender: "",
   });
 
-  const { user } = MyContext();
-
   useEffect(() => {
-    refreshKontingens();
-    refreshOfficials();
-    refreshPesertas();
+    fetchAll();
   }, []);
 
-  const refreshAll = () => {
+  const fetchAll = () => {
     refreshKontingens();
     refreshOfficials();
     refreshPesertas();
@@ -69,7 +66,7 @@ export const AdminContextProvider = ({
 
   // GET KONTINGEN
   const refreshKontingens = async () => {
-    setSelectedKontingen(kontingenInitialValue);
+    setSelectedKontingen(undefined);
     setKontingensLoading(true);
     try {
       const { result, error } = await getAllKontingen();
@@ -113,7 +110,7 @@ export const AdminContextProvider = ({
   };
 
   useEffect(() => {
-    if (selectedKontingen.id) {
+    if (selectedKontingen) {
       resetKategori();
       setUncofirmedKontingens([]);
       setSelectedOfficials(
@@ -135,6 +132,42 @@ export const AdminContextProvider = ({
       if (kontingen.unconfirmedPembayaranIds.length) selected.push(kontingen);
     });
     setUncofirmedKontingens(selected);
+  };
+
+  // ADD
+  const addKontingens = (newKontingens: KontingenState[]) => {
+    const data = reduceData([
+      ...kontingens,
+      ...newKontingens,
+    ]) as KontingenState[];
+    setKontingens(data);
+  };
+
+  // DELETE
+  const deleteKontingen = (id: string) => {
+    setKontingens(kontingens.filter((item) => item.id != id));
+  };
+
+  // PESERTA
+  // ADD
+  const addPesertas = (newPesertas: PesertaState[]) => {
+    const data = reduceData([...pesertas, ...newPesertas]) as PesertaState[];
+    setPesertas(data);
+  };
+  // DELETE
+  const deletePeserta = (id: string) => {
+    setPesertas(pesertas.filter((item) => item.id != id));
+  };
+
+  // OFFICIAL
+  // ADD
+  const addOfficials = (newOfficials: OfficialState[]) => {
+    const data = reduceData([...officials, ...newOfficials]) as OfficialState[];
+    setOfficials(data);
+  };
+  // DELETE
+  const deleteOfficial = (id: string) => {
+    setOfficials(officials.filter((item) => item.id != id));
   };
 
   // CEK KUOTA
@@ -225,16 +258,19 @@ export const AdminContextProvider = ({
         kontingens,
         kontingensLoading,
         setKontingens,
-        refreshKontingens,
+        addKontingens,
+        deleteKontingen,
         pesertas,
         pesertasLoading,
         setPesertas,
-        refreshPesertas,
+        addPesertas,
+        deletePeserta,
         officials,
         officialsLoading,
         setOfficials,
-        refreshOfficials,
-        refreshAll,
+        addOfficials,
+        deleteOfficial,
+        fetchAll,
         mode,
         setMode,
         selectedKontingen,
@@ -242,6 +278,7 @@ export const AdminContextProvider = ({
         cekKuota,
         selectedKategori,
         setSelectedKategori,
+        resetKategori,
         selectedPesertas,
         setSelectedPesertas,
         selectedOfficials,
@@ -249,7 +286,6 @@ export const AdminContextProvider = ({
         getUnconfirmedKontingens,
         unconfirmedKongtingens,
         setUncofirmedKontingens,
-        resetKategori,
       }}
     >
       {children}
@@ -258,5 +294,59 @@ export const AdminContextProvider = ({
 };
 
 export const AdminContext = () => {
-  return useContext(Context);
+  return useContext(Context) as {
+    error: string;
+    kontingens: KontingenState[];
+    fetchKontingens: () => void;
+    kontingensLoading: boolean;
+    setKontingens: (kontingens: KontingenState[]) => void;
+    addKontingens: (kontingens: KontingenState[]) => void;
+    deleteKontingen: (id: string) => void;
+    pesertas: PesertaState[];
+    fetchPesertas: () => void;
+    pesertasLoading: boolean;
+    setPesertas: (pesertas: PesertaState[]) => void;
+    addPesertas: (pesertas: PesertaState[]) => void;
+    deletePeserta: (id: string) => void;
+    officials: OfficialState[];
+    fetchOfficials: () => void;
+    officialsLoading: boolean;
+    setOfficials: (officials: OfficialState[]) => void;
+    addOfficials: (officials: OfficialState[]) => void;
+    deleteOfficial: (id: string) => void;
+    fetchAll: () => void;
+    mode: string;
+    setMode: (mode: string) => void;
+    selectedKontingen: KontingenState | undefined;
+    setSelectedKontingen: (kontingen: KontingenState | undefined) => void;
+    cekKuota: (
+      tingkatanPertandingan: string,
+      kategoriPertandingan: string,
+      jenisKelamin: string
+    ) => JSX.Element;
+    selectedKategori: {
+      tingkatan: string;
+      jenis: string;
+      sabuk: string;
+      jurus: string;
+      kategori: string;
+      gender: string;
+    };
+    setSelectedKategori: (value: {
+      tingkatan: string;
+      jenis: string;
+      sabuk: string;
+      jurus: string;
+      kategori: string;
+      gender: string;
+    }) => void;
+    resetKategori: () => void;
+    selectedPesertas: PesertaState[];
+    setSelectedPesertas: (pesertas: PesertaState[]) => void;
+    selectedOfficials: OfficialState[];
+    setSelectedOfficials: (officials: OfficialState[]) => void;
+    getUnconfirmedKontingens: () => void;
+    unconfirmedKongtingens: KontingenState[];
+    setUncofirmedKontingens: (kontingens: KontingenState[]) => void;
+  };
 };

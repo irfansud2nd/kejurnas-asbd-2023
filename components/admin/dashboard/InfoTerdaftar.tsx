@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import TerdaftarCard from "./TerdaftarCard";
 import { AdminContext } from "@/context/AdminContext";
 import { countFromCollection } from "@/utils/actions";
-import { toastError } from "@/utils/functions";
 const InfoTerdaftar = () => {
   const { setMode } = AdminContext();
 

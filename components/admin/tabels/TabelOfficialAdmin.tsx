@@ -13,7 +13,7 @@ const TabelOfficialAdmin = () => {
   const {
     officials,
     kontingens,
-    refreshOfficials,
+    fetchOfficials,
     officialsLoading,
     selectedKontingen,
     selectedOfficials,
@@ -44,7 +44,7 @@ const TabelOfficialAdmin = () => {
   });
 
   useEffect(() => {
-    if (selectedKontingen.id) {
+    if (selectedKontingen) {
       setOfficialsToMap(selectedOfficials);
     } else {
       setOfficialsToMap(officials);
@@ -59,8 +59,8 @@ const TabelOfficialAdmin = () => {
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
-        {!selectedKontingen.id && (
-          <button className="btn_green" onClick={refreshOfficials}>
+        {!selectedKontingen && (
+          <button className="btn_green" onClick={fetchOfficials}>
             Refresh
           </button>
         )}

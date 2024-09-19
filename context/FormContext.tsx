@@ -7,6 +7,7 @@ import { getKontingenByEmail } from "@/utils/kontingen/kontingenActions";
 import { getPesertasByEmail } from "@/utils/peserta/pesertaActions";
 import { getOfficialsByEmail } from "@/utils/official/officialActions";
 import { FirebaseError } from "firebase/app";
+import { reduceData } from "@/utils/functions";
 
 const Context = createContext<any>(null);
 
@@ -30,16 +31,6 @@ export const FormContextProvider = ({
       fetchData();
     }
   }, [user]);
-
-  const reduceData = (data: any[], key: string = "id") => {
-    const reducedData = Object.values(
-      data.reduce((acc, obj) => {
-        acc[obj[key]] = obj;
-        return acc;
-      }, {} as any)
-    );
-    return reducedData;
-  };
 
   const fetchPesertas = async () => {
     try {
@@ -103,6 +94,7 @@ export const FormContextProvider = ({
     ]) as KontingenState[];
     setKontingens(data);
   };
+
   // DELETE
   const deleteKontingen = (id: string) => {
     setKontingens(kontingens.filter((item) => item.id != id));
